@@ -10,11 +10,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/filter"
-	"github.com/influxdata/telegraf/internal"
-	"github.com/influxdata/telegraf/internal/tls"
-	"github.com/influxdata/telegraf/plugins/inputs"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/filter"
+	"github.com/jaddqiu/opsagent/internal"
+	"github.com/jaddqiu/opsagent/internal/tls"
+	"github.com/jaddqiu/opsagent/plugins/inputs"
 )
 
 const (

@@ -13,8 +13,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/metric"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/metric"
 
 	"github.com/matttproud/golang_protobuf_extensions/pbutil"
 	dto "github.com/prometheus/client_model/go"

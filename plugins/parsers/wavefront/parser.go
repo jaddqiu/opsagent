@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/metric"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/metric"
 )
 
 const MAX_BUFFER_SIZE = 2

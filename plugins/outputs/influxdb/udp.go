@@ -7,8 +7,8 @@ import (
 	"net"
 	"net/url"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/plugins/serializers/influx"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/plugins/serializers/influx"
 )
 
 const (

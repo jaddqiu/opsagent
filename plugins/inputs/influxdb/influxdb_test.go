@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/influxdata/telegraf/plugins/inputs/influxdb"
-	"github.com/influxdata/telegraf/testutil"
+	"github.com/jaddqiu/opsagent/plugins/inputs/influxdb"
+	"github.com/jaddqiu/opsagent/testutil"
 	"github.com/stretchr/testify/require"
 )
 

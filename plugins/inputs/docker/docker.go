@@ -17,11 +17,11 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/swarm"
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/filter"
-	"github.com/influxdata/telegraf/internal"
-	tlsint "github.com/influxdata/telegraf/internal/tls"
-	"github.com/influxdata/telegraf/plugins/inputs"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/filter"
+	"github.com/jaddqiu/opsagent/internal"
+	tlsint "github.com/jaddqiu/opsagent/internal/tls"
+	"github.com/jaddqiu/opsagent/plugins/inputs"
 )
 
 // Docker object

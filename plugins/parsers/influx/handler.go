@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"time"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/metric"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/metric"
 	"github.com/prometheus/common/log"
 )
 

@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/metric"
-	"github.com/influxdata/telegraf/testutil"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/metric"
+	"github.com/jaddqiu/opsagent/testutil"
 )
 
 // Create a valuecounter with config

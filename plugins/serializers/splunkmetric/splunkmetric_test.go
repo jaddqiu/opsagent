@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/metric"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/metric"
 )
 
 func MustMetric(v telegraf.Metric, err error) telegraf.Metric {

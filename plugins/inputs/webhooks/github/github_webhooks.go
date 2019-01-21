@@ -10,7 +10,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/influxdata/telegraf"
+	"github.com/jaddqiu/opsagent"
 )
 
 type GithubWebhook struct {

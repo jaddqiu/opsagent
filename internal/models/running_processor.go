@@ -3,7 +3,7 @@ package models
 import (
 	"sync"
 
-	"github.com/influxdata/telegraf"
+	"github.com/jaddqiu/opsagent"
 )
 
 type RunningProcessor struct {

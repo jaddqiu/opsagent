@@ -12,8 +12,8 @@ import (
 	"net"
 	"os"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/plugins/outputs"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/plugins/outputs"
 )
 
 const (

@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/internal"
-	"github.com/influxdata/telegraf/metric"
-	"github.com/influxdata/telegraf/testutil"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/internal"
+	"github.com/jaddqiu/opsagent/metric"
+	"github.com/jaddqiu/opsagent/testutil"
 	"github.com/stretchr/testify/require"
 )
 

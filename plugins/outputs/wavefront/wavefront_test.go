@@ -1,9 +1,9 @@
 package wavefront
 
 import (
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/metric"
-	"github.com/influxdata/telegraf/testutil"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/metric"
+	"github.com/jaddqiu/opsagent/testutil"
 	"reflect"
 	"strings"
 	"testing"

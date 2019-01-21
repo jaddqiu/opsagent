@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/influxdata/telegraf"
+	"github.com/jaddqiu/opsagent"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

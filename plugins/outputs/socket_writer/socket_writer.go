@@ -8,11 +8,11 @@ import (
 
 	"crypto/tls"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/internal"
-	tlsint "github.com/influxdata/telegraf/internal/tls"
-	"github.com/influxdata/telegraf/plugins/outputs"
-	"github.com/influxdata/telegraf/plugins/serializers"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/internal"
+	tlsint "github.com/jaddqiu/opsagent/internal/tls"
+	"github.com/jaddqiu/opsagent/plugins/outputs"
+	"github.com/jaddqiu/opsagent/plugins/serializers"
 )
 
 type SocketWriter struct {
@@ -59,7 +59,7 @@ func (sw *SocketWriter) SampleConfig() string {
   ## Data format to generate.
   ## Each data format has its own unique set of configuration options, read
   ## more about them here:
-  ## https://github.com/influxdata/telegraf/blob/master/docs/DATA_FORMATS_INPUT.md
+  ## https://github.com/jaddqiu/opsagent/blob/master/docs/DATA_FORMATS_INPUT.md
   # data_format = "influx"
 `
 }

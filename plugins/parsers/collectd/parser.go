@@ -9,8 +9,8 @@ import (
 	"collectd.org/api"
 	"collectd.org/network"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/metric"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/metric"
 )
 
 const (

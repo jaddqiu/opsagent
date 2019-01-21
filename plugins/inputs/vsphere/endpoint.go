@@ -14,9 +14,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/influxdata/telegraf/filter"
+	"github.com/jaddqiu/opsagent/filter"
 
-	"github.com/influxdata/telegraf"
+	"github.com/jaddqiu/opsagent"
 	"github.com/vmware/govmomi/object"
 	"github.com/vmware/govmomi/performance"
 	"github.com/vmware/govmomi/view"

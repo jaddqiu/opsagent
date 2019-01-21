@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/influxdata/telegraf/testutil"
+	"github.com/jaddqiu/opsagent/testutil"
 )
 
 func postWebhooks(rb *ParticleWebhook, eventBody string) *httptest.ResponseRecorder {

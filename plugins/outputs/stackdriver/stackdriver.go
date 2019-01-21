@@ -6,8 +6,8 @@ import (
 	"log"
 	"path"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/plugins/outputs"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/plugins/outputs"
 
 	// Imports the Stackdriver Monitoring client package.
 	monitoring "cloud.google.com/go/monitoring/apiv3"

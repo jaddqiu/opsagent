@@ -1,8 +1,8 @@
 package syslog
 
 import (
-	"github.com/influxdata/telegraf/internal"
-	"github.com/influxdata/telegraf/testutil"
+	"github.com/jaddqiu/opsagent/internal"
+	"github.com/jaddqiu/opsagent/testutil"
 	"time"
 )
 

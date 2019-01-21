@@ -13,9 +13,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/internal/tls"
-	"github.com/influxdata/telegraf/plugins/inputs"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/internal/tls"
+	"github.com/jaddqiu/opsagent/plugins/inputs"
 )
 
 //CSV format: https://cbonte.github.io/haproxy-dconv/1.5/configuration.html#9.1

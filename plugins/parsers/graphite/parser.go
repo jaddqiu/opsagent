@@ -10,10 +10,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/influxdata/telegraf/internal/templating"
+	"github.com/jaddqiu/opsagent/internal/templating"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/metric"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/metric"
 )
 
 // Minimum and maximum supported dates for timestamps.

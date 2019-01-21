@@ -14,9 +14,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/internal"
-	"github.com/influxdata/telegraf/plugins/inputs"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/internal"
+	"github.com/jaddqiu/opsagent/plugins/inputs"
 )
 
 // HostPinger is a function that runs the "ping" function using a list of

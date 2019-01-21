@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/influxdata/telegraf"
+	"github.com/jaddqiu/opsagent"
 )
 
 func (n *NginxPlusApi) gatherMetrics(addr *url.URL, acc telegraf.Accumulator) {

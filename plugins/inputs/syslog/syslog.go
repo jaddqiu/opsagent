@@ -16,10 +16,10 @@ import (
 	"github.com/influxdata/go-syslog/nontransparent"
 	"github.com/influxdata/go-syslog/octetcounting"
 	"github.com/influxdata/go-syslog/rfc5424"
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/internal"
-	tlsConfig "github.com/influxdata/telegraf/internal/tls"
-	"github.com/influxdata/telegraf/plugins/inputs"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/internal"
+	tlsConfig "github.com/jaddqiu/opsagent/internal/tls"
+	"github.com/jaddqiu/opsagent/plugins/inputs"
 )
 
 const defaultReadTimeout = time.Second * 5

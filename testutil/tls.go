@@ -6,7 +6,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/influxdata/telegraf/internal/tls"
+	"github.com/jaddqiu/opsagent/internal/tls"
 )
 
 type pki struct {

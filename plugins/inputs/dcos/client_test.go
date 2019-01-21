@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/influxdata/telegraf/testutil"
+	"github.com/jaddqiu/opsagent/testutil"
 	"github.com/stretchr/testify/require"
 )
 

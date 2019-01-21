@@ -9,7 +9,7 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/influxdata/telegraf"
+	"github.com/jaddqiu/opsagent"
 )
 
 const MaxInt64 = int64(^uint64(0) >> 1)

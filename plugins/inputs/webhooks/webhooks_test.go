@@ -4,10 +4,10 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/influxdata/telegraf/plugins/inputs/webhooks/github"
-	"github.com/influxdata/telegraf/plugins/inputs/webhooks/papertrail"
-	"github.com/influxdata/telegraf/plugins/inputs/webhooks/particle"
-	"github.com/influxdata/telegraf/plugins/inputs/webhooks/rollbar"
+	"github.com/jaddqiu/opsagent/plugins/inputs/webhooks/github"
+	"github.com/jaddqiu/opsagent/plugins/inputs/webhooks/papertrail"
+	"github.com/jaddqiu/opsagent/plugins/inputs/webhooks/particle"
+	"github.com/jaddqiu/opsagent/plugins/inputs/webhooks/rollbar"
 )
 
 func TestAvailableWebhooks(t *testing.T) {

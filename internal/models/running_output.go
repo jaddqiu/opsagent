@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/selfstat"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/selfstat"
 )
 
 const (

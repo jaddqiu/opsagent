@@ -3,7 +3,7 @@ package vsphere
 import (
 	"time"
 
-	"github.com/influxdata/telegraf/selfstat"
+	"github.com/jaddqiu/opsagent/selfstat"
 )
 
 // Stopwatch is a simple helper for recording timing information,

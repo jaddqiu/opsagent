@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/influxdata/telegraf"
+	"github.com/jaddqiu/opsagent"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )

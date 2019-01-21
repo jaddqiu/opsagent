@@ -6,9 +6,9 @@ import (
 	"math"
 	"strconv"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/filter"
-	"github.com/influxdata/telegraf/plugins/processors"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/filter"
+	"github.com/jaddqiu/opsagent/plugins/processors"
 )
 
 var sampleConfig = `

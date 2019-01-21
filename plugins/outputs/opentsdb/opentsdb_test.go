@@ -12,8 +12,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/testutil"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/testutil"
 )
 
 func TestCleanTags(t *testing.T) {

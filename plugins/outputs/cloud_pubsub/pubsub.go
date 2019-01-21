@@ -6,10 +6,10 @@ import (
 	"sync"
 
 	"cloud.google.com/go/pubsub"
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/internal"
-	"github.com/influxdata/telegraf/plugins/outputs"
-	"github.com/influxdata/telegraf/plugins/serializers"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/internal"
+	"github.com/jaddqiu/opsagent/plugins/outputs"
+	"github.com/jaddqiu/opsagent/plugins/serializers"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 )
@@ -26,7 +26,7 @@ const sampleConfig = `
   ## Required. Data format to consume.
   ## Each data format has its own unique set of configuration options.
   ## Read more about them here:
-  ## https://github.com/influxdata/telegraf/blob/master/docs/DATA_FORMATS_INPUT.md
+  ## https://github.com/jaddqiu/opsagent/blob/master/docs/DATA_FORMATS_INPUT.md
   data_format = "influx"
 
   ## Optional. Filepath for GCP credentials JSON file to authorize calls to

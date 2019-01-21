@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/influxdata/telegraf/testutil"
+	"github.com/jaddqiu/opsagent/testutil"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/swarm"

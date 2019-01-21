@@ -5,7 +5,7 @@ package cgroup
 import (
 	"testing"
 
-	"github.com/influxdata/telegraf/testutil"
+	"github.com/jaddqiu/opsagent/testutil"
 	"github.com/stretchr/testify/require"
 )
 

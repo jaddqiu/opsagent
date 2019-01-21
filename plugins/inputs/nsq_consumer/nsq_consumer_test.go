@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/influxdata/telegraf/plugins/parsers"
-	"github.com/influxdata/telegraf/testutil"
+	"github.com/jaddqiu/opsagent/plugins/parsers"
+	"github.com/jaddqiu/opsagent/testutil"
 	"github.com/nsqio/go-nsq"
 	"github.com/stretchr/testify/assert"
 )

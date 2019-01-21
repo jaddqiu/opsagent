@@ -3,8 +3,8 @@ package regex
 import (
 	"regexp"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/plugins/processors"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/plugins/processors"
 )
 
 type Regex struct {

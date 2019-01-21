@@ -11,9 +11,9 @@ import (
 
 	"encoding/json"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/internal"
-	"github.com/influxdata/telegraf/plugins/inputs"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/internal"
+	"github.com/jaddqiu/opsagent/plugins/inputs"
 
 	gnatsd "github.com/nats-io/gnatsd/server"
 )

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/influxdata/telegraf/testutil"
+	"github.com/jaddqiu/opsagent/testutil"
 )
 
 // By all rights, we should use `string literal`, but the string contains "`".

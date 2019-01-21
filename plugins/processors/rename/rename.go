@@ -1,8 +1,8 @@
 package rename
 
 import (
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/plugins/processors"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/plugins/processors"
 )
 
 const sampleConfig = `

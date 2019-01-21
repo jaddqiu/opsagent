@@ -1,7 +1,7 @@
 ---
 defaults:
   defaults: &defaults
-    working_directory: '/go/src/github.com/influxdata/telegraf'
+    working_directory: '/go/src/github.com/jaddqiu/opsagent'
   go-1_9: &go-1_9
     docker:
       - image: 'quay.io/influxdb/telegraf-ci:1.9.7'

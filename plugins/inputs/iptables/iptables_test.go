@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/influxdata/telegraf/testutil"
+	"github.com/jaddqiu/opsagent/testutil"
 )
 
 func TestIptables_Gather(t *testing.T) {

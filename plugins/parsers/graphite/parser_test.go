@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/influxdata/telegraf/internal/templating"
-	"github.com/influxdata/telegraf/metric"
+	"github.com/jaddqiu/opsagent/internal/templating"
+	"github.com/jaddqiu/opsagent/metric"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

@@ -13,11 +13,11 @@ import (
 
 	"github.com/kballard/go-shellquote"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/internal"
-	"github.com/influxdata/telegraf/plugins/inputs"
-	"github.com/influxdata/telegraf/plugins/parsers"
-	"github.com/influxdata/telegraf/plugins/parsers/nagios"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/internal"
+	"github.com/jaddqiu/opsagent/plugins/inputs"
+	"github.com/jaddqiu/opsagent/plugins/parsers"
+	"github.com/jaddqiu/opsagent/plugins/parsers/nagios"
 )
 
 const sampleConfig = `
@@ -37,7 +37,7 @@ const sampleConfig = `
   ## Data format to consume.
   ## Each data format has its own unique set of configuration options, read
   ## more about them here:
-  ## https://github.com/influxdata/telegraf/blob/master/docs/DATA_FORMATS_INPUT.md
+  ## https://github.com/jaddqiu/opsagent/blob/master/docs/DATA_FORMATS_INPUT.md
   data_format = "influx"
 `
 

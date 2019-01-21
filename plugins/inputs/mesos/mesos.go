@@ -13,10 +13,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/internal/tls"
-	"github.com/influxdata/telegraf/plugins/inputs"
-	jsonparser "github.com/influxdata/telegraf/plugins/parsers/json"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/internal/tls"
+	"github.com/jaddqiu/opsagent/plugins/inputs"
+	jsonparser "github.com/jaddqiu/opsagent/plugins/parsers/json"
 )
 
 type Role string

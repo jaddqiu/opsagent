@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/influxdata/telegraf"
+	"github.com/jaddqiu/opsagent"
 
-	"github.com/influxdata/telegraf/plugins/serializers/graphite"
-	"github.com/influxdata/telegraf/plugins/serializers/influx"
-	"github.com/influxdata/telegraf/plugins/serializers/json"
-	"github.com/influxdata/telegraf/plugins/serializers/nowmetric"
-	"github.com/influxdata/telegraf/plugins/serializers/splunkmetric"
+	"github.com/jaddqiu/opsagent/plugins/serializers/graphite"
+	"github.com/jaddqiu/opsagent/plugins/serializers/influx"
+	"github.com/jaddqiu/opsagent/plugins/serializers/json"
+	"github.com/jaddqiu/opsagent/plugins/serializers/nowmetric"
+	"github.com/jaddqiu/opsagent/plugins/serializers/splunkmetric"
 )
 
 // SerializerOutput is an interface for output plugins that are able to

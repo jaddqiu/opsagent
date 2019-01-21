@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/influxdata/telegraf"
-	tlsint "github.com/influxdata/telegraf/internal/tls"
-	"github.com/influxdata/telegraf/plugins/inputs"
+	"github.com/jaddqiu/opsagent"
+	tlsint "github.com/jaddqiu/opsagent/internal/tls"
+	"github.com/jaddqiu/opsagent/plugins/inputs"
 
 	as "github.com/aerospike/aerospike-client-go"
 )

@@ -16,11 +16,11 @@ import (
 
 	"github.com/Azure/go-autorest/autorest"
 	"github.com/Azure/go-autorest/autorest/azure/auth"
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/internal"
-	"github.com/influxdata/telegraf/metric"
-	"github.com/influxdata/telegraf/plugins/outputs"
-	"github.com/influxdata/telegraf/selfstat"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/internal"
+	"github.com/jaddqiu/opsagent/metric"
+	"github.com/jaddqiu/opsagent/plugins/outputs"
+	"github.com/jaddqiu/opsagent/selfstat"
 )
 
 // AzureMonitor allows publishing of metrics to the Azure Monitor custom metrics

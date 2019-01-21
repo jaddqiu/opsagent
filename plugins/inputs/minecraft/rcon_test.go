@@ -3,7 +3,7 @@ package minecraft
 import (
 	"testing"
 
-	"github.com/influxdata/telegraf/plugins/inputs/minecraft/internal/rcon"
+	"github.com/jaddqiu/opsagent/plugins/inputs/minecraft/internal/rcon"
 )
 
 type MockRCONClient struct {

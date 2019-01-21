@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/influxdata/telegraf"
+	"github.com/jaddqiu/opsagent"
 )
 
 const (

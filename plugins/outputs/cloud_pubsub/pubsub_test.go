@@ -4,9 +4,9 @@ import (
 	"testing"
 
 	"cloud.google.com/go/pubsub"
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/plugins/parsers"
-	"github.com/influxdata/telegraf/testutil"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/plugins/parsers"
+	"github.com/jaddqiu/opsagent/testutil"
 	"github.com/stretchr/testify/assert"
 )
 

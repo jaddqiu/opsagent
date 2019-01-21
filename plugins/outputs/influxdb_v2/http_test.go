@@ -4,7 +4,7 @@ import (
 	"net/url"
 	"testing"
 
-	influxdb "github.com/influxdata/telegraf/plugins/outputs/influxdb_v2"
+	influxdb "github.com/jaddqiu/opsagent/plugins/outputs/influxdb_v2"
 	"github.com/stretchr/testify/require"
 )
 

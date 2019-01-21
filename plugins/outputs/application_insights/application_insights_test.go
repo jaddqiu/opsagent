@@ -7,10 +7,10 @@ import (
 
 	"github.com/Microsoft/ApplicationInsights-Go/appinsights"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/internal"
-	"github.com/influxdata/telegraf/metric"
-	"github.com/influxdata/telegraf/plugins/outputs/application_insights/mocks"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/internal"
+	"github.com/jaddqiu/opsagent/metric"
+	"github.com/jaddqiu/opsagent/plugins/outputs/application_insights/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

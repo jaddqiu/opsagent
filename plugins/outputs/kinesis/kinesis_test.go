@@ -3,7 +3,7 @@ package kinesis
 import (
 	"testing"
 
-	"github.com/influxdata/telegraf/testutil"
+	"github.com/jaddqiu/opsagent/testutil"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 )

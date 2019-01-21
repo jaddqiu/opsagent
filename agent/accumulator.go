@@ -4,9 +4,9 @@ import (
 	"log"
 	"time"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/metric"
-	"github.com/influxdata/telegraf/selfstat"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/metric"
+	"github.com/jaddqiu/opsagent/selfstat"
 )
 
 var (

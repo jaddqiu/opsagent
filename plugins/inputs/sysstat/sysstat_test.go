@@ -9,7 +9,7 @@ import (
 	"path"
 	"testing"
 
-	"github.com/influxdata/telegraf/testutil"
+	"github.com/jaddqiu/opsagent/testutil"
 )
 
 var s = Sysstat{

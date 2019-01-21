@@ -17,10 +17,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/internal"
-	"github.com/influxdata/telegraf/metric"
-	"github.com/influxdata/telegraf/plugins/outputs/influxdb"
+	"github.com/jaddqiu/opsagent"
+	"github.com/jaddqiu/opsagent/internal"
+	"github.com/jaddqiu/opsagent/metric"
+	"github.com/jaddqiu/opsagent/plugins/outputs/influxdb"
 	"github.com/stretchr/testify/require"
 )
 
