@@ -14,7 +14,7 @@ import (
 )
 
 // SerializerOutput is an interface for output plugins that are able to
-// serialize telegraf metrics into arbitrary data formats.
+// serialize opsagent metrics into arbitrary data formats.
 type SerializerOutput interface {
 	// SetSerializer sets the serializer function for the interface.
 	SetSerializer(serializer Serializer)
@@ -23,15 +23,15 @@ type SerializerOutput interface {
 // Serializer is an interface defining functions that a serializer plugin must
 // satisfy.
 type Serializer interface {
-	// Serialize takes a single telegraf metric and turns it into a byte buffer.
+	// Serialize takes a single opsagent metric and turns it into a byte buffer.
 	// separate metrics should be separated by a newline, and there should be
 	// a newline at the end of the buffer.
-	Serialize(metric telegraf.Metric) ([]byte, error)
+	Serialize(metric opsagent.Metric) ([]byte, error)
 
-	// SerializeBatch takes an array of telegraf metric and serializes it into
+	// SerializeBatch takes an array of opsagent metric and serializes it into
 	// a byte buffer.  This method is not required to be suitable for use with
 	// line oriented framing.
-	SerializeBatch(metrics []telegraf.Metric) ([]byte, error)
+	SerializeBatch(metrics []opsagent.Metric) ([]byte, error)
 }
 
 // Config is a struct that covers the data types needed for all serializer types,
@@ -56,7 +56,7 @@ type Config struct {
 	// Prefix to add to all measurements, only supports Graphite
 	Prefix string
 
-	// Template for converting telegraf metrics into Graphite
+	// Template for converting opsagent metrics into Graphite
 	// only supports Graphite
 	Template string
 

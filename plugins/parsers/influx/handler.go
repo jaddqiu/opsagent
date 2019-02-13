@@ -11,7 +11,7 @@ import (
 
 type MetricHandler struct {
 	builder   *metric.Builder
-	metrics   []telegraf.Metric
+	metrics   []opsagent.Metric
 	precision time.Duration
 }
 
@@ -31,7 +31,7 @@ func (h *MetricHandler) SetTimePrecision(precision time.Duration) {
 	h.precision = precision
 }
 
-func (h *MetricHandler) Metric() (telegraf.Metric, error) {
+func (h *MetricHandler) Metric() (opsagent.Metric, error) {
 	return h.builder.Metric()
 }
 

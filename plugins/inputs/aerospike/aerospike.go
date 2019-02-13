@@ -35,14 +35,14 @@ var sampleConfig = `
   ## server has configured and get stats for them.
   servers = ["localhost:3000"]
 
-  # username = "telegraf"
+  # username = "opsagent"
   # password = "pa$$word"
 
   ## Optional TLS Config
   # enable_tls = false
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## If false, skip chain & host verification
   # insecure_skip_verify = true
  `
@@ -55,7 +55,7 @@ func (a *Aerospike) Description() string {
 	return "Read stats from aerospike server(s)"
 }
 
-func (a *Aerospike) Gather(acc telegraf.Accumulator) error {
+func (a *Aerospike) Gather(acc opsagent.Accumulator) error {
 	if !a.initialized {
 		tlsConfig, err := a.ClientConfig.TLSConfig()
 		if err != nil {
@@ -85,7 +85,7 @@ func (a *Aerospike) Gather(acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (a *Aerospike) gatherServer(hostport string, acc telegraf.Accumulator) error {
+func (a *Aerospike) gatherServer(hostport string, acc opsagent.Accumulator) error {
 	host, port, err := net.SplitHostPort(hostport)
 	if err != nil {
 		return err
@@ -177,7 +177,7 @@ func copyTags(m map[string]string) map[string]string {
 }
 
 func init() {
-	inputs.Add("aerospike", func() telegraf.Input {
+	inputs.Add("aerospike", func() opsagent.Input {
 		return &Aerospike{}
 	})
 }

@@ -13,7 +13,7 @@ import (
 )
 
 const sampleConfig = `
-  ## Postfix queue directory. If not provided, telegraf will try to use
+  ## Postfix queue directory. If not provided, opsagent will try to use
   ## 'postconf -h queue_directory' to determine it.
   # queue_directory = "/var/spool/postfix"
 `
@@ -28,7 +28,7 @@ func getQueueDirectory() (string, error) {
 	return strings.TrimSpace(string(qd)), nil
 }
 
-func qScan(path string, acc telegraf.Accumulator) (int64, int64, int64, error) {
+func qScan(path string, acc opsagent.Accumulator) (int64, int64, int64, error) {
 	var length, size int64
 	var oldest time.Time
 	err := filepath.Walk(path, func(_ string, finfo os.FileInfo, err error) error {
@@ -69,7 +69,7 @@ type Postfix struct {
 	QueueDirectory string
 }
 
-func (p *Postfix) Gather(acc telegraf.Accumulator) error {
+func (p *Postfix) Gather(acc opsagent.Accumulator) error {
 	if p.QueueDirectory == "" {
 		var err error
 		p.QueueDirectory, err = getQueueDirectory()
@@ -103,7 +103,7 @@ func (p *Postfix) Description() string {
 }
 
 func init() {
-	inputs.Add("postfix", func() telegraf.Input {
+	inputs.Add("postfix", func() opsagent.Input {
 		return &Postfix{
 			QueueDirectory: "/var/spool/postfix",
 		}

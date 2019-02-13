@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Metric(v telegraf.Metric, err error) telegraf.Metric {
+func Metric(v opsagent.Metric, err error) opsagent.Metric {
 	if err != nil {
 		panic(err)
 	}
@@ -21,8 +21,8 @@ func TestConverter(t *testing.T) {
 	tests := []struct {
 		name      string
 		converter *Converter
-		input     telegraf.Metric
-		expected  telegraf.Metric
+		input     opsagent.Metric
+		expected  opsagent.Metric
 	}{
 		{
 			name:      "empty",

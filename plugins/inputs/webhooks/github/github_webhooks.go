@@ -16,10 +16,10 @@ import (
 type GithubWebhook struct {
 	Path   string
 	Secret string
-	acc    telegraf.Accumulator
+	acc    opsagent.Accumulator
 }
 
-func (gh *GithubWebhook) Register(router *mux.Router, acc telegraf.Accumulator) {
+func (gh *GithubWebhook) Register(router *mux.Router, acc opsagent.Accumulator) {
 	router.HandleFunc(gh.Path, gh.eventHandler).Methods("POST")
 	log.Printf("I! Started the webhooks_github on %s\n", gh.Path)
 	gh.acc = acc

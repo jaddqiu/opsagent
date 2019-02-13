@@ -39,9 +39,9 @@ func (*InfluxDB) SampleConfig() string {
   ]
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 
@@ -50,7 +50,7 @@ func (*InfluxDB) SampleConfig() string {
 `
 }
 
-func (i *InfluxDB) Gather(acc telegraf.Accumulator) error {
+func (i *InfluxDB) Gather(acc opsagent.Accumulator) error {
 	if len(i.URLs) == 0 {
 		i.URLs = []string{"http://localhost:8086/debug/vars"}
 	}
@@ -123,13 +123,13 @@ type memstats struct {
 
 // Gathers data from a particular URL
 // Parameters:
-//     acc    : The telegraf Accumulator to use
+//     acc    : The opsagent Accumulator to use
 //     url    : endpoint to send request to
 //
 // Returns:
 //     error: Any error that may have occurred
 func (i *InfluxDB) gatherURL(
-	acc telegraf.Accumulator,
+	acc opsagent.Accumulator,
 	url string,
 ) error {
 	shardCounter := 0
@@ -256,7 +256,7 @@ func (i *InfluxDB) gatherURL(
 }
 
 func init() {
-	inputs.Add("influxdb", func() telegraf.Input {
+	inputs.Add("influxdb", func() opsagent.Input {
 		return &InfluxDB{
 			Timeout: internal.Duration{Duration: time.Second * 5},
 		}

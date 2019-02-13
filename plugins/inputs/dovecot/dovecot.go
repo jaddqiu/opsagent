@@ -50,7 +50,7 @@ func (d *Dovecot) SampleConfig() string { return sampleConfig }
 const defaultPort = "24242"
 
 // Reads stats from all configured servers.
-func (d *Dovecot) Gather(acc telegraf.Accumulator) error {
+func (d *Dovecot) Gather(acc opsagent.Accumulator) error {
 	if !validQuery[d.Type] {
 		return fmt.Errorf("Error: %s is not a valid query type\n",
 			d.Type)
@@ -79,7 +79,7 @@ func (d *Dovecot) Gather(acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (d *Dovecot) gatherServer(addr string, acc telegraf.Accumulator, qtype string, filter string) error {
+func (d *Dovecot) gatherServer(addr string, acc opsagent.Accumulator, qtype string, filter string) error {
 	_, _, err := net.SplitHostPort(addr)
 	if err != nil {
 		return fmt.Errorf("Error: %s on url %s\n", err, addr)
@@ -109,7 +109,7 @@ func (d *Dovecot) gatherServer(addr string, acc telegraf.Accumulator, qtype stri
 	return gatherStats(&buf, acc, host, qtype)
 }
 
-func gatherStats(buf *bytes.Buffer, acc telegraf.Accumulator, host string, qtype string) error {
+func gatherStats(buf *bytes.Buffer, acc opsagent.Accumulator, host string, qtype string) error {
 
 	lines := strings.Split(buf.String(), "\n")
 	head := strings.Split(lines[0], "\t")
@@ -181,7 +181,7 @@ func secParser(tm string) float64 {
 }
 
 func init() {
-	inputs.Add("dovecot", func() telegraf.Input {
+	inputs.Add("dovecot", func() opsagent.Input {
 		return &Dovecot{}
 	})
 }

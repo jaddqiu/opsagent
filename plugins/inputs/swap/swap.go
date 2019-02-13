@@ -18,7 +18,7 @@ func (_ *SwapStats) Description() string {
 
 func (_ *SwapStats) SampleConfig() string { return "" }
 
-func (s *SwapStats) Gather(acc telegraf.Accumulator) error {
+func (s *SwapStats) Gather(acc opsagent.Accumulator) error {
 	swap, err := s.ps.SwapStat()
 	if err != nil {
 		return fmt.Errorf("error getting swap memory info: %s", err)
@@ -42,7 +42,7 @@ func (s *SwapStats) Gather(acc telegraf.Accumulator) error {
 
 func init() {
 	ps := system.NewSystemPS()
-	inputs.Add("swap", func() telegraf.Input {
+	inputs.Add("swap", func() opsagent.Input {
 		return &SwapStats{ps: ps}
 	})
 }

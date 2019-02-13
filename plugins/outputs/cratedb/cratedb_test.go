@@ -72,7 +72,7 @@ func TestConnectAndWrite(t *testing.T) {
 
 func Test_insertSQL(t *testing.T) {
 	tests := []struct {
-		Metrics []telegraf.Metric
+		Metrics []opsagent.Metric
 		Want    string
 	}{
 		{

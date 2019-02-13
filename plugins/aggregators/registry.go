@@ -2,7 +2,7 @@ package aggregators
 
 import "github.com/jaddqiu/opsagent"
 
-type Creator func() telegraf.Aggregator
+type Creator func() opsagent.Aggregator
 
 var Aggregators = map[string]Creator{}
 

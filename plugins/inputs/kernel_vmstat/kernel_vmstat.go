@@ -25,7 +25,7 @@ func (k *KernelVmstat) SampleConfig() string {
 	return ""
 }
 
-func (k *KernelVmstat) Gather(acc telegraf.Accumulator) error {
+func (k *KernelVmstat) Gather(acc opsagent.Accumulator) error {
 	data, err := k.getProcVmstat()
 	if err != nil {
 		return err
@@ -70,7 +70,7 @@ func (k *KernelVmstat) getProcVmstat() ([]byte, error) {
 }
 
 func init() {
-	inputs.Add("kernel_vmstat", func() telegraf.Input {
+	inputs.Add("kernel_vmstat", func() opsagent.Input {
 		return &KernelVmstat{
 			statFile: "/proc/vmstat",
 		}

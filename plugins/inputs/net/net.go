@@ -25,13 +25,13 @@ func (_ *NetIOStats) Description() string {
 }
 
 var netSampleConfig = `
-  ## By default, telegraf gathers stats from any up interface (excluding loopback)
+  ## By default, opsagent gathers stats from any up interface (excluding loopback)
   ## Setting interfaces will tell it to gather these explicit interfaces,
   ## regardless of status.
   ##
   # interfaces = ["eth0"]
   ##
-  ## On linux systems telegraf also collects protocol stats.
+  ## On linux systems opsagent also collects protocol stats.
   ## Setting ignore_protocol_stats to true will skip reporting of protocol metrics.
   ##
   # ignore_protocol_stats = false
@@ -42,7 +42,7 @@ func (_ *NetIOStats) SampleConfig() string {
 	return netSampleConfig
 }
 
-func (s *NetIOStats) Gather(acc telegraf.Accumulator) error {
+func (s *NetIOStats) Gather(acc opsagent.Accumulator) error {
 	netio, err := s.ps.NetIO()
 	if err != nil {
 		return fmt.Errorf("error getting net io info: %s", err)
@@ -119,7 +119,7 @@ func (s *NetIOStats) Gather(acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add("net", func() telegraf.Input {
+	inputs.Add("net", func() opsagent.Input {
 		return &NetIOStats{ps: system.NewSystemPS()}
 	})
 }

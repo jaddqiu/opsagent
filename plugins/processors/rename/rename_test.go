@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func newMetric(name string, tags map[string]string, fields map[string]interface{}) telegraf.Metric {
+func newMetric(name string, tags map[string]string, fields map[string]interface{}) opsagent.Metric {
 	if tags == nil {
 		tags = map[string]string{}
 	}

@@ -243,7 +243,7 @@ preferred_found                 4    0
 preferred_not_found             4    43
 `
 
-var testKstatPath = os.TempDir() + "/telegraf/proc/spl/kstat/zfs"
+var testKstatPath = os.TempDir() + "/opsagent/proc/spl/kstat/zfs"
 
 func TestZfsPoolMetrics(t *testing.T) {
 	err := os.MkdirAll(testKstatPath, 0755)
@@ -280,7 +280,7 @@ func TestZfsPoolMetrics(t *testing.T) {
 
 	acc.AssertContainsTaggedFields(t, "zfs_pool", poolMetrics, tags)
 
-	err = os.RemoveAll(os.TempDir() + "/telegraf")
+	err = os.RemoveAll(os.TempDir() + "/opsagent")
 	require.NoError(t, err)
 }
 
@@ -357,7 +357,7 @@ func TestZfsGeneratesMetrics(t *testing.T) {
 
 	acc3.AssertContainsTaggedFields(t, "zfs", intMetrics, tags)
 
-	err = os.RemoveAll(os.TempDir() + "/telegraf")
+	err = os.RemoveAll(os.TempDir() + "/opsagent")
 	require.NoError(t, err)
 }
 

@@ -124,7 +124,7 @@ func (m *Mcrouter) Description() string {
 }
 
 // Gather reads stats from all configured servers accumulates stats
-func (m *Mcrouter) Gather(acc telegraf.Accumulator) error {
+func (m *Mcrouter) Gather(acc opsagent.Accumulator) error {
 	ctx := context.Background()
 
 	if m.Timeout.Duration < 1*time.Second {
@@ -191,7 +191,7 @@ func (m *Mcrouter) ParseAddress(address string) (string, string, error) {
 	return address, protocol, nil
 }
 
-func (m *Mcrouter) gatherServer(ctx context.Context, address string, acc telegraf.Accumulator) error {
+func (m *Mcrouter) gatherServer(ctx context.Context, address string, acc opsagent.Accumulator) error {
 	var conn net.Conn
 	var err error
 	var protocol string
@@ -280,7 +280,7 @@ func parseResponse(r *bufio.Scanner) (map[string]string, error) {
 }
 
 func init() {
-	inputs.Add("mcrouter", func() telegraf.Input {
+	inputs.Add("mcrouter", func() opsagent.Input {
 		return &Mcrouter{}
 	})
 }

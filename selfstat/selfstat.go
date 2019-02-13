@@ -1,5 +1,5 @@
 // selfstat is a package for tracking and collecting internal statistics
-// about telegraf. Metrics can be registered using this package, and then
+// about opsagent. Metrics can be registered using this package, and then
 // incremented or set within your code. If the inputs.internal plugin is enabled,
 // then all registered stats will be collected as they would by any other input
 // plugin.
@@ -20,7 +20,7 @@ var (
 	registry *rgstry
 )
 
-// Stat is an interface for dealing with telegraf statistics collected
+// Stat is an interface for dealing with opsagent statistics collected
 // on itself.
 type Stat interface {
 	// Name is the name of the measurement
@@ -54,7 +54,7 @@ type Stat interface {
 // already been registered.
 //
 // The returned Stat can be incremented by the consumer of Register(), and it's
-// value will be returned as a telegraf metric when Metrics() is called.
+// value will be returned as a opsagent metric when Metrics() is called.
 func Register(measurement, field string, tags map[string]string) Stat {
 	return registry.register(&stat{
 		measurement: "internal_" + measurement,
@@ -78,7 +78,7 @@ func Register(measurement, field string, tags map[string]string) Stat {
 // to Get().
 //
 // The returned Stat can be incremented by the consumer of Register(), and it's
-// value will be returned as a telegraf metric when Metrics() is called.
+// value will be returned as a opsagent metric when Metrics() is called.
 func RegisterTiming(measurement, field string, tags map[string]string) Stat {
 	return registry.register(&timingStat{
 		measurement: "internal_" + measurement,
@@ -87,11 +87,11 @@ func RegisterTiming(measurement, field string, tags map[string]string) Stat {
 	})
 }
 
-// Metrics returns all registered stats as telegraf metrics.
-func Metrics() []telegraf.Metric {
+// Metrics returns all registered stats as opsagent metrics.
+func Metrics() []opsagent.Metric {
 	registry.mu.Lock()
 	now := time.Now()
-	metrics := make([]telegraf.Metric, len(registry.stats))
+	metrics := make([]opsagent.Metric, len(registry.stats))
 	i := 0
 	for _, stats := range registry.stats {
 		if len(stats) > 0 {

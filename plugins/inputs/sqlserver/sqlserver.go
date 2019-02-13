@@ -35,7 +35,7 @@ var queries MapQuery
 // Initialized flag
 var isInitialized = false
 
-var defaultServer = "Server=.;app name=telegraf;log=1;"
+var defaultServer = "Server=.;app name=opsagent;log=1;"
 
 var sampleConfig = `
   ## Specify instances to monitor with a list of connection strings.
@@ -45,7 +45,7 @@ var sampleConfig = `
   ##   See https://github.com/denisenkom/go-mssqldb for detailed connection
   ##   parameters.
   # servers = [
-  #  "Server=192.168.1.10;Port=1433;User Id=<user>;Password=<pw>;app name=telegraf;log=1;",
+  #  "Server=192.168.1.10;Port=1433;User Id=<user>;Password=<pw>;app name=opsagent;log=1;",
   # ]
 
   ## Optional parameter, setting this to 2 will use a new version
@@ -122,7 +122,7 @@ func initQueries(s *SQLServer) {
 }
 
 // Gather collect data from SQL Server
-func (s *SQLServer) Gather(acc telegraf.Accumulator) error {
+func (s *SQLServer) Gather(acc opsagent.Accumulator) error {
 	if !isInitialized {
 		initQueries(s)
 	}
@@ -147,7 +147,7 @@ func (s *SQLServer) Gather(acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (s *SQLServer) gatherServer(server string, query Query, acc telegraf.Accumulator) error {
+func (s *SQLServer) gatherServer(server string, query Query, acc opsagent.Accumulator) error {
 	// deferred opening
 	conn, err := sql.Open("mssql", server)
 	if err != nil {
@@ -183,7 +183,7 @@ func (s *SQLServer) gatherServer(server string, query Query, acc telegraf.Accumu
 	return rows.Err()
 }
 
-func (s *SQLServer) accRow(query Query, acc telegraf.Accumulator, row scanner) error {
+func (s *SQLServer) accRow(query Query, acc opsagent.Accumulator, row scanner) error {
 	var columnVars []interface{}
 	var fields = make(map[string]interface{})
 
@@ -235,7 +235,7 @@ func (s *SQLServer) accRow(query Query, acc telegraf.Accumulator, row scanner) e
 }
 
 func init() {
-	inputs.Add("sqlserver", func() telegraf.Input {
+	inputs.Add("sqlserver", func() opsagent.Input {
 		return &SQLServer{}
 	})
 }
@@ -1209,7 +1209,7 @@ BEGIN
 END
 ELSE
 BEGIN
-	RAISERROR('This does not seem to be an AzureDB instance. Set "azureDB = false" in your telegraf configuration.',16,1)
+	RAISERROR('This does not seem to be an AzureDB instance. Set "azureDB = false" in your opsagent configuration.',16,1)
 END`
 
 // Queries V1

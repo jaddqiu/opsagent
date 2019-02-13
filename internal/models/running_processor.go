@@ -10,7 +10,7 @@ type RunningProcessor struct {
 	Name string
 
 	sync.Mutex
-	Processor telegraf.Processor
+	Processor opsagent.Processor
 	Config    *ProcessorConfig
 }
 
@@ -27,11 +27,11 @@ type ProcessorConfig struct {
 	Filter Filter
 }
 
-func (rp *RunningProcessor) metricFiltered(metric telegraf.Metric) {
+func (rp *RunningProcessor) metricFiltered(metric opsagent.Metric) {
 	metric.Drop()
 }
 
-func containsMetric(item telegraf.Metric, metrics []telegraf.Metric) bool {
+func containsMetric(item opsagent.Metric, metrics []opsagent.Metric) bool {
 	for _, m := range metrics {
 		if item == m {
 			return true
@@ -40,11 +40,11 @@ func containsMetric(item telegraf.Metric, metrics []telegraf.Metric) bool {
 	return false
 }
 
-func (rp *RunningProcessor) Apply(in ...telegraf.Metric) []telegraf.Metric {
+func (rp *RunningProcessor) Apply(in ...opsagent.Metric) []opsagent.Metric {
 	rp.Lock()
 	defer rp.Unlock()
 
-	ret := []telegraf.Metric{}
+	ret := []opsagent.Metric{}
 
 	for _, metric := range in {
 		// In processors when a filter selects a metric it is sent through the

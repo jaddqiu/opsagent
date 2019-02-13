@@ -34,5 +34,5 @@ func (g *CGroup) Description() string {
 }
 
 func init() {
-	inputs.Add("cgroup", func() telegraf.Input { return &CGroup{} })
+	inputs.Add("cgroup", func() opsagent.Input { return &CGroup{} })
 }

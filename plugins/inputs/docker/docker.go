@@ -114,9 +114,9 @@ var sampleConfig = `
   docker_label_exclude = []
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 `
@@ -127,7 +127,7 @@ func (d *Docker) Description() string {
 
 func (d *Docker) SampleConfig() string { return sampleConfig }
 
-func (d *Docker) Gather(acc telegraf.Accumulator) error {
+func (d *Docker) Gather(acc opsagent.Accumulator) error {
 	if d.client == nil {
 		c, err := d.getNewClient()
 		if err != nil {
@@ -207,7 +207,7 @@ func (d *Docker) Gather(acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (d *Docker) gatherSwarmInfo(acc telegraf.Accumulator) error {
+func (d *Docker) gatherSwarmInfo(acc opsagent.Accumulator) error {
 	ctx, cancel := context.WithTimeout(context.Background(), d.Timeout.Duration)
 	defer cancel()
 	services, err := d.client.ServiceList(ctx, types.ServiceListOptions{})
@@ -274,7 +274,7 @@ func (d *Docker) gatherSwarmInfo(acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (d *Docker) gatherInfo(acc telegraf.Accumulator) error {
+func (d *Docker) gatherInfo(acc opsagent.Accumulator) error {
 	// Init vars
 	dataFields := make(map[string]interface{})
 	metadataFields := make(map[string]interface{})
@@ -348,7 +348,7 @@ func (d *Docker) gatherInfo(acc telegraf.Accumulator) error {
 
 func (d *Docker) gatherContainer(
 	container types.Container,
-	acc telegraf.Accumulator,
+	acc opsagent.Accumulator,
 ) error {
 	var v *types.StatsJSON
 	// Parse container name
@@ -465,7 +465,7 @@ func (d *Docker) gatherContainer(
 
 func parseContainerStats(
 	stat *types.StatsJSON,
-	acc telegraf.Accumulator,
+	acc opsagent.Accumulator,
 	tags map[string]string,
 	id string,
 	perDevice bool,
@@ -640,7 +640,7 @@ func parseContainerStats(
 
 func gatherBlockIOMetrics(
 	stat *types.StatsJSON,
-	acc telegraf.Accumulator,
+	acc opsagent.Accumulator,
 	tags map[string]string,
 	tm time.Time,
 	id string,
@@ -835,7 +835,7 @@ func (d *Docker) getNewClient() (Client, error) {
 }
 
 func init() {
-	inputs.Add("docker", func() telegraf.Input {
+	inputs.Add("docker", func() opsagent.Input {
 		return &Docker{
 			PerDevice:      true,
 			Timeout:        internal.Duration{Duration: time.Second * 5},

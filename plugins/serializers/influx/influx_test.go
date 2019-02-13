@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func MustMetric(v telegraf.Metric, err error) telegraf.Metric {
+func MustMetric(v opsagent.Metric, err error) opsagent.Metric {
 	if err != nil {
 		panic(err)
 	}
@@ -21,7 +21,7 @@ var tests = []struct {
 	name        string
 	maxBytes    int
 	typeSupport FieldTypeSupport
-	input       telegraf.Metric
+	input       opsagent.Metric
 	output      []byte
 	errReason   string
 }{
@@ -463,7 +463,7 @@ func TestSerialize_SerializeBatch(t *testing.T) {
 		),
 	)
 
-	metrics := []telegraf.Metric{m, m}
+	metrics := []opsagent.Metric{m, m}
 
 	serializer := NewSerializer()
 	serializer.SetFieldSortOrder(SortFields)

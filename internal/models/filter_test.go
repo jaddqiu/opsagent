@@ -258,7 +258,7 @@ func TestFilter_TagPass(t *testing.T) {
 	}
 	require.NoError(t, f.Compile())
 
-	passes := [][]*telegraf.Tag{
+	passes := [][]*opsagent.Tag{
 		{{Key: "cpu", Value: "cpu-total"}},
 		{{Key: "cpu", Value: "cpu-0"}},
 		{{Key: "cpu", Value: "cpu-1"}},
@@ -266,7 +266,7 @@ func TestFilter_TagPass(t *testing.T) {
 		{{Key: "mem", Value: "mem_free"}},
 	}
 
-	drops := [][]*telegraf.Tag{
+	drops := [][]*opsagent.Tag{
 		{{Key: "cpu", Value: "cputotal"}},
 		{{Key: "cpu", Value: "cpu0"}},
 		{{Key: "cpu", Value: "cpu1"}},
@@ -302,7 +302,7 @@ func TestFilter_TagDrop(t *testing.T) {
 	}
 	require.NoError(t, f.Compile())
 
-	drops := [][]*telegraf.Tag{
+	drops := [][]*opsagent.Tag{
 		{{Key: "cpu", Value: "cpu-total"}},
 		{{Key: "cpu", Value: "cpu-0"}},
 		{{Key: "cpu", Value: "cpu-1"}},
@@ -310,7 +310,7 @@ func TestFilter_TagDrop(t *testing.T) {
 		{{Key: "mem", Value: "mem_free"}},
 	}
 
-	passes := [][]*telegraf.Tag{
+	passes := [][]*opsagent.Tag{
 		{{Key: "cpu", Value: "cputotal"}},
 		{{Key: "cpu", Value: "cpu0"}},
 		{{Key: "cpu", Value: "cpu1"}},
@@ -442,7 +442,7 @@ func TestFilter_FilterFieldPassAndDrop(t *testing.T) {
 // both parameters were defined
 // see: https://github.com/jaddqiu/opsagent/issues/2860
 func TestFilter_FilterTagsPassAndDrop(t *testing.T) {
-	inputData := [][]*telegraf.Tag{
+	inputData := [][]*opsagent.Tag{
 		{{Key: "tag1", Value: "1"}, {Key: "tag2", Value: "3"}},
 		{{Key: "tag1", Value: "1"}, {Key: "tag2", Value: "2"}},
 		{{Key: "tag1", Value: "2"}, {Key: "tag2", Value: "1"}},
@@ -486,7 +486,7 @@ func BenchmarkFilter(b *testing.B) {
 	tests := []struct {
 		name   string
 		filter Filter
-		metric telegraf.Metric
+		metric opsagent.Metric
 	}{
 		{
 			name:   "empty filter",

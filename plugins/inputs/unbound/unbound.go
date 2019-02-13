@@ -116,7 +116,7 @@ func unboundRunner(cmdName string, Timeout internal.Duration, UseSudo bool, Serv
 // Gather collects stats from unbound-control and adds them to the Accumulator
 //
 // All the dots in stat name will replaced by underscores. Histogram statistics will not be collected.
-func (s *Unbound) Gather(acc telegraf.Accumulator) error {
+func (s *Unbound) Gather(acc opsagent.Accumulator) error {
 
 	// Always exclude histrogram statistics
 	statExcluded := []string{"histogram.*"}
@@ -199,7 +199,7 @@ func (s *Unbound) Gather(acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add("unbound", func() telegraf.Input {
+	inputs.Add("unbound", func() opsagent.Input {
 		return &Unbound{
 			run:         unboundRunner,
 			Binary:      defaultBinary,

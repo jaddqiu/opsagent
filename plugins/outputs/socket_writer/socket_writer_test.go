@@ -46,7 +46,7 @@ func TestSocketWriter_udp(t *testing.T) {
 }
 
 func TestSocketWriter_unix(t *testing.T) {
-	tmpdir, err := ioutil.TempDir("", "telegraf")
+	tmpdir, err := ioutil.TempDir("", "opsagent")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpdir)
 	sock := filepath.Join(tmpdir, "sw.TestSocketWriter_unix.sock")
@@ -67,7 +67,7 @@ func TestSocketWriter_unix(t *testing.T) {
 }
 
 func TestSocketWriter_unixgram(t *testing.T) {
-	tmpdir, err := ioutil.TempDir("", "telegraf")
+	tmpdir, err := ioutil.TempDir("", "opsagent")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpdir)
 	sock := filepath.Join(tmpdir, "sw.TSW_unixgram.sock")
@@ -85,7 +85,7 @@ func TestSocketWriter_unixgram(t *testing.T) {
 }
 
 func testSocketWriter_stream(t *testing.T, sw *SocketWriter, lconn net.Conn) {
-	metrics := []telegraf.Metric{}
+	metrics := []opsagent.Metric{}
 	metrics = append(metrics, testutil.TestMetric(1, "test"))
 	mbs1out, _ := sw.Serialize(metrics[0])
 	metrics = append(metrics, testutil.TestMetric(2, "test"))
@@ -105,7 +105,7 @@ func testSocketWriter_stream(t *testing.T, sw *SocketWriter, lconn net.Conn) {
 }
 
 func testSocketWriter_packet(t *testing.T, sw *SocketWriter, lconn net.PacketConn) {
-	metrics := []telegraf.Metric{}
+	metrics := []opsagent.Metric{}
 	metrics = append(metrics, testutil.TestMetric(1, "test"))
 	mbs1out, _ := sw.Serialize(metrics[0])
 	metrics = append(metrics, testutil.TestMetric(2, "test"))
@@ -147,7 +147,7 @@ func TestSocketWriter_Write_err(t *testing.T) {
 	require.NoError(t, err)
 	lconn.(*net.TCPConn).SetWriteBuffer(256)
 
-	metrics := []telegraf.Metric{testutil.TestMetric(1, "testerr")}
+	metrics := []opsagent.Metric{testutil.TestMetric(1, "testerr")}
 
 	// close the socket to generate an error
 	lconn.Close()
@@ -182,7 +182,7 @@ func TestSocketWriter_Write_reconnect(t *testing.T) {
 		wg.Done()
 	}()
 
-	metrics := []telegraf.Metric{testutil.TestMetric(1, "testerr")}
+	metrics := []opsagent.Metric{testutil.TestMetric(1, "testerr")}
 	err = sw.Write(metrics)
 	require.NoError(t, err)
 

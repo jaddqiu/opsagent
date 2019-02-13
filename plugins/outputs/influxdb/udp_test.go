@@ -21,7 +21,7 @@ var (
 	metricString = "cpu value=42 0\n"
 )
 
-func getMetric() telegraf.Metric {
+func getMetric() opsagent.Metric {
 	metric, err := metric.New(
 		"cpu",
 		map[string]string{},
@@ -104,7 +104,7 @@ func TestUDP_Simple(t *testing.T) {
 	require.NoError(t, err)
 
 	ctx := context.Background()
-	err = client.Write(ctx, []telegraf.Metric{
+	err = client.Write(ctx, []opsagent.Metric{
 		getMetric(),
 		getMetric(),
 	})
@@ -130,7 +130,7 @@ func TestUDP_DialError(t *testing.T) {
 	require.NoError(t, err)
 
 	ctx := context.Background()
-	err = client.Write(ctx, []telegraf.Metric{getMetric()})
+	err = client.Write(ctx, []opsagent.Metric{getMetric()})
 	require.Error(t, err)
 }
 
@@ -159,7 +159,7 @@ func TestUDP_WriteError(t *testing.T) {
 	require.NoError(t, err)
 
 	ctx := context.Background()
-	err = client.Write(ctx, []telegraf.Metric{getMetric()})
+	err = client.Write(ctx, []opsagent.Metric{getMetric()})
 	require.Error(t, err)
 	require.True(t, closed)
 }
@@ -168,7 +168,7 @@ func TestUDP_ErrorLogging(t *testing.T) {
 	tests := []struct {
 		name        string
 		config      *influxdb.UDPConfig
-		metrics     []telegraf.Metric
+		metrics     []opsagent.Metric
 		logContains string
 	}{
 		{
@@ -183,7 +183,7 @@ func TestUDP_ErrorLogging(t *testing.T) {
 					},
 				},
 			},
-			metrics:     []telegraf.Metric{getMetric()},
+			metrics:     []opsagent.Metric{getMetric()},
 			logContains: `could not serialize metric: "cpu": need more space`,
 		},
 		{
@@ -197,8 +197,8 @@ func TestUDP_ErrorLogging(t *testing.T) {
 					},
 				},
 			},
-			metrics: []telegraf.Metric{
-				func() telegraf.Metric {
+			metrics: []opsagent.Metric{
+				func() opsagent.Metric {
 					metric, _ := metric.New(
 						"cpu",
 						map[string]string{
@@ -233,7 +233,7 @@ func TestUDP_WriteWithRealConn(t *testing.T) {
 	conn, err := net.ListenPacket("udp", "127.0.0.1:0")
 	require.NoError(t, err)
 
-	metrics := []telegraf.Metric{
+	metrics := []opsagent.Metric{
 		getMetric(),
 		getMetric(),
 	}

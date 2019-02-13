@@ -10,7 +10,7 @@ import (
 )
 
 // Create a valuecounter with config
-func NewTestValueCounter(fields []string) telegraf.Aggregator {
+func NewTestValueCounter(fields []string) opsagent.Aggregator {
 	vc := &ValueCounter{
 		Fields: fields,
 	}

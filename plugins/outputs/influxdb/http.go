@@ -28,7 +28,7 @@ const (
 
 const (
 	defaultRequestTimeout          = time.Second * 5
-	defaultDatabase                = "telegraf"
+	defaultDatabase                = "opsagent"
 	errStringDatabaseNotFound      = "database not found"
 	errStringHintedHandoffNotEmpty = "hinted handoff queue not empty"
 	errStringPartialWrite          = "partial write"
@@ -136,7 +136,7 @@ func NewHTTPClient(config *HTTPConfig) (*httpClient, error) {
 
 	userAgent := config.UserAgent
 	if userAgent == "" {
-		userAgent = "Telegraf/" + internal.Version()
+		userAgent = "Opsagent/" + internal.Version()
 	}
 
 	var headers = make(map[string]string, len(config.Headers)+1)
@@ -263,7 +263,7 @@ func (c *httpClient) CreateDatabase(ctx context.Context) error {
 }
 
 // Write sends the metrics to InfluxDB
-func (c *httpClient) Write(ctx context.Context, metrics []telegraf.Metric) error {
+func (c *httpClient) Write(ctx context.Context, metrics []opsagent.Metric) error {
 	var err error
 
 	reader := influx.NewReader(metrics, c.serializer)
@@ -324,7 +324,7 @@ func (c *httpClient) Write(ctx context.Context, metrics []telegraf.Metric) error
 		return nil
 	}
 
-	// This error indicates a bug in either Telegraf line protocol
+	// This error indicates a bug in either Opsagent line protocol
 	// serialization, retries would not be successful.
 	if strings.Contains(desc, errStringUnableToParse) {
 		log.Printf("E! [outputs.influxdb]: when writing to [%s]: received error %v; discarding points",

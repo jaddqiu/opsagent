@@ -21,7 +21,7 @@ var sampleConfig = `
   ## MQTT outputs send metrics to this topic format
   ##    "<topic_prefix>/<hostname>/<pluginname>/"
   ##   ex: prefix/web01.example.com/mem
-  topic_prefix = "telegraf"
+  topic_prefix = "opsagent"
 
   ## QoS policy for messages
   ##   0 = at most once
@@ -30,7 +30,7 @@ var sampleConfig = `
   # qos = 2
 
   ## username and password to connect MQTT server.
-  # username = "telegraf"
+  # username = "opsagent"
   # password = "metricsmetricsmetricsmetrics"
 
   ## client ID, if not set a random ID is generated
@@ -40,9 +40,9 @@ var sampleConfig = `
   # timeout = "5s"
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 
@@ -117,7 +117,7 @@ func (m *MQTT) Description() string {
 	return "Configuration for MQTT server to send metrics to"
 }
 
-func (m *MQTT) Write(metrics []telegraf.Metric) error {
+func (m *MQTT) Write(metrics []opsagent.Metric) error {
 	m.Lock()
 	defer m.Unlock()
 	if len(metrics) == 0 {
@@ -128,7 +128,7 @@ func (m *MQTT) Write(metrics []telegraf.Metric) error {
 		hostname = ""
 	}
 
-	metricsmap := make(map[string][]telegraf.Metric)
+	metricsmap := make(map[string][]opsagent.Metric)
 
 	for _, metric := range metrics {
 		var t []string
@@ -194,7 +194,7 @@ func (m *MQTT) createOpts() (*paho.ClientOptions, error) {
 	if m.ClientID != "" {
 		opts.SetClientID(m.ClientID)
 	} else {
-		opts.SetClientID("Telegraf-Output-" + internal.RandomString(5))
+		opts.SetClientID("Opsagent-Output-" + internal.RandomString(5))
 	}
 
 	tlsCfg, err := m.ClientConfig.TLSConfig()
@@ -230,7 +230,7 @@ func (m *MQTT) createOpts() (*paho.ClientOptions, error) {
 }
 
 func init() {
-	outputs.Add("mqtt", func() telegraf.Output {
+	outputs.Add("mqtt", func() opsagent.Output {
 		return &MQTT{}
 	})
 }

@@ -85,7 +85,7 @@ func newRunnerMock(out []byte, err error) Runner {
 	}
 }
 
-func (r runnerMock) Run(e *Exec, command string, acc telegraf.Accumulator) ([]byte, error) {
+func (r runnerMock) Run(e *Exec, command string, acc opsagent.Accumulator) ([]byte, error) {
 	if r.err != nil {
 		return nil, r.err
 	}

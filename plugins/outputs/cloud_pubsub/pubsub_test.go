@@ -141,7 +141,7 @@ func TestPubSub_Error(t *testing.T) {
 	}
 }
 
-func verifyMetricPublished(t *testing.T, m telegraf.Metric, published map[string]*pubsub.Message) *pubsub.Message {
+func verifyMetricPublished(t *testing.T, m opsagent.Metric, published map[string]*pubsub.Message) *pubsub.Message {
 	p, _ := parsers.NewInfluxParser()
 
 	v, _ := m.GetField("value")

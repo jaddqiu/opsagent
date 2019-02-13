@@ -31,7 +31,7 @@ func TestAdd(t *testing.T) {
 			"value": int64(101),
 		},
 		time.Now().Add(time.Millisecond*150),
-		telegraf.Untyped)
+		opsagent.Untyped)
 	require.False(t, ra.Add(m))
 	ra.Push(&acc)
 
@@ -59,7 +59,7 @@ func TestAddMetricsOutsideCurrentPeriod(t *testing.T) {
 			"value": int64(101),
 		},
 		now.Add(-time.Hour),
-		telegraf.Untyped,
+		opsagent.Untyped,
 	)
 	require.False(t, ra.Add(m))
 
@@ -70,7 +70,7 @@ func TestAddMetricsOutsideCurrentPeriod(t *testing.T) {
 			"value": int64(101),
 		},
 		now.Add(time.Hour),
-		telegraf.Untyped,
+		opsagent.Untyped,
 	)
 	require.False(t, ra.Add(m))
 
@@ -81,7 +81,7 @@ func TestAddMetricsOutsideCurrentPeriod(t *testing.T) {
 			"value": int64(101),
 		},
 		time.Now().Add(time.Millisecond*50),
-		telegraf.Untyped)
+		opsagent.Untyped)
 	require.False(t, ra.Add(m))
 
 	ra.Push(&acc)
@@ -110,7 +110,7 @@ func TestAddAndPushOnePeriod(t *testing.T) {
 			"value": int64(101),
 		},
 		time.Now().Add(time.Millisecond*100),
-		telegraf.Untyped)
+		opsagent.Untyped)
 	require.False(t, ra.Add(m))
 
 	ra.Push(&acc)
@@ -137,7 +137,7 @@ func TestAddDropOriginal(t *testing.T) {
 			"value": int64(101),
 		},
 		now,
-		telegraf.Untyped)
+		opsagent.Untyped)
 	require.True(t, ra.Add(m))
 
 	// this metric name doesn't match the filter, so Add will return false
@@ -147,7 +147,7 @@ func TestAddDropOriginal(t *testing.T) {
 			"value": int64(101),
 		},
 		now,
-		telegraf.Untyped)
+		opsagent.Untyped)
 	require.False(t, ra.Add(m2))
 }
 
@@ -187,14 +187,14 @@ func (t *TestAggregator) Reset() {
 	atomic.StoreInt64(&t.sum, 0)
 }
 
-func (t *TestAggregator) Push(acc telegraf.Accumulator) {
+func (t *TestAggregator) Push(acc opsagent.Accumulator) {
 	acc.AddFields("TestMetric",
 		map[string]interface{}{"sum": t.sum},
 		map[string]string{},
 	)
 }
 
-func (t *TestAggregator) Add(in telegraf.Metric) {
+func (t *TestAggregator) Add(in opsagent.Metric) {
 	for _, v := range in.Fields() {
 		if vi, ok := v.(int64); ok {
 			atomic.AddInt64(&t.sum, vi)

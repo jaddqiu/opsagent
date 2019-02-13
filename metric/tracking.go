@@ -10,17 +10,17 @@ import (
 
 // NotifyFunc is called when a tracking metric is done being processed with
 // the tracking information.
-type NotifyFunc = func(track telegraf.DeliveryInfo)
+type NotifyFunc = func(track opsagent.DeliveryInfo)
 
 // WithTracking adds tracking to the metric and registers the notify function
 // to be called when processing is complete.
-func WithTracking(metric telegraf.Metric, fn NotifyFunc) (telegraf.Metric, telegraf.TrackingID) {
+func WithTracking(metric opsagent.Metric, fn NotifyFunc) (opsagent.Metric, opsagent.TrackingID) {
 	return newTrackingMetric(metric, fn)
 }
 
 // WithBatchTracking adds tracking to the metrics and registers the notify
 // function to be called when processing is complete.
-func WithGroupTracking(metric []telegraf.Metric, fn NotifyFunc) ([]telegraf.Metric, telegraf.TrackingID) {
+func WithGroupTracking(metric []opsagent.Metric, fn NotifyFunc) ([]opsagent.Metric, opsagent.TrackingID) {
 	return newTrackingMetricGroup(metric, fn)
 }
 
@@ -33,9 +33,9 @@ var (
 	finalizer func(*trackingData)
 )
 
-func newTrackingID() telegraf.TrackingID {
+func newTrackingID() opsagent.TrackingID {
 	atomic.AddUint64(&lastID, 1)
-	return telegraf.TrackingID(lastID)
+	return opsagent.TrackingID(lastID)
 }
 
 func debugFinalizer(d *trackingData) {
@@ -46,7 +46,7 @@ func debugFinalizer(d *trackingData) {
 }
 
 type trackingData struct {
-	id          telegraf.TrackingID
+	id          opsagent.TrackingID
 	rc          int32
 	acceptCount int32
 	rejectCount int32
@@ -80,11 +80,11 @@ func (d *trackingData) notify() {
 }
 
 type trackingMetric struct {
-	telegraf.Metric
+	opsagent.Metric
 	d *trackingData
 }
 
-func newTrackingMetric(metric telegraf.Metric, fn NotifyFunc) (telegraf.Metric, telegraf.TrackingID) {
+func newTrackingMetric(metric opsagent.Metric, fn NotifyFunc) (opsagent.Metric, opsagent.TrackingID) {
 	m := &trackingMetric{
 		Metric: metric,
 		d: &trackingData{
@@ -102,7 +102,7 @@ func newTrackingMetric(metric telegraf.Metric, fn NotifyFunc) (telegraf.Metric, 
 	return m, m.d.id
 }
 
-func newTrackingMetricGroup(group []telegraf.Metric, fn NotifyFunc) ([]telegraf.Metric, telegraf.TrackingID) {
+func newTrackingMetricGroup(group []opsagent.Metric, fn NotifyFunc) ([]opsagent.Metric, opsagent.TrackingID) {
 	d := &trackingData{
 		id:          newTrackingID(),
 		rc:          0,
@@ -131,7 +131,7 @@ func newTrackingMetricGroup(group []telegraf.Metric, fn NotifyFunc) ([]telegraf.
 	return group, d.id
 }
 
-func (m *trackingMetric) Copy() telegraf.Metric {
+func (m *trackingMetric) Copy() opsagent.Metric {
 	m.d.incr()
 	return &trackingMetric{
 		Metric: m.Metric.Copy(),
@@ -165,12 +165,12 @@ func (m *trackingMetric) decr() {
 }
 
 type deliveryInfo struct {
-	id       telegraf.TrackingID
+	id       opsagent.TrackingID
 	accepted int
 	rejected int
 }
 
-func (r *deliveryInfo) ID() telegraf.TrackingID {
+func (r *deliveryInfo) ID() opsagent.TrackingID {
 	return r.id
 }
 

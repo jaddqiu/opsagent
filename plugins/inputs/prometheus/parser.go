@@ -23,8 +23,8 @@ import (
 
 // Parse returns a slice of Metrics from a text representation of a
 // metrics
-func Parse(buf []byte, header http.Header) ([]telegraf.Metric, error) {
-	var metrics []telegraf.Metric
+func Parse(buf []byte, header http.Header) ([]opsagent.Metric, error) {
+	var metrics []opsagent.Metric
 	var parser expfmt.TextParser
 	// parse even if the buffer begins with a newline
 	buf = bytes.TrimPrefix(buf, []byte("\n"))
@@ -78,7 +78,7 @@ func Parse(buf []byte, header http.Header) ([]telegraf.Metric, error) {
 				// standard metric
 				fields = getNameAndValue(m)
 			}
-			// converting to telegraf metric
+			// converting to opsagent metric
 			if len(fields) > 0 {
 				var t time.Time
 				if m.TimestampMs != nil && *m.TimestampMs > 0 {
@@ -97,18 +97,18 @@ func Parse(buf []byte, header http.Header) ([]telegraf.Metric, error) {
 	return metrics, err
 }
 
-func valueType(mt dto.MetricType) telegraf.ValueType {
+func valueType(mt dto.MetricType) opsagent.ValueType {
 	switch mt {
 	case dto.MetricType_COUNTER:
-		return telegraf.Counter
+		return opsagent.Counter
 	case dto.MetricType_GAUGE:
-		return telegraf.Gauge
+		return opsagent.Gauge
 	case dto.MetricType_SUMMARY:
-		return telegraf.Summary
+		return opsagent.Summary
 	case dto.MetricType_HISTOGRAM:
-		return telegraf.Histogram
+		return opsagent.Histogram
 	default:
-		return telegraf.Untyped
+		return opsagent.Untyped
 	}
 }
 

@@ -22,10 +22,10 @@ const (
 )
 
 var (
-	testBcachePath           = os.TempDir() + "/telegraf/sys/fs/bcache"
+	testBcachePath           = os.TempDir() + "/opsagent/sys/fs/bcache"
 	testBcacheUuidPath       = testBcachePath + "/663955a3-765a-4737-a9fd-8250a7a78411"
-	testBcacheDevPath        = os.TempDir() + "/telegraf/sys/devices/virtual/block/bcache0"
-	testBcacheBackingDevPath = os.TempDir() + "/telegraf/sys/devices/virtual/block/md10"
+	testBcacheDevPath        = os.TempDir() + "/opsagent/sys/devices/virtual/block/bcache0"
+	testBcacheBackingDevPath = os.TempDir() + "/opsagent/sys/devices/virtual/block/md10"
 )
 
 func TestBcacheGeneratesMetrics(t *testing.T) {
@@ -116,6 +116,6 @@ func TestBcacheGeneratesMetrics(t *testing.T) {
 	require.NoError(t, err)
 	acc.AssertContainsTaggedFields(t, "bcache", fields, tags)
 
-	err = os.RemoveAll(os.TempDir() + "/telegraf")
+	err = os.RemoveAll(os.TempDir() + "/opsagent")
 	require.NoError(t, err)
 }

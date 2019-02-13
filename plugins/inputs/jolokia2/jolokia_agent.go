@@ -56,7 +56,7 @@ func (ja *JolokiaAgent) Description() string {
 	return "Read JMX metrics from a Jolokia REST agent endpoint"
 }
 
-func (ja *JolokiaAgent) Gather(acc telegraf.Accumulator) error {
+func (ja *JolokiaAgent) Gather(acc opsagent.Accumulator) error {
 	if ja.gatherer == nil {
 		ja.gatherer = NewGatherer(ja.createMetrics())
 	}

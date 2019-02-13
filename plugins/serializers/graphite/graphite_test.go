@@ -916,7 +916,7 @@ func TestSerializeBatch(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			m, err := metric.New(tt.metric_name, tt.tags, tt.fields, now)
 			assert.NoError(t, err)
-			actual, _ := s.SerializeBatch([]telegraf.Metric{m, m})
+			actual, _ := s.SerializeBatch([]opsagent.Metric{m, m})
 			require.Equal(t, tt.expected, string(actual))
 		})
 	}
@@ -947,7 +947,7 @@ func TestSerializeBatchWithTagsSupport(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			m, err := metric.New(tt.metric_name, tt.tags, tt.fields, now)
 			assert.NoError(t, err)
-			actual, _ := s.SerializeBatch([]telegraf.Metric{m, m})
+			actual, _ := s.SerializeBatch([]opsagent.Metric{m, m})
 			require.Equal(t, tt.expected, string(actual))
 		})
 	}

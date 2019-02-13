@@ -66,9 +66,9 @@ func NewParser() *parser {
 }
 
 // Parse parses the input bytes to an array of metrics
-func (p *parser) Parse(buf []byte) ([]telegraf.Metric, error) {
+func (p *parser) Parse(buf []byte) ([]opsagent.Metric, error) {
 
-	metrics := make([]telegraf.Metric, 0)
+	metrics := make([]opsagent.Metric, 0)
 
 	metricTime, err := p.parseTime(buf)
 	if err != nil {
@@ -135,7 +135,7 @@ func (p *parser) SetTemplates(separator string, templates []string) error {
 }
 
 // ParseLine is not supported by the dropwizard format
-func (p *parser) ParseLine(line string) (telegraf.Metric, error) {
+func (p *parser) ParseLine(line string) (opsagent.Metric, error) {
 	return nil, fmt.Errorf("ParseLine not supported: %s, for data format: dropwizard", line)
 }
 
@@ -218,7 +218,7 @@ func (p *parser) unmarshalMetrics(buf []byte) (map[string]interface{}, error) {
 	return jsonOut, nil
 }
 
-func (p *parser) readDWMetrics(metricType string, dwms interface{}, metrics []telegraf.Metric, tm time.Time) []telegraf.Metric {
+func (p *parser) readDWMetrics(metricType string, dwms interface{}, metrics []opsagent.Metric, tm time.Time) []opsagent.Metric {
 	if dwmsTyped, ok := dwms.(map[string]interface{}); ok {
 		for dwmName, dwmFields := range dwmsTyped {
 			measurementName := dwmName
@@ -232,7 +232,7 @@ func (p *parser) readDWMetrics(metricType string, dwms interface{}, metrics []te
 			}
 
 			parsed, err := p.seriesParser.Parse([]byte(measurementName))
-			var m telegraf.Metric
+			var m opsagent.Metric
 			if err != nil || len(parsed) != 1 {
 				m, err = metric.New(measurementName, map[string]string{}, map[string]interface{}{}, tm)
 				if err != nil {

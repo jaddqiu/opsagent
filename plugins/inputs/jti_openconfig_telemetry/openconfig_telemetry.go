@@ -46,10 +46,10 @@ var (
 
   ## Authentication details. Username and password are must if device expects 
   ## authentication. Client ID must be unique when connecting from multiple instances 
-  ## of telegraf to the same device
+  ## of opsagent to the same device
   username = "user"
   password = "pass"
-  client_id = "telegraf"
+  client_id = "opsagent"
 
   ## Frequency to get data
   sample_frequency = "1000ms"
@@ -76,7 +76,7 @@ var (
 
   ## x509 Certificate to use with TLS connection. If it is not provided, an insecure 
   ## channel will be opened with server
-  ssl_cert = "/etc/telegraf/cert.pem"
+  ssl_cert = "/etc/opsagent/cert.pem"
 
   ## Delay between retry attempts of failed RPC calls or streams. Defaults to 1000ms.
   ## Failed streams/calls will not be retried if 0 is provided
@@ -95,7 +95,7 @@ func (m *OpenConfigTelemetry) Description() string {
 	return "Read JTI OpenConfig Telemetry from listed sensors"
 }
 
-func (m *OpenConfigTelemetry) Gather(acc telegraf.Accumulator) error {
+func (m *OpenConfigTelemetry) Gather(acc opsagent.Accumulator) error {
 	return nil
 }
 
@@ -274,7 +274,7 @@ func (m *OpenConfigTelemetry) splitSensorConfig() int {
 // Subscribes and collects OpenConfig telemetry data from given server
 func (m *OpenConfigTelemetry) collectData(ctx context.Context,
 	grpcServer string, grpcClientConn *grpc.ClientConn,
-	acc telegraf.Accumulator) error {
+	acc opsagent.Accumulator) error {
 	c := telemetry.NewOpenConfigTelemetryClient(grpcClientConn)
 	for _, sensor := range m.sensorsConfig {
 		m.wg.Add(1)
@@ -342,7 +342,7 @@ func (m *OpenConfigTelemetry) collectData(ctx context.Context,
 	return nil
 }
 
-func (m *OpenConfigTelemetry) Start(acc telegraf.Accumulator) error {
+func (m *OpenConfigTelemetry) Start(acc opsagent.Accumulator) error {
 	// Build sensors config
 	if m.splitSensorConfig() == 0 {
 		return fmt.Errorf("E! No valid sensor configuration available")
@@ -413,7 +413,7 @@ func (m *OpenConfigTelemetry) Start(acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add("jti_openconfig_telemetry", func() telegraf.Input {
+	inputs.Add("jti_openconfig_telemetry", func() opsagent.Input {
 		return &OpenConfigTelemetry{
 			RetryDelay: internal.Duration{Duration: time.Second},
 			StrAsTags:  false,

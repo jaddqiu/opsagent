@@ -27,7 +27,7 @@ func (r *Rename) Description() string {
 	return "Rename measurements, tags, and fields that pass through this filter."
 }
 
-func (r *Rename) Apply(in ...telegraf.Metric) []telegraf.Metric {
+func (r *Rename) Apply(in ...opsagent.Metric) []opsagent.Metric {
 	for _, point := range in {
 		for _, replace := range r.Replaces {
 			if replace.Dest == "" {
@@ -63,7 +63,7 @@ func (r *Rename) Apply(in ...telegraf.Metric) []telegraf.Metric {
 }
 
 func init() {
-	processors.Add("rename", func() telegraf.Processor {
+	processors.Add("rename", func() opsagent.Processor {
 		return &Rename{}
 	})
 }

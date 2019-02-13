@@ -42,15 +42,15 @@ var sampleConfig = `
   # datacentre = ""
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = true
 
   ## Consul checks' tag splitting
   # When tags are formatted like "key:value" with ":" as a delimiter then
-  # they will be splitted and reported as proper key:value in Telegraf
+  # they will be splitted and reported as proper key:value in Opsagent
   # tag_delimiter = ":"
 `
 
@@ -100,7 +100,7 @@ func (c *Consul) createAPIClient() (*api.Client, error) {
 	return api.NewClient(config)
 }
 
-func (c *Consul) GatherHealthCheck(acc telegraf.Accumulator, checks []*api.HealthCheck) {
+func (c *Consul) GatherHealthCheck(acc opsagent.Accumulator, checks []*api.HealthCheck) {
 	for _, check := range checks {
 		record := make(map[string]interface{})
 		tags := make(map[string]string)
@@ -135,7 +135,7 @@ func (c *Consul) GatherHealthCheck(acc telegraf.Accumulator, checks []*api.Healt
 	}
 }
 
-func (c *Consul) Gather(acc telegraf.Accumulator) error {
+func (c *Consul) Gather(acc opsagent.Accumulator) error {
 	if c.client == nil {
 		newClient, err := c.createAPIClient()
 
@@ -158,7 +158,7 @@ func (c *Consul) Gather(acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add("consul", func() telegraf.Input {
+	inputs.Add("consul", func() opsagent.Input {
 		return &Consul{}
 	})
 }

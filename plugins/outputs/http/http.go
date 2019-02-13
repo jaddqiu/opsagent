@@ -40,9 +40,9 @@ var sampleConfig = `
   # scopes = ["urn:opc:idm:__myscopes__"]
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 
@@ -154,7 +154,7 @@ func (h *HTTP) SampleConfig() string {
 	return sampleConfig
 }
 
-func (h *HTTP) Write(metrics []telegraf.Metric) error {
+func (h *HTTP) Write(metrics []opsagent.Metric) error {
 	reqBody, err := h.serializer.SerializeBatch(metrics)
 	if err != nil {
 		return err
@@ -187,7 +187,7 @@ func (h *HTTP) write(reqBody []byte) error {
 		req.SetBasicAuth(h.Username, h.Password)
 	}
 
-	req.Header.Set("User-Agent", "Telegraf/"+internal.Version())
+	req.Header.Set("User-Agent", "Opsagent/"+internal.Version())
 	req.Header.Set("Content-Type", defaultContentType)
 	if h.ContentEncoding == "gzip" {
 		req.Header.Set("Content-Encoding", "gzip")
@@ -211,7 +211,7 @@ func (h *HTTP) write(reqBody []byte) error {
 }
 
 func init() {
-	outputs.Add("http", func() telegraf.Output {
+	outputs.Add("http", func() opsagent.Output {
 		return &HTTP{
 			Timeout: internal.Duration{Duration: defaultClientTimeout},
 			Method:  defaultMethod,

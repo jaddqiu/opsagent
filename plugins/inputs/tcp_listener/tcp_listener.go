@@ -41,7 +41,7 @@ type TcpListener struct {
 	conns map[string]*net.TCPConn
 
 	parser parsers.Parser
-	acc    telegraf.Accumulator
+	acc    opsagent.Accumulator
 
 	MaxConnections     selfstat.Stat
 	CurrentConnections selfstat.Stat
@@ -73,7 +73,7 @@ func (t *TcpListener) Description() string {
 
 // All the work is done in the Start() function, so this is just a dummy
 // function.
-func (t *TcpListener) Gather(_ telegraf.Accumulator) error {
+func (t *TcpListener) Gather(_ opsagent.Accumulator) error {
 	return nil
 }
 
@@ -82,7 +82,7 @@ func (t *TcpListener) SetParser(parser parsers.Parser) {
 }
 
 // Start starts the tcp listener service.
-func (t *TcpListener) Start(acc telegraf.Accumulator) error {
+func (t *TcpListener) Start(acc opsagent.Accumulator) error {
 	t.Lock()
 	defer t.Unlock()
 
@@ -187,9 +187,9 @@ func (t *TcpListener) tcpListen() error {
 // refuser refuses a TCP connection
 func (t *TcpListener) refuser(conn *net.TCPConn) {
 	// Tell the connection why we are closing.
-	fmt.Fprintf(conn, "Telegraf maximum concurrent TCP connections (%d)"+
+	fmt.Fprintf(conn, "Opsagent maximum concurrent TCP connections (%d)"+
 		" reached, closing.\nYou may want to increase max_tcp_connections in"+
-		" the Telegraf tcp listener configuration.\n", t.MaxTCPConnections)
+		" the Opsagent tcp listener configuration.\n", t.MaxTCPConnections)
 	conn.Close()
 	log.Printf("I! Refused TCP Connection from %s", conn.RemoteAddr())
 	log.Printf("I! WARNING: Maximum TCP Connections reached, you may want to" +
@@ -247,7 +247,7 @@ func (t *TcpListener) tcpParser() error {
 	defer t.wg.Done()
 
 	var packet []byte
-	var metrics []telegraf.Metric
+	var metrics []opsagent.Metric
 	var err error
 	for {
 		select {
@@ -290,7 +290,7 @@ func (t *TcpListener) remember(id string, conn *net.TCPConn) {
 }
 
 func init() {
-	inputs.Add("tcp_listener", func() telegraf.Input {
+	inputs.Add("tcp_listener", func() opsagent.Input {
 		return &TcpListener{
 			ServiceAddress:         ":8094",
 			AllowedPendingMessages: 10000,

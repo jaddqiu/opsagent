@@ -27,7 +27,7 @@ func (w *Wireless) SampleConfig() string {
 }
 
 func init() {
-	inputs.Add("wireless", func() telegraf.Input {
+	inputs.Add("wireless", func() opsagent.Input {
 		return &Wireless{}
 	})
 }

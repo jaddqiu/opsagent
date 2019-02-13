@@ -29,7 +29,7 @@ var sampleConfig = `
   ## If not specified, then default is /proc
   # host_proc = "/proc"
 
-  ## By default, telegraf gather stats for all bond interfaces
+  ## By default, opsagent gather stats for all bond interfaces
   ## Setting interfaces will restrict the stats to the specified
   ## bond interfaces.
   # bond_interfaces = ["bond0"]
@@ -43,7 +43,7 @@ func (bond *Bond) SampleConfig() string {
 	return sampleConfig
 }
 
-func (bond *Bond) Gather(acc telegraf.Accumulator) error {
+func (bond *Bond) Gather(acc opsagent.Accumulator) error {
 	// load proc path, get default value if config value and env variable are empty
 	bond.loadPath()
 	// list bond interfaces from bonding directory or gather all interfaces.
@@ -67,7 +67,7 @@ func (bond *Bond) Gather(acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (bond *Bond) gatherBondInterface(bondName string, rawFile string, acc telegraf.Accumulator) error {
+func (bond *Bond) gatherBondInterface(bondName string, rawFile string, acc opsagent.Accumulator) error {
 	splitIndex := strings.Index(rawFile, "Slave Interface:")
 	if splitIndex == -1 {
 		splitIndex = len(rawFile)
@@ -86,7 +86,7 @@ func (bond *Bond) gatherBondInterface(bondName string, rawFile string, acc teleg
 	return nil
 }
 
-func (bond *Bond) gatherBondPart(bondName string, rawFile string, acc telegraf.Accumulator) error {
+func (bond *Bond) gatherBondPart(bondName string, rawFile string, acc opsagent.Accumulator) error {
 	fields := make(map[string]interface{})
 	tags := map[string]string{
 		"bond": bondName,
@@ -119,7 +119,7 @@ func (bond *Bond) gatherBondPart(bondName string, rawFile string, acc telegraf.A
 	return fmt.Errorf("Couldn't find status info for '%s' ", bondName)
 }
 
-func (bond *Bond) gatherSlavePart(bondName string, rawFile string, acc telegraf.Accumulator) error {
+func (bond *Bond) gatherSlavePart(bondName string, rawFile string, acc opsagent.Accumulator) error {
 	var slave string
 	var status int
 
@@ -198,7 +198,7 @@ func (bond *Bond) listInterfaces() ([]string, error) {
 }
 
 func init() {
-	inputs.Add("bond", func() telegraf.Input {
+	inputs.Add("bond", func() opsagent.Input {
 		return &Bond{}
 	})
 }

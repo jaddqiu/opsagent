@@ -72,7 +72,7 @@ func (s *Ping) SampleConfig() string {
 	return sampleConfig
 }
 
-func (p *Ping) Gather(acc telegraf.Accumulator) error {
+func (p *Ping) Gather(acc opsagent.Accumulator) error {
 	if p.Count < 1 {
 		p.Count = 1
 	}
@@ -88,7 +88,7 @@ func (p *Ping) Gather(acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (p *Ping) pingToURL(u string, acc telegraf.Accumulator) {
+func (p *Ping) pingToURL(u string, acc opsagent.Accumulator) {
 	defer p.wg.Done()
 
 	tags := map[string]string{"url": u}
@@ -248,7 +248,7 @@ func (p *Ping) timeout() float64 {
 }
 
 func init() {
-	inputs.Add("ping", func() telegraf.Input {
+	inputs.Add("ping", func() opsagent.Input {
 		return &Ping{
 			pingHost:  hostPinger,
 			Count:     1,

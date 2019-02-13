@@ -2,7 +2,7 @@ package inputs
 
 import "github.com/jaddqiu/opsagent"
 
-type Creator func() telegraf.Input
+type Creator func() opsagent.Input
 
 var Inputs = map[string]Creator{}
 

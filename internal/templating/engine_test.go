@@ -12,9 +12,9 @@ func TestEngineAlternateSeparator(t *testing.T) {
 		"/ /*/*/* /measurement/origin/measurement*",
 	})
 	require.NoError(t, err)
-	name, tags, field, err := engine.Apply("/telegraf/host01/cpu")
+	name, tags, field, err := engine.Apply("/opsagent/host01/cpu")
 	require.NoError(t, err)
-	require.Equal(t, "telegraf_cpu", name)
+	require.Equal(t, "opsagent_cpu", name)
 	require.Equal(t, map[string]string{
 		"origin": "host01",
 	}, tags)

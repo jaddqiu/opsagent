@@ -13,7 +13,7 @@ import (
 
 func TestBuildPoint(t *testing.T) {
 	var tagtests = []struct {
-		ptIn  telegraf.Metric
+		ptIn  opsagent.Metric
 		outPt Point
 		err   error
 	}{

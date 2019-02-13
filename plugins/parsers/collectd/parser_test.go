@@ -206,7 +206,7 @@ func TestParse_SignSecurityLevel(t *testing.T) {
 
 	metrics, err = parser.Parse(bytes)
 	require.Nil(t, err)
-	require.Equal(t, []telegraf.Metric{}, metrics)
+	require.Equal(t, []opsagent.Metric{}, metrics)
 
 	// Wrong password error
 	buf, err = writeValueList(singleMetric.vl)
@@ -240,7 +240,7 @@ func TestParse_EncryptSecurityLevel(t *testing.T) {
 
 	metrics, err := parser.Parse(bytes)
 	require.Nil(t, err)
-	require.Equal(t, []telegraf.Metric{}, metrics)
+	require.Equal(t, []opsagent.Metric{}, metrics)
 
 	// Encrypted data
 	buf, err = writeValueList(singleMetric.vl)
@@ -261,7 +261,7 @@ func TestParse_EncryptSecurityLevel(t *testing.T) {
 
 	metrics, err = parser.Parse(bytes)
 	require.Nil(t, err)
-	require.Equal(t, []telegraf.Metric{}, metrics)
+	require.Equal(t, []opsagent.Metric{}, metrics)
 
 	// Wrong password error
 	buf, err = writeValueList(singleMetric.vl)
@@ -285,7 +285,7 @@ func TestParseLine(t *testing.T) {
 	metric, err := parser.ParseLine(string(bytes))
 	require.Nil(t, err)
 
-	assertEqualMetrics(t, singleMetric.expected, []telegraf.Metric{metric})
+	assertEqualMetrics(t, singleMetric.expected, []opsagent.Metric{metric})
 }
 
 func writeValueList(valueLists []api.ValueList) (*network.Buffer, error) {
@@ -302,7 +302,7 @@ func writeValueList(valueLists []api.ValueList) (*network.Buffer, error) {
 	return buffer, nil
 }
 
-func assertEqualMetrics(t *testing.T, expected []metricData, received []telegraf.Metric) {
+func assertEqualMetrics(t *testing.T, expected []metricData, received []opsagent.Metric) {
 	require.Equal(t, len(expected), len(received))
 	for i, m := range received {
 		require.Equal(t, expected[i].name, m.Name())

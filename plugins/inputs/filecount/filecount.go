@@ -149,7 +149,7 @@ func (fc *FileCount) initFileFilters() {
 	fc.fileFilters = rejectNilFilters(filters)
 }
 
-func (fc *FileCount) count(acc telegraf.Accumulator, basedir string, glob globpath.GlobPath) {
+func (fc *FileCount) count(acc opsagent.Accumulator, basedir string, glob globpath.GlobPath) {
 	childCount := make(map[string]int64)
 	childSize := make(map[string]int64)
 	walkFn := func(path string, de *godirwalk.Dirent) error {
@@ -227,7 +227,7 @@ func (fc *FileCount) filter(file os.FileInfo) (bool, error) {
 	return true, nil
 }
 
-func (fc *FileCount) Gather(acc telegraf.Accumulator) error {
+func (fc *FileCount) Gather(acc opsagent.Accumulator) error {
 	if fc.globPaths == nil {
 		fc.initGlobPaths(acc)
 	}
@@ -265,7 +265,7 @@ func (fc *FileCount) getDirs() []string {
 	return dirs
 }
 
-func (fc *FileCount) initGlobPaths(acc telegraf.Accumulator) {
+func (fc *FileCount) initGlobPaths(acc opsagent.Accumulator) {
 	fc.globPaths = []globpath.GlobPath{}
 	for _, directory := range fc.getDirs() {
 		glob, err := globpath.Compile(directory)
@@ -291,7 +291,7 @@ func NewFileCount() *FileCount {
 }
 
 func init() {
-	inputs.Add("filecount", func() telegraf.Input {
+	inputs.Add("filecount", func() opsagent.Input {
 		return NewFileCount()
 	})
 }

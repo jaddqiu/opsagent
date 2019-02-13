@@ -9,7 +9,7 @@ type MinMax struct {
 	cache map[uint64]aggregate
 }
 
-func NewMinMax() telegraf.Aggregator {
+func NewMinMax() opsagent.Aggregator {
 	mm := &MinMax{}
 	mm.Reset()
 	return mm
@@ -43,7 +43,7 @@ func (m *MinMax) Description() string {
 	return "Keep the aggregate min/max of each metric passing through."
 }
 
-func (m *MinMax) Add(in telegraf.Metric) {
+func (m *MinMax) Add(in opsagent.Metric) {
 	id := in.HashID()
 	if _, ok := m.cache[id]; !ok {
 		// hit an uncached metric, create caches for first time:
@@ -86,7 +86,7 @@ func (m *MinMax) Add(in telegraf.Metric) {
 	}
 }
 
-func (m *MinMax) Push(acc telegraf.Accumulator) {
+func (m *MinMax) Push(acc opsagent.Accumulator) {
 	for _, aggregate := range m.cache {
 		fields := map[string]interface{}{}
 		for k, v := range aggregate.fields {
@@ -115,7 +115,7 @@ func convert(in interface{}) (float64, bool) {
 }
 
 func init() {
-	aggregators.Add("minmax", func() telegraf.Aggregator {
+	aggregators.Add("minmax", func() opsagent.Aggregator {
 		return NewMinMax()
 	})
 }

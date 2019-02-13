@@ -29,24 +29,24 @@ endif
 .PHONY: all
 all:
 	@$(MAKE) --no-print-directory deps
-	@$(MAKE) --no-print-directory telegraf
+	@$(MAKE) --no-print-directory opsagent
 
 .PHONY: deps
 deps:
 	dep ensure -vendor-only
 
-.PHONY: telegraf
-telegraf:
-	go build -ldflags "$(LDFLAGS)" ./cmd/telegraf
+.PHONY: opsagent
+opsagent:
+	go build -ldflags "$(LDFLAGS)" ./cmd/opsagent
 
 .PHONY: go-install
 go-install:
-	go install -ldflags "-w -s $(LDFLAGS)" ./cmd/telegraf
+	go install -ldflags "-w -s $(LDFLAGS)" ./cmd/opsagent
 
 .PHONY: install
-install: telegraf
+install: opsagent
 	mkdir -p $(DESTDIR)$(PREFIX)/bin/
-	cp telegraf $(DESTDIR)$(PREFIX)/bin/
+	cp opsagent $(DESTDIR)$(PREFIX)/bin/
 
 
 .PHONY: test
@@ -108,8 +108,8 @@ package-nightly:
 
 .PHONY: clean
 clean:
-	rm -f telegraf
-	rm -f telegraf.exe
+	rm -f opsagent
+	rm -f opsagent.exe
 
 .PHONY: docker-image
 docker-image:
@@ -124,7 +124,7 @@ static:
 	@CGO_ENABLED=0 \
 	GOOS=linux \
 	GOARCH=amd64 \
-	go build -ldflags "$(LDFLAGS)" ./cmd/telegraf
+	go build -ldflags "$(LDFLAGS)" ./cmd/opsagent
 
 .PHONY: plugin-%
 plugin-%:

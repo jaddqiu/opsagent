@@ -156,7 +156,7 @@ type Exchange struct {
 }
 
 // gatherFunc ...
-type gatherFunc func(r *RabbitMQ, acc telegraf.Accumulator)
+type gatherFunc func(r *RabbitMQ, acc opsagent.Accumulator)
 
 var gatherFunctions = []gatherFunc{gatherOverview, gatherNodes, gatherQueues, gatherExchanges}
 
@@ -170,9 +170,9 @@ var sampleConfig = `
   # password = "guest"
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 
@@ -192,11 +192,11 @@ var sampleConfig = `
 
   ## A list of queues to gather as the rabbitmq_queue measurement. If not
   ## specified, metrics for all queues are gathered.
-  # queues = ["telegraf"]
+  # queues = ["opsagent"]
 
   ## A list of exchanges to gather as the rabbitmq_exchange measurement. If not
   ## specified, metrics for all exchanges are gathered.
-  # exchanges = ["telegraf"]
+  # exchanges = ["opsagent"]
 
   ## Queues to include and exclude. Globs accepted.
   ## Note that an empty array for both will include all queues
@@ -215,7 +215,7 @@ func (r *RabbitMQ) Description() string {
 }
 
 // Gather ...
-func (r *RabbitMQ) Gather(acc telegraf.Accumulator) error {
+func (r *RabbitMQ) Gather(acc opsagent.Accumulator) error {
 	if r.Client == nil {
 		tlsCfg, err := r.ClientConfig.TLSConfig()
 		if err != nil {
@@ -288,7 +288,7 @@ func (r *RabbitMQ) requestJSON(u string, target interface{}) error {
 	return nil
 }
 
-func gatherOverview(r *RabbitMQ, acc telegraf.Accumulator) {
+func gatherOverview(r *RabbitMQ, acc opsagent.Accumulator) {
 	overview := &OverviewResponse{}
 
 	err := r.requestJSON("/api/overview", &overview)
@@ -334,7 +334,7 @@ func gatherOverview(r *RabbitMQ, acc telegraf.Accumulator) {
 	acc.AddFields("rabbitmq_overview", fields, tags)
 }
 
-func gatherNodes(r *RabbitMQ, acc telegraf.Accumulator) {
+func gatherNodes(r *RabbitMQ, acc opsagent.Accumulator) {
 	nodes := make([]Node, 0)
 	// Gather information about nodes
 	err := r.requestJSON("/api/nodes", &nodes)
@@ -375,7 +375,7 @@ func gatherNodes(r *RabbitMQ, acc telegraf.Accumulator) {
 	}
 }
 
-func gatherQueues(r *RabbitMQ, acc telegraf.Accumulator) {
+func gatherQueues(r *RabbitMQ, acc opsagent.Accumulator) {
 	if r.excludeEveryQueue {
 		return
 	}
@@ -433,7 +433,7 @@ func gatherQueues(r *RabbitMQ, acc telegraf.Accumulator) {
 	}
 }
 
-func gatherExchanges(r *RabbitMQ, acc telegraf.Accumulator) {
+func gatherExchanges(r *RabbitMQ, acc opsagent.Accumulator) {
 	// Gather information about exchanges
 	exchanges := make([]Exchange, 0)
 	err := r.requestJSON("/api/exchanges", &exchanges)
@@ -517,7 +517,7 @@ func (r *RabbitMQ) shouldGatherExchange(exchange Exchange) bool {
 }
 
 func init() {
-	inputs.Add("rabbitmq", func() telegraf.Input {
+	inputs.Add("rabbitmq", func() opsagent.Input {
 		return &RabbitMQ{
 			ResponseHeaderTimeout: internal.Duration{Duration: DefaultResponseHeaderTimeout * time.Second},
 			ClientTimeout:         internal.Duration{Duration: DefaultClientTimeout * time.Second},

@@ -27,9 +27,9 @@ const sampleConfig = `
   # timeout = "5s"
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
 
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
@@ -160,7 +160,7 @@ func getTags(subject pkix.Name, location string) map[string]string {
 }
 
 // Gather adds metrics into the accumulator.
-func (c *X509Cert) Gather(acc telegraf.Accumulator) error {
+func (c *X509Cert) Gather(acc opsagent.Accumulator) error {
 	now := time.Now()
 
 	for _, location := range c.Sources {
@@ -181,7 +181,7 @@ func (c *X509Cert) Gather(acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add("x509_cert", func() telegraf.Input {
+	inputs.Add("x509_cert", func() opsagent.Input {
 		return &X509Cert{
 			Sources: []string{},
 			Timeout: internal.Duration{Duration: 5},

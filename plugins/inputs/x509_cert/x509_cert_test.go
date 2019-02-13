@@ -18,8 +18,8 @@ import (
 
 var pki = testutil.NewPKI("../../../testutil/pki")
 
-// Make sure X509Cert implements telegraf.Input
-var _ telegraf.Input = &X509Cert{}
+// Make sure X509Cert implements opsagent.Input
+var _ opsagent.Input = &X509Cert{}
 
 func TestGatherRemote(t *testing.T) {
 	if testing.Short() {

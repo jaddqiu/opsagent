@@ -291,7 +291,7 @@ const sampleQueuesResponse = `
       "avg_ack_ingress_rate": 0,
       "avg_ack_egress_rate": 0
     },
-    "name": "telegraf",
+    "name": "opsagent",
     "vhost": "collectd",
     "durable": true,
     "auto_delete": false,
@@ -382,7 +382,7 @@ const sampleQueuesResponse = `
       "avg_ack_ingress_rate": 0.19115840579934168,
       "avg_ack_egress_rate": 0.1492766485341716
     },
-    "name": "telegraf",
+    "name": "opsagent",
     "vhost": "metrics",
     "durable": true,
     "auto_delete": false,
@@ -420,7 +420,7 @@ const sampleExchangesResponse = `
     "durable": true,
     "type": "fanout",
     "vhost": "\/",
-    "name": "telegraf"
+    "name": "opsagent"
   },
   {
     "arguments": { },

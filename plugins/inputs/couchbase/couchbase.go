@@ -38,7 +38,7 @@ func (r *Couchbase) Description() string {
 
 // Reads stats from all configured clusters. Accumulates stats.
 // Returns one of the errors encountered while gathering stats (if any).
-func (r *Couchbase) Gather(acc telegraf.Accumulator) error {
+func (r *Couchbase) Gather(acc opsagent.Accumulator) error {
 	if len(r.Servers) == 0 {
 		r.gatherServer("http://localhost:8091/", acc, nil)
 		return nil
@@ -59,7 +59,7 @@ func (r *Couchbase) Gather(acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (r *Couchbase) gatherServer(addr string, acc telegraf.Accumulator, pool *couchbase.Pool) error {
+func (r *Couchbase) gatherServer(addr string, acc opsagent.Accumulator, pool *couchbase.Pool) error {
 	if pool == nil {
 		client, err := couchbase.Connect(addr)
 		if err != nil {
@@ -102,7 +102,7 @@ func (r *Couchbase) gatherServer(addr string, acc telegraf.Accumulator, pool *co
 }
 
 func init() {
-	inputs.Add("couchbase", func() telegraf.Input {
+	inputs.Add("couchbase", func() opsagent.Input {
 		return &Couchbase{}
 	})
 }

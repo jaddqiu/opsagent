@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func createTestMetric() telegraf.Metric {
+func createTestMetric() opsagent.Metric {
 	metric, _ := metric.New("m1",
 		map[string]string{"metric_tag": "from_metric"},
 		map[string]interface{}{"value": int64(1)},
@@ -18,7 +18,7 @@ func createTestMetric() telegraf.Metric {
 	return metric
 }
 
-func calculateProcessedTags(processor Override, metric telegraf.Metric) map[string]string {
+func calculateProcessedTags(processor Override, metric opsagent.Metric) map[string]string {
 	processed := processor.Apply(metric)
 	return processed[0].Tags()
 }

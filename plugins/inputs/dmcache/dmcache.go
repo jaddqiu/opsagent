@@ -24,7 +24,7 @@ func (c *DMCache) Description() string {
 }
 
 func init() {
-	inputs.Add("dmcache", func() telegraf.Input {
+	inputs.Add("dmcache", func() opsagent.Input {
 		return &DMCache{
 			PerDevice:        true,
 			getCurrentStatus: dmSetupStatus,

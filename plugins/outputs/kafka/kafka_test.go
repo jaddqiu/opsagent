@@ -104,7 +104,7 @@ func TestRoutingKey(t *testing.T) {
 	tests := []struct {
 		name   string
 		kafka  *Kafka
-		metric telegraf.Metric
+		metric opsagent.Metric
 		check  func(t *testing.T, routingKey string)
 	}{
 		{
@@ -112,7 +112,7 @@ func TestRoutingKey(t *testing.T) {
 			kafka: &Kafka{
 				RoutingKey: "static",
 			},
-			metric: func() telegraf.Metric {
+			metric: func() opsagent.Metric {
 				m, _ := metric.New(
 					"cpu",
 					map[string]string{},
@@ -132,7 +132,7 @@ func TestRoutingKey(t *testing.T) {
 			kafka: &Kafka{
 				RoutingKey: "random",
 			},
-			metric: func() telegraf.Metric {
+			metric: func() opsagent.Metric {
 				m, _ := metric.New(
 					"cpu",
 					map[string]string{},

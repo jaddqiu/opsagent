@@ -76,9 +76,9 @@ var sampleConfig = `
   # ]
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 `
@@ -90,7 +90,7 @@ func (m *Mesos) SampleConfig() string {
 
 // Description just returns a short description of the Mesos plugin
 func (m *Mesos) Description() string {
-	return "Telegraf plugin for gathering metrics from N Mesos masters"
+	return "Opsagent plugin for gathering metrics from N Mesos masters"
 }
 
 func parseURL(s string, role Role) (*url.URL, error) {
@@ -162,7 +162,7 @@ func (m *Mesos) initialize() error {
 }
 
 // Gather() metrics from given list of Mesos Masters
-func (m *Mesos) Gather(acc telegraf.Accumulator) error {
+func (m *Mesos) Gather(acc opsagent.Accumulator) error {
 	if !m.initialized {
 		err := m.initialize()
 		if err != nil {
@@ -492,7 +492,7 @@ type TaskStats struct {
 	Statistics  map[string]interface{} `json:"statistics"`
 }
 
-func (m *Mesos) gatherSlaveTaskMetrics(u *url.URL, acc telegraf.Accumulator) error {
+func (m *Mesos) gatherSlaveTaskMetrics(u *url.URL, acc opsagent.Accumulator) error {
 	var metrics []TaskStats
 
 	tags := map[string]string{
@@ -550,7 +550,7 @@ func urlTag(u *url.URL) string {
 }
 
 // This should not belong to the object
-func (m *Mesos) gatherMainMetrics(u *url.URL, role Role, acc telegraf.Accumulator) error {
+func (m *Mesos) gatherMainMetrics(u *url.URL, role Role, acc opsagent.Accumulator) error {
 	var jsonOut map[string]interface{}
 
 	tags := map[string]string{
@@ -599,7 +599,7 @@ func (m *Mesos) gatherMainMetrics(u *url.URL, role Role, acc telegraf.Accumulato
 }
 
 func init() {
-	inputs.Add("mesos", func() telegraf.Input {
+	inputs.Add("mesos", func() opsagent.Input {
 		return &Mesos{}
 	})
 }

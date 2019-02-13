@@ -70,7 +70,7 @@ func (s *Server) gatherOplogStats() *OplogStats {
 	return stats
 }
 
-func (s *Server) gatherData(acc telegraf.Accumulator, gatherDbStats bool) error {
+func (s *Server) gatherData(acc opsagent.Accumulator, gatherDbStats bool) error {
 	s.Session.SetMode(mgo.Eventual, true)
 	s.Session.SetSocketTimeout(0)
 	result_server := &ServerStatus{}

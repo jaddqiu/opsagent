@@ -89,7 +89,7 @@ func (a *ApplicationInsights) Connect() error {
 	return nil
 }
 
-func (a *ApplicationInsights) Write(metrics []telegraf.Metric) error {
+func (a *ApplicationInsights) Write(metrics []opsagent.Metric) error {
 	for _, metric := range metrics {
 		allMetricTelemetry := a.createTelemetry(metric)
 		for _, telemetry := range allMetricTelemetry {
@@ -121,7 +121,7 @@ func (a *ApplicationInsights) Close() error {
 	return nil
 }
 
-func (a *ApplicationInsights) createTelemetry(metric telegraf.Metric) []appinsights.Telemetry {
+func (a *ApplicationInsights) createTelemetry(metric opsagent.Metric) []appinsights.Telemetry {
 	aggregateTelemetry, usedFields := a.createAggregateMetricTelemetry(metric)
 	if aggregateTelemetry != nil {
 		telemetry := a.createTelemetryForUnusedFields(metric, usedFields)
@@ -146,7 +146,7 @@ func (a *ApplicationInsights) createTelemetry(metric telegraf.Metric) []appinsig
 	}
 }
 
-func (a *ApplicationInsights) createSimpleMetricTelemetry(metric telegraf.Metric, fieldName string, useFieldNameInTelemetryName bool) *appinsights.MetricTelemetry {
+func (a *ApplicationInsights) createSimpleMetricTelemetry(metric opsagent.Metric, fieldName string, useFieldNameInTelemetryName bool) *appinsights.MetricTelemetry {
 	telemetryValue, err := getFloat64TelemetryPropertyValue([]string{fieldName}, metric, nil)
 	if err != nil {
 		return nil
@@ -165,7 +165,7 @@ func (a *ApplicationInsights) createSimpleMetricTelemetry(metric telegraf.Metric
 	return telemetry
 }
 
-func (a *ApplicationInsights) createAggregateMetricTelemetry(metric telegraf.Metric) (*appinsights.AggregateMetricTelemetry, []string) {
+func (a *ApplicationInsights) createAggregateMetricTelemetry(metric opsagent.Metric) (*appinsights.AggregateMetricTelemetry, []string) {
 	usedFields := make([]string, 0, 6) // We will use up to 6 fields
 
 	// Get the sum of all individual measurements(mandatory property)
@@ -198,7 +198,7 @@ func (a *ApplicationInsights) createAggregateMetricTelemetry(metric telegraf.Met
 	return telemetry, usedFields
 }
 
-func (a *ApplicationInsights) createTelemetryForUnusedFields(metric telegraf.Metric, usedFields []string) []appinsights.Telemetry {
+func (a *ApplicationInsights) createTelemetryForUnusedFields(metric opsagent.Metric, usedFields []string) []appinsights.Telemetry {
 	fields := metric.Fields()
 	retval := make([]appinsights.Telemetry, 0, len(fields))
 
@@ -216,7 +216,7 @@ func (a *ApplicationInsights) createTelemetryForUnusedFields(metric telegraf.Met
 	return retval
 }
 
-func (a *ApplicationInsights) addContextTags(metric telegraf.Metric, telemetry appinsights.Telemetry) {
+func (a *ApplicationInsights) addContextTags(metric opsagent.Metric, telemetry appinsights.Telemetry) {
 	for contextTagName, tagSourceName := range a.ContextTagSources {
 		if contextTagValue, found := metric.GetTag(tagSourceName); found {
 			telemetry.ContextTags()[contextTagName] = contextTagValue
@@ -226,7 +226,7 @@ func (a *ApplicationInsights) addContextTags(metric telegraf.Metric, telemetry a
 
 func getFloat64TelemetryPropertyValue(
 	candidateFields []string,
-	metric telegraf.Metric,
+	metric opsagent.Metric,
 	usedFields *[]string) (float64, error) {
 
 	for _, fieldName := range candidateFields {
@@ -252,7 +252,7 @@ func getFloat64TelemetryPropertyValue(
 
 func getIntTelemetryPropertyValue(
 	candidateFields []string,
-	metric telegraf.Metric,
+	metric opsagent.Metric,
 	usedFields *[]string) (int, error) {
 
 	for _, fieldName := range candidateFields {
@@ -287,7 +287,7 @@ func contains(set []string, val string) bool {
 }
 
 func toFloat64(value interface{}) (float64, error) {
-	// Out of all Golang numerical types Telegraf only uses int64, unit64 and float64 for fields
+	// Out of all Golang numerical types Opsagent only uses int64, unit64 and float64 for fields
 	switch v := value.(type) {
 	case int64:
 		return float64(v), nil
@@ -311,7 +311,7 @@ func toInt(value interface{}) (int, error) {
 		}
 	}
 
-	// Out of all Golang numerical types Telegraf only uses int64, unit64 and float64 for fields
+	// Out of all Golang numerical types Opsagent only uses int64, unit64 and float64 for fields
 	switch v := value.(type) {
 	case uint64:
 		if is32Bit {
@@ -344,7 +344,7 @@ func logOutputMsg(level string, format string, v ...interface{}) {
 }
 
 func init() {
-	outputs.Add("application_insights", func() telegraf.Output {
+	outputs.Add("application_insights", func() opsagent.Output {
 		return &ApplicationInsights{
 			Timeout:           internal.Duration{Duration: time.Second * 5},
 			diagMsgSubscriber: diagnosticsMessageSubscriber{},

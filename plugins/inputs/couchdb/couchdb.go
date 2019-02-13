@@ -99,12 +99,12 @@ func (*CouchDB) SampleConfig() string {
   hosts = ["http://localhost:8086/_stats"]
 
   ## Use HTTP Basic Authentication.
-  # basic_username = "telegraf"
+  # basic_username = "opsagent"
   # basic_password = "p@ssw0rd"
 `
 }
 
-func (c *CouchDB) Gather(accumulator telegraf.Accumulator) error {
+func (c *CouchDB) Gather(accumulator opsagent.Accumulator) error {
 	var wg sync.WaitGroup
 	for _, u := range c.Hosts {
 		wg.Add(1)
@@ -121,7 +121,7 @@ func (c *CouchDB) Gather(accumulator telegraf.Accumulator) error {
 	return nil
 }
 
-func (c *CouchDB) fetchAndInsertData(accumulator telegraf.Accumulator, host string) error {
+func (c *CouchDB) fetchAndInsertData(accumulator opsagent.Accumulator, host string) error {
 	if c.client == nil {
 		c.client = &http.Client{
 			Transport: &http.Transport{
@@ -283,7 +283,7 @@ func (c *CouchDB) generateFields(fields map[string]interface{}, prefix string, o
 }
 
 func init() {
-	inputs.Add("couchdb", func() telegraf.Input {
+	inputs.Add("couchdb", func() opsagent.Input {
 		return &CouchDB{
 			client: &http.Client{
 				Transport: &http.Transport{

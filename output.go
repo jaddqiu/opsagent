@@ -1,4 +1,4 @@
-package telegraf
+package opsagent
 
 type Output interface {
 	// Connect to the Output

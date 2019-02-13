@@ -47,9 +47,9 @@ type Sample struct {
 type MetricFamily struct {
 	// Samples are the Sample belonging to this MetricFamily.
 	Samples map[SampleID]*Sample
-	// Need the telegraf ValueType because there isn't a Prometheus ValueType
+	// Need the opsagent ValueType because there isn't a Prometheus ValueType
 	// representing Histogram or Summary
-	TelegrafValueType telegraf.ValueType
+	OpsagentValueType opsagent.ValueType
 	// LabelSet is the label counts for all Samples.
 	LabelSet map[string]int
 }
@@ -103,8 +103,8 @@ var sampleConfig = `
   # string_as_label = true
 
   ## If set, enable TLS with the given certificate.
-  # tls_cert = "/etc/ssl/telegraf.crt"
-  # tls_key = "/etc/ssl/telegraf.key"
+  # tls_cert = "/etc/ssl/opsagent.crt"
+  # tls_key = "/etc/ssl/opsagent.key"
 
   ## Export metric collection time.
   # export_timestamp = false
@@ -260,7 +260,7 @@ func (p *PrometheusClient) Collect(ch chan<- prometheus.Metric) {
 				labelNames = append(labelNames, k)
 			}
 		}
-		desc := prometheus.NewDesc(name, "Telegraf collected metric", labelNames, nil)
+		desc := prometheus.NewDesc(name, "Opsagent collected metric", labelNames, nil)
 
 		for _, sample := range family.Samples {
 			// Get labels for this sample; unset labels will be set to the
@@ -273,13 +273,13 @@ func (p *PrometheusClient) Collect(ch chan<- prometheus.Metric) {
 
 			var metric prometheus.Metric
 			var err error
-			switch family.TelegrafValueType {
-			case telegraf.Summary:
+			switch family.OpsagentValueType {
+			case opsagent.Summary:
 				metric, err = prometheus.NewConstSummary(desc, sample.Count, sample.Sum, sample.SummaryValue, labels...)
-			case telegraf.Histogram:
+			case opsagent.Histogram:
 				metric, err = prometheus.NewConstHistogram(desc, sample.Count, sample.Sum, sample.HistogramValue, labels...)
 			default:
-				metric, err = prometheus.NewConstMetric(desc, getPromValueType(family.TelegrafValueType), sample.Value, labels...)
+				metric, err = prometheus.NewConstMetric(desc, getPromValueType(family.OpsagentValueType), sample.Value, labels...)
 			}
 			if err != nil {
 				log.Printf("E! Error creating prometheus metric, "+
@@ -299,18 +299,18 @@ func sanitize(value string) string {
 	return invalidNameCharRE.ReplaceAllString(value, "_")
 }
 
-func getPromValueType(tt telegraf.ValueType) prometheus.ValueType {
+func getPromValueType(tt opsagent.ValueType) prometheus.ValueType {
 	switch tt {
-	case telegraf.Counter:
+	case opsagent.Counter:
 		return prometheus.CounterValue
-	case telegraf.Gauge:
+	case opsagent.Gauge:
 		return prometheus.GaugeValue
 	default:
 		return prometheus.UntypedValue
 	}
 }
 
-// CreateSampleID creates a SampleID based on the tags of a telegraf.Metric.
+// CreateSampleID creates a SampleID based on the tags of a opsagent.Metric.
 func CreateSampleID(tags map[string]string) SampleID {
 	pairs := make([]string, 0, len(tags))
 	for k, v := range tags {
@@ -329,13 +329,13 @@ func addSample(fam *MetricFamily, sample *Sample, sampleID SampleID) {
 	fam.Samples[sampleID] = sample
 }
 
-func (p *PrometheusClient) addMetricFamily(point telegraf.Metric, sample *Sample, mname string, sampleID SampleID) {
+func (p *PrometheusClient) addMetricFamily(point opsagent.Metric, sample *Sample, mname string, sampleID SampleID) {
 	var fam *MetricFamily
 	var ok bool
 	if fam, ok = p.fam[mname]; !ok {
 		fam = &MetricFamily{
 			Samples:           make(map[SampleID]*Sample),
-			TelegrafValueType: point.Type(),
+			OpsagentValueType: point.Type(),
 			LabelSet:          make(map[string]int),
 		}
 		p.fam[mname] = fam
@@ -344,7 +344,7 @@ func (p *PrometheusClient) addMetricFamily(point telegraf.Metric, sample *Sample
 	addSample(fam, sample, sampleID)
 }
 
-func (p *PrometheusClient) Write(metrics []telegraf.Metric) error {
+func (p *PrometheusClient) Write(metrics []opsagent.Metric) error {
 	p.Lock()
 	defer p.Unlock()
 
@@ -371,7 +371,7 @@ func (p *PrometheusClient) Write(metrics []telegraf.Metric) error {
 		}
 
 		switch point.Type() {
-		case telegraf.Summary:
+		case opsagent.Summary:
 			var mname string
 			var sum float64
 			var count uint64
@@ -413,7 +413,7 @@ func (p *PrometheusClient) Write(metrics []telegraf.Metric) error {
 
 			p.addMetricFamily(point, sample, mname, sampleID)
 
-		case telegraf.Histogram:
+		case opsagent.Histogram:
 			var mname string
 			var sum float64
 			var count uint64
@@ -481,11 +481,11 @@ func (p *PrometheusClient) Write(metrics []telegraf.Metric) error {
 				// the prometheus input.
 				var mname string
 				switch point.Type() {
-				case telegraf.Counter:
+				case opsagent.Counter:
 					if fn == "counter" {
 						mname = sanitize(point.Name())
 					}
-				case telegraf.Gauge:
+				case opsagent.Gauge:
 					if fn == "gauge" {
 						mname = sanitize(point.Name())
 					}
@@ -507,7 +507,7 @@ func (p *PrometheusClient) Write(metrics []telegraf.Metric) error {
 }
 
 func init() {
-	outputs.Add("prometheus_client", func() telegraf.Output {
+	outputs.Add("prometheus_client", func() opsagent.Output {
 		return &PrometheusClient{
 			ExpirationInterval: internal.Duration{Duration: time.Second * 60},
 			StringAsLabel:      true,

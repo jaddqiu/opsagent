@@ -18,7 +18,7 @@ func (_ *MemStats) Description() string {
 
 func (_ *MemStats) SampleConfig() string { return "" }
 
-func (s *MemStats) Gather(acc telegraf.Accumulator) error {
+func (s *MemStats) Gather(acc opsagent.Accumulator) error {
 	vm, err := s.ps.VMStat()
 	if err != nil {
 		return fmt.Errorf("error getting virtual memory info: %s", err)
@@ -66,7 +66,7 @@ func (s *MemStats) Gather(acc telegraf.Accumulator) error {
 
 func init() {
 	ps := system.NewSystemPS()
-	inputs.Add("mem", func() telegraf.Input {
+	inputs.Add("mem", func() opsagent.Input {
 		return &MemStats{ps: ps}
 	})
 }

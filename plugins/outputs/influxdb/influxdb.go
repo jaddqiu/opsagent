@@ -23,7 +23,7 @@ var (
 )
 
 type Client interface {
-	Write(context.Context, []telegraf.Metric) error
+	Write(context.Context, []opsagent.Metric) error
 	CreateDatabase(ctx context.Context) error
 
 	URL() string
@@ -70,10 +70,10 @@ var sampleConfig = `
 
   ## The target database for metrics; will be created as needed.
   ## For UDP url endpoint database needs to be configured on server side.
-  # database = "telegraf"
+  # database = "opsagent"
 
   ## If true, no CREATE DATABASE queries will be sent.  Set to true when using
-  ## Telegraf with a user without permissions to create databases or when the
+  ## Opsagent with a user without permissions to create databases or when the
   ## database already exists.
   # skip_database_creation = false
 
@@ -89,19 +89,19 @@ var sampleConfig = `
   # timeout = "5s"
 
   ## HTTP Basic Auth
-  # username = "telegraf"
+  # username = "opsagent"
   # password = "metricsmetricsmetricsmetrics"
 
   ## HTTP User-Agent
-  # user_agent = "telegraf"
+  # user_agent = "opsagent"
 
   ## UDP payload size is the maximum packet size to send.
   # udp_payload = "512B"
 
   ## Optional TLS Config for use on HTTP connections.
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 
@@ -116,7 +116,7 @@ var sampleConfig = `
   ## compress body or "identity" to apply no encoding.
   # content_encoding = "identity"
 
-  ## When true, Telegraf will output unsigned integers as unsigned values,
+  ## When true, Opsagent will output unsigned integers as unsigned values,
   ## i.e.: "42u".  You will need a version of InfluxDB supporting unsigned
   ## integer values.  Enabling this option will result in field type errors if
   ## existing data has been written.
@@ -192,7 +192,7 @@ func (i *InfluxDB) SampleConfig() string {
 
 // Write sends metrics to one of the configured servers, logging each
 // unsuccessful. If all servers fail, return an error.
-func (i *InfluxDB) Write(metrics []telegraf.Metric) error {
+func (i *InfluxDB) Write(metrics []opsagent.Metric) error {
 	ctx := context.Background()
 
 	var err error
@@ -277,7 +277,7 @@ func (i *InfluxDB) httpClient(ctx context.Context, url *url.URL, proxy *url.URL)
 }
 
 func init() {
-	outputs.Add("influxdb", func() telegraf.Output {
+	outputs.Add("influxdb", func() opsagent.Output {
 		return &InfluxDB{
 			Timeout: internal.Duration{Duration: time.Second * 5},
 			CreateHTTPClientF: func(config *HTTPConfig) (Client, error) {

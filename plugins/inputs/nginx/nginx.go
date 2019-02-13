@@ -31,9 +31,9 @@ var sampleConfig = `
   urls = ["http://localhost/server_status"]
 
   ## Optional TLS Config
-  tls_ca = "/etc/telegraf/ca.pem"
-  tls_cert = "/etc/telegraf/cert.cer"
-  tls_key = "/etc/telegraf/key.key"
+  tls_ca = "/etc/opsagent/ca.pem"
+  tls_cert = "/etc/opsagent/cert.cer"
+  tls_key = "/etc/opsagent/key.key"
   ## Use TLS but skip chain & host verification
   insecure_skip_verify = false
 
@@ -49,7 +49,7 @@ func (n *Nginx) Description() string {
 	return "Read Nginx's basic status information (ngx_http_stub_status_module)"
 }
 
-func (n *Nginx) Gather(acc telegraf.Accumulator) error {
+func (n *Nginx) Gather(acc opsagent.Accumulator) error {
 	var wg sync.WaitGroup
 
 	// Create an HTTP client that is re-used for each
@@ -100,7 +100,7 @@ func (n *Nginx) createHttpClient() (*http.Client, error) {
 	return client, nil
 }
 
-func (n *Nginx) gatherUrl(addr *url.URL, acc telegraf.Accumulator) error {
+func (n *Nginx) gatherUrl(addr *url.URL, acc opsagent.Accumulator) error {
 	resp, err := n.client.Get(addr.String())
 	if err != nil {
 		return fmt.Errorf("error making HTTP request to %s: %s", addr.String(), err)
@@ -201,7 +201,7 @@ func getTags(addr *url.URL) map[string]string {
 }
 
 func init() {
-	inputs.Add("nginx", func() telegraf.Input {
+	inputs.Add("nginx", func() opsagent.Input {
 		return &Nginx{}
 	})
 }

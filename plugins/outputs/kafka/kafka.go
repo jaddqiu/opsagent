@@ -67,10 +67,10 @@ var sampleConfig = `
   ## URLs of kafka brokers
   brokers = ["localhost:9092"]
   ## Kafka topic for producer messages
-  topic = "telegraf"
+  topic = "opsagent"
 
   ## Optional Client id
-  # client_id = "Telegraf"
+  # client_id = "Opsagent"
 
   ## Set the minimal supported Kafka version.  Setting this enables the use of new
   ## Kafka features and APIs.  Of particular interest, lz4 compression
@@ -105,7 +105,7 @@ var sampleConfig = `
   #   keys = ["foo", "bar"]
   #   separator = "_"
 
-  ## Telegraf tag to use as a routing key
+  ## Opsagent tag to use as a routing key
   ##  ie, if this tag exists, its value will be used as the routing key
   routing_tag = "host"
 
@@ -113,7 +113,7 @@ var sampleConfig = `
   ## when the tag specified in routing tag is not found.  If set to "random",
   ## a random value will be generated for each message.
   ##   ex: routing_key = "random"
-  ##       routing_key = "telegraf"
+  ##       routing_key = "opsagent"
   # routing_key = ""
 
   ## CompressionCodec represents the various compression codecs recognized by
@@ -149,9 +149,9 @@ var sampleConfig = `
   # max_message_bytes = 1000000
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 
@@ -175,7 +175,7 @@ func ValidateTopicSuffixMethod(method string) error {
 	return fmt.Errorf("Unknown topic suffix method provided: %s", method)
 }
 
-func (k *Kafka) GetTopicName(metric telegraf.Metric) string {
+func (k *Kafka) GetTopicName(metric opsagent.Metric) string {
 	var topicName string
 	switch k.TopicSuffix.Method {
 	case "measurement":
@@ -218,7 +218,7 @@ func (k *Kafka) Connect() error {
 	if k.ClientID != "" {
 		config.ClientID = k.ClientID
 	} else {
-		config.ClientID = "Telegraf"
+		config.ClientID = "Opsagent"
 	}
 
 	config.Producer.RequiredAcks = sarama.RequiredAcks(k.RequiredAcks)
@@ -273,7 +273,7 @@ func (k *Kafka) Description() string {
 	return "Configuration for the Kafka server to send metrics to"
 }
 
-func (k *Kafka) routingKey(metric telegraf.Metric) string {
+func (k *Kafka) routingKey(metric opsagent.Metric) string {
 	if k.RoutingTag != "" {
 		key, ok := metric.GetTag(k.RoutingTag)
 		if ok {
@@ -289,7 +289,7 @@ func (k *Kafka) routingKey(metric telegraf.Metric) string {
 	return k.RoutingKey
 }
 
-func (k *Kafka) Write(metrics []telegraf.Metric) error {
+func (k *Kafka) Write(metrics []opsagent.Metric) error {
 	msgs := make([]*sarama.ProducerMessage, 0, len(metrics))
 	for _, metric := range metrics {
 		buf, err := k.serializer.Serialize(metric)
@@ -327,7 +327,7 @@ func (k *Kafka) Write(metrics []telegraf.Metric) error {
 }
 
 func init() {
-	outputs.Add("kafka", func() telegraf.Output {
+	outputs.Add("kafka", func() opsagent.Output {
 		return &Kafka{
 			MaxRetry:     3,
 			RequiredAcks: -1,

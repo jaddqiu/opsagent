@@ -59,7 +59,7 @@ type aggregate struct {
 
 const (
 	defaultRequestTimeout  = time.Second * 5
-	defaultNamespacePrefix = "Telegraf/"
+	defaultNamespacePrefix = "Opsagent/"
 	defaultAuthResource    = "https://monitoring.azure.com/"
 
 	vmInstanceMetadataURL = "http://169.254.169.254/metadata/instance?api-version=2017-12-01"
@@ -72,12 +72,12 @@ var sampleConfig = `
   ## Timeout for HTTP writes.
   # timeout = "20s"
 
-  ## Set the namespace prefix, defaults to "Telegraf/<input-name>".
-  # namespace_prefix = "Telegraf/"
+  ## Set the namespace prefix, defaults to "Opsagent/<input-name>".
+  # namespace_prefix = "Opsagent/"
 
   ## Azure Monitor doesn't have a string value type, so convert string
   ## fields to dimensions (a.k.a. tags) if enabled. Azure Monitor allows
-  ## a maximum of 10 dimensions so Telegraf will only send the first 10
+  ## a maximum of 10 dimensions so Opsagent will only send the first 10
   ## alphanumeric dimensions.
   # strings_as_dimensions = false
 
@@ -243,7 +243,7 @@ type azureMonitorSeries struct {
 }
 
 // Write writes metrics to the remote endpoint
-func (a *AzureMonitor) Write(metrics []telegraf.Metric) error {
+func (a *AzureMonitor) Write(metrics []opsagent.Metric) error {
 	azmetrics := make(map[uint64]*azureMonitorMetric, len(metrics))
 	for _, m := range metrics {
 		id := hashIDWithTagKeysOnly(m)
@@ -335,7 +335,7 @@ func (a *AzureMonitor) send(body []byte) error {
 	return nil
 }
 
-func hashIDWithTagKeysOnly(m telegraf.Metric) uint64 {
+func hashIDWithTagKeysOnly(m opsagent.Metric) uint64 {
 	h := fnv.New64a()
 	h.Write([]byte(m.Name()))
 	h.Write([]byte("\n"))
@@ -354,7 +354,7 @@ func hashIDWithTagKeysOnly(m telegraf.Metric) uint64 {
 	return h.Sum64()
 }
 
-func translate(m telegraf.Metric, prefix string) (*azureMonitorMetric, error) {
+func translate(m opsagent.Metric, prefix string) (*azureMonitorMetric, error) {
 	var dimensionNames []string
 	var dimensionValues []string
 	for _, tag := range m.TagList() {
@@ -419,7 +419,7 @@ func translate(m telegraf.Metric, prefix string) (*azureMonitorMetric, error) {
 	}, nil
 }
 
-func getFloatField(m telegraf.Metric, key string) (float64, error) {
+func getFloatField(m opsagent.Metric, key string) (float64, error) {
 	fv, ok := m.GetField(key)
 	if !ok {
 		return 0, fmt.Errorf("missing field: %s", key)
@@ -431,7 +431,7 @@ func getFloatField(m telegraf.Metric, key string) (float64, error) {
 	return 0, fmt.Errorf("unexpected type: %s: %T", key, fv)
 }
 
-func getIntField(m telegraf.Metric, key string) (int64, error) {
+func getIntField(m opsagent.Metric, key string) (int64, error) {
 	fv, ok := m.GetField(key)
 	if !ok {
 		return 0, fmt.Errorf("missing field: %s", key)
@@ -444,7 +444,7 @@ func getIntField(m telegraf.Metric, key string) (int64, error) {
 }
 
 // Add will append a metric to the output aggregate
-func (a *AzureMonitor) Add(m telegraf.Metric) {
+func (a *AzureMonitor) Add(m opsagent.Metric) {
 	// Azure Monitor only supports aggregates 30 minutes into the past and 4
 	// minutes into the future. Future metrics are dropped when pushed.
 	t := m.Time()
@@ -552,8 +552,8 @@ func hashIDWithField(id uint64, fk string) uint64 {
 }
 
 // Push sends metrics to the output metric buffer
-func (a *AzureMonitor) Push() []telegraf.Metric {
-	var metrics []telegraf.Metric
+func (a *AzureMonitor) Push() []opsagent.Metric {
+	var metrics []opsagent.Metric
 	for tbucket, aggs := range a.cache {
 		// Do not send metrics early
 		if tbucket.After(a.timeFunc().Add(-time.Minute)) {
@@ -611,7 +611,7 @@ func (a *AzureMonitor) Reset() {
 }
 
 func init() {
-	outputs.Add("azure_monitor", func() telegraf.Output {
+	outputs.Add("azure_monitor", func() opsagent.Output {
 		return &AzureMonitor{
 			timeFunc: time.Now,
 		}

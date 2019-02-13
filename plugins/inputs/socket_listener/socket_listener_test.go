@@ -53,7 +53,7 @@ func TestSocketListener_tcp_tls(t *testing.T) {
 }
 
 func TestSocketListener_unix_tls(t *testing.T) {
-	tmpdir, err := ioutil.TempDir("", "telegraf")
+	tmpdir, err := ioutil.TempDir("", "opsagent")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpdir)
 	sock := filepath.Join(tmpdir, "sl.TestSocketListener_unix_tls.sock")
@@ -114,7 +114,7 @@ func TestSocketListener_udp(t *testing.T) {
 }
 
 func TestSocketListener_unix(t *testing.T) {
-	tmpdir, err := ioutil.TempDir("", "telegraf")
+	tmpdir, err := ioutil.TempDir("", "opsagent")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpdir)
 	sock := filepath.Join(tmpdir, "sl.TestSocketListener_unix.sock")
@@ -138,7 +138,7 @@ func TestSocketListener_unix(t *testing.T) {
 }
 
 func TestSocketListener_unixgram(t *testing.T) {
-	tmpdir, err := ioutil.TempDir("", "telegraf")
+	tmpdir, err := ioutil.TempDir("", "opsagent")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpdir)
 	sock := filepath.Join(tmpdir, "sl.TestSocketListener_unixgram.sock")

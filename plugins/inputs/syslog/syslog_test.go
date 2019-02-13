@@ -44,7 +44,7 @@ func TestAddress(t *testing.T) {
 	require.EqualError(t, err, "unknown protocol 'unsupported' in 'example.com:6514'")
 	require.Error(t, err)
 
-	tmpdir, err := ioutil.TempDir("", "telegraf")
+	tmpdir, err := ioutil.TempDir("", "opsagent")
 	defer os.RemoveAll(tmpdir)
 	require.NoError(t, err)
 	sock := filepath.Join(tmpdir, "syslog.TestAddress.sock")

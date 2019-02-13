@@ -20,7 +20,7 @@ type Server struct {
 	serverStatus serverStatus
 }
 
-func (s *Server) gatherData(acc telegraf.Accumulator) error {
+func (s *Server) gatherData(acc opsagent.Accumulator) error {
 	if err := s.getServerStatus(); err != nil {
 		return fmt.Errorf("Failed to get server_status, %s\n", err)
 	}
@@ -110,7 +110,7 @@ var ClusterTracking = []string{
 	"written_docs_per_sec",
 }
 
-func (s *Server) addClusterStats(acc telegraf.Accumulator) error {
+func (s *Server) addClusterStats(acc opsagent.Accumulator) error {
 	cursor, err := gorethink.DB("rethinkdb").Table("stats").Get([]string{"cluster"}).Run(s.session)
 	if err != nil {
 		return fmt.Errorf("cluster stats query error, %s\n", err.Error())
@@ -138,7 +138,7 @@ var MemberTracking = []string{
 	"total_writes",
 }
 
-func (s *Server) addMemberStats(acc telegraf.Accumulator) error {
+func (s *Server) addMemberStats(acc opsagent.Accumulator) error {
 	cursor, err := gorethink.DB("rethinkdb").Table("stats").Get([]string{"server", s.serverStatus.Id}).Run(s.session)
 	if err != nil {
 		return fmt.Errorf("member stats query error, %s\n", err.Error())
@@ -162,7 +162,7 @@ var TableTracking = []string{
 	"total_writes",
 }
 
-func (s *Server) addTableStats(acc telegraf.Accumulator) error {
+func (s *Server) addTableStats(acc opsagent.Accumulator) error {
 	tablesCursor, err := gorethink.DB("rethinkdb").Table("table_status").Run(s.session)
 	defer tablesCursor.Close()
 	var tables []tableStatus

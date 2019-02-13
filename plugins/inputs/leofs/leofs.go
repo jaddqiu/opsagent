@@ -160,7 +160,7 @@ func (l *LeoFS) Description() string {
 	return "Read metrics from a LeoFS Server via SNMP"
 }
 
-func (l *LeoFS) Gather(acc telegraf.Accumulator) error {
+func (l *LeoFS) Gather(acc opsagent.Accumulator) error {
 	if len(l.Servers) == 0 {
 		l.gatherServer(defaultEndpoint, ServerTypeManagerMaster, acc)
 		return nil
@@ -199,7 +199,7 @@ func (l *LeoFS) Gather(acc telegraf.Accumulator) error {
 func (l *LeoFS) gatherServer(
 	endpoint string,
 	serverType ServerType,
-	acc telegraf.Accumulator,
+	acc opsagent.Accumulator,
 ) error {
 	cmd := exec.Command("snmpwalk", "-v2c", "-cpublic", "-On", endpoint, oid)
 	stdout, err := cmd.StdoutPipe()
@@ -249,7 +249,7 @@ func retrieveTokenAfterColon(line string) (string, error) {
 }
 
 func init() {
-	inputs.Add("leofs", func() telegraf.Input {
+	inputs.Add("leofs", func() opsagent.Input {
 		return &LeoFS{}
 	})
 }

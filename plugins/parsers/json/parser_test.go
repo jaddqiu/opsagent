@@ -742,7 +742,7 @@ func TestTimeKeyDelete(t *testing.T) {
 
 	metrics, err := parser.Parse([]byte(data))
 	require.NoError(t, err)
-	expected := []telegraf.Metric{
+	expected := []opsagent.Metric{
 		testutil.MustMetric("json",
 			map[string]string{},
 			map[string]interface{}{"value": 42.0},

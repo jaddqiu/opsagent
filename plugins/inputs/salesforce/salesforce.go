@@ -82,7 +82,7 @@ func (s *Salesforce) Description() string {
 }
 
 // Reads limits values from Salesforce API
-func (s *Salesforce) Gather(acc telegraf.Accumulator) error {
+func (s *Salesforce) Gather(acc opsagent.Accumulator) error {
 	limits, err := s.fetchLimits()
 	if err != nil {
 		return err
@@ -239,7 +239,7 @@ func (s *Salesforce) login() error {
 }
 
 func init() {
-	inputs.Add("salesforce", func() telegraf.Input {
+	inputs.Add("salesforce", func() opsagent.Input {
 		return NewSalesforce()
 	})
 }

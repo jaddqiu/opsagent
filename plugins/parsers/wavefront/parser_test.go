@@ -121,7 +121,7 @@ func TestParseMultiple(t *testing.T) {
 	assert.NoError(t, err)
 	testMetric2, err := metric.New("test.metric2", map[string]string{}, map[string]interface{}{"value": 2.}, time.Unix(1530939936, 0))
 	assert.NoError(t, err)
-	testMetrics := []telegraf.Metric{testMetric1, testMetric2}
+	testMetrics := []opsagent.Metric{testMetric1, testMetric2}
 	assert.Equal(t, parsedMetrics[0].Name(), testMetrics[0].Name())
 	assert.Equal(t, parsedMetrics[0].Fields(), testMetrics[0].Fields())
 	assert.EqualValues(t, parsedMetrics[1], testMetrics[1])
@@ -132,7 +132,7 @@ func TestParseMultiple(t *testing.T) {
 	assert.NoError(t, err)
 	testMetric2, err = metric.New("test.metric", map[string]string{"source": "mysource"}, map[string]interface{}{"value": 1.1234}, time.Unix(1530939936, 0))
 	assert.NoError(t, err)
-	testMetrics = []telegraf.Metric{testMetric1, testMetric2}
+	testMetrics = []opsagent.Metric{testMetric1, testMetric2}
 	assert.EqualValues(t, parsedMetrics, testMetrics)
 
 	parsedMetrics, err = parser.Parse([]byte("\"test.metric\" 1.1234 1530939936 \"source\"=\"mysource\" tag2=value2\ntest.metric		 1.1234      1530939936 	source=\"mysource\"    tag2=value2     "))
@@ -141,7 +141,7 @@ func TestParseMultiple(t *testing.T) {
 	assert.NoError(t, err)
 	testMetric2, err = metric.New("test.metric", map[string]string{"source": "mysource", "tag2": "value2"}, map[string]interface{}{"value": 1.1234}, time.Unix(1530939936, 0))
 	assert.NoError(t, err)
-	testMetrics = []telegraf.Metric{testMetric1, testMetric2}
+	testMetrics = []opsagent.Metric{testMetric1, testMetric2}
 	assert.EqualValues(t, parsedMetrics, testMetrics)
 
 	parsedMetrics, err = parser.Parse([]byte("test.metric 1 1530939936 source=mysource\n\"test.metric\" 1.1234 1530939936 source=\"mysource\"\ntest.metric3 333 1530939936 tagit=valueit"))
@@ -152,7 +152,7 @@ func TestParseMultiple(t *testing.T) {
 	assert.NoError(t, err)
 	testMetric3, err := metric.New("test.metric3", map[string]string{"tagit": "valueit"}, map[string]interface{}{"value": 333.}, time.Unix(1530939936, 0))
 	assert.NoError(t, err)
-	testMetrics = []telegraf.Metric{testMetric1, testMetric2, testMetric3}
+	testMetrics = []opsagent.Metric{testMetric1, testMetric2, testMetric3}
 	assert.EqualValues(t, parsedMetrics, testMetrics)
 
 }

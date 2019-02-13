@@ -35,7 +35,7 @@ type Instrumental struct {
 
 const (
 	DefaultHost     = "collector.instrumentalapp.com"
-	HelloMessage    = "hello version go/telegraf/1.1\n"
+	HelloMessage    = "hello version go/opsagent/1.1\n"
 	AuthFormat      = "authenticate %s\n"
 	HandshakeFormat = HelloMessage + AuthFormat
 )
@@ -77,7 +77,7 @@ func (i *Instrumental) Close() error {
 	return nil
 }
 
-func (i *Instrumental) Write(metrics []telegraf.Metric) error {
+func (i *Instrumental) Write(metrics []opsagent.Metric) error {
 	if i.conn == nil {
 		err := i.Connect()
 		if err != nil {
@@ -193,7 +193,7 @@ func (i *Instrumental) authenticate(conn net.Conn) error {
 }
 
 func init() {
-	outputs.Add("instrumental", func() telegraf.Output {
+	outputs.Add("instrumental", func() opsagent.Output {
 		return &Instrumental{
 			Host:     DefaultHost,
 			Template: graphite.DEFAULT_TEMPLATE,

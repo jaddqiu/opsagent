@@ -52,7 +52,7 @@ type AMQPConsumer struct {
 	AuthMethod string
 	tls.ClientConfig
 
-	deliveries map[telegraf.TrackingID]amqp.Delivery
+	deliveries map[opsagent.TrackingID]amqp.Delivery
 
 	parser parsers.Parser
 	conn   *amqp.Connection
@@ -98,7 +98,7 @@ func (a *AMQPConsumer) SampleConfig() string {
   # password = ""
 
   ## Exchange to declare and consume from.
-  exchange = "telegraf"
+  exchange = "opsagent"
 
   ## Exchange type; common types are "direct", "fanout", "topic", "header", "x-consistent-hash".
   # exchange_type = "topic"
@@ -114,7 +114,7 @@ func (a *AMQPConsumer) SampleConfig() string {
   # exchange_arguments = {"hash_propery" = "timestamp"}
 
   ## AMQP queue name.
-  queue = "telegraf"
+  queue = "opsagent"
 
   ## AMQP queue durability can be "transient" or "durable".
   queue_durability = "durable"
@@ -141,9 +141,9 @@ func (a *AMQPConsumer) SampleConfig() string {
   # auth_method = "PLAIN"
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 
@@ -164,7 +164,7 @@ func (a *AMQPConsumer) SetParser(parser parsers.Parser) {
 }
 
 // All gathering is done in the Start function
-func (a *AMQPConsumer) Gather(_ telegraf.Accumulator) error {
+func (a *AMQPConsumer) Gather(_ opsagent.Accumulator) error {
 	return nil
 }
 
@@ -194,8 +194,8 @@ func (a *AMQPConsumer) createConfig() (*amqp.Config, error) {
 	return &config, nil
 }
 
-// Start satisfies the telegraf.ServiceInput interface
-func (a *AMQPConsumer) Start(acc telegraf.Accumulator) error {
+// Start satisfies the opsagent.ServiceInput interface
+func (a *AMQPConsumer) Start(acc opsagent.Accumulator) error {
 	amqpConf, err := a.createConfig()
 	if err != nil {
 		return err
@@ -390,8 +390,8 @@ func declareExchange(
 }
 
 // Read messages from queue and add them to the Accumulator
-func (a *AMQPConsumer) process(ctx context.Context, msgs <-chan amqp.Delivery, ac telegraf.Accumulator) {
-	a.deliveries = make(map[telegraf.TrackingID]amqp.Delivery)
+func (a *AMQPConsumer) process(ctx context.Context, msgs <-chan amqp.Delivery, ac opsagent.Accumulator) {
+	a.deliveries = make(map[opsagent.TrackingID]amqp.Delivery)
 
 	acc := ac.WithTracking(a.MaxUndeliveredMessages)
 	sem := make(semaphore, a.MaxUndeliveredMessages)
@@ -427,7 +427,7 @@ func (a *AMQPConsumer) process(ctx context.Context, msgs <-chan amqp.Delivery, a
 	}
 }
 
-func (a *AMQPConsumer) onMessage(acc telegraf.TrackingAccumulator, d amqp.Delivery) error {
+func (a *AMQPConsumer) onMessage(acc opsagent.TrackingAccumulator, d amqp.Delivery) error {
 	metrics, err := a.parser.Parse(d.Body)
 	if err != nil {
 		// Discard the message from the queue; will never be able to process
@@ -446,7 +446,7 @@ func (a *AMQPConsumer) onMessage(acc telegraf.TrackingAccumulator, d amqp.Delive
 	return nil
 }
 
-func (a *AMQPConsumer) onDelivery(track telegraf.DeliveryInfo) bool {
+func (a *AMQPConsumer) onDelivery(track opsagent.DeliveryInfo) bool {
 	delivery, ok := a.deliveries[track.ID()]
 	if !ok {
 		// Added by a previous connection
@@ -484,7 +484,7 @@ func (a *AMQPConsumer) Stop() {
 }
 
 func init() {
-	inputs.Add("amqp_consumer", func() telegraf.Input {
+	inputs.Add("amqp_consumer", func() opsagent.Input {
 		return &AMQPConsumer{
 			URL:                    DefaultBroker,
 			AuthMethod:             DefaultAuthMethod,

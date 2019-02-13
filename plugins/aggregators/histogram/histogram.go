@@ -56,7 +56,7 @@ type groupedByCountFields struct {
 }
 
 // NewHistogramAggregator creates new histogram aggregator
-func NewHistogramAggregator() telegraf.Aggregator {
+func NewHistogramAggregator() opsagent.Aggregator {
 	h := &HistogramAggregator{}
 	h.buckets = make(bucketsByMetrics)
 	h.resetCache()
@@ -100,7 +100,7 @@ func (h *HistogramAggregator) Description() string {
 }
 
 // Add adds new hit to the buckets
-func (h *HistogramAggregator) Add(in telegraf.Metric) {
+func (h *HistogramAggregator) Add(in opsagent.Metric) {
 	bucketsByField := make(map[string][]float64)
 	for field := range in.Fields() {
 		buckets := h.getBuckets(in.Name(), field)
@@ -140,7 +140,7 @@ func (h *HistogramAggregator) Add(in telegraf.Metric) {
 }
 
 // Push returns histogram values for metrics
-func (h *HistogramAggregator) Push(acc telegraf.Accumulator) {
+func (h *HistogramAggregator) Push(acc opsagent.Accumulator) {
 	metricsWithGroupedFields := []groupedByCountFields{}
 
 	for _, aggregate := range h.cache {
@@ -309,7 +309,7 @@ func makeFieldsWithCount(fieldsWithCountIn map[string]int64) map[string]interfac
 
 // init initializes histogram aggregator plugin
 func init() {
-	aggregators.Add("histogram", func() telegraf.Aggregator {
+	aggregators.Add("histogram", func() opsagent.Aggregator {
 		return NewHistogramAggregator()
 	})
 }

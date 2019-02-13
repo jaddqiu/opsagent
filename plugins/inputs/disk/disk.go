@@ -36,7 +36,7 @@ func (_ *DiskStats) SampleConfig() string {
 	return diskSampleConfig
 }
 
-func (s *DiskStats) Gather(acc telegraf.Accumulator) error {
+func (s *DiskStats) Gather(acc opsagent.Accumulator) error {
 	// Legacy support:
 	if len(s.Mountpoints) != 0 {
 		s.MountPoints = s.Mountpoints
@@ -107,7 +107,7 @@ func parseOptions(opts string) MountOptions {
 
 func init() {
 	ps := system.NewSystemPS()
-	inputs.Add("disk", func() telegraf.Input {
+	inputs.Add("disk", func() opsagent.Input {
 		return &DiskStats{ps: ps}
 	})
 }

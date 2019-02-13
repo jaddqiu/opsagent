@@ -96,7 +96,7 @@ func (f *Filter) Compile() error {
 
 // Select returns true if the metric matches according to the
 // namepass/namedrop and tagpass/tagdrop filters.  The metric is not modified.
-func (f *Filter) Select(metric telegraf.Metric) bool {
+func (f *Filter) Select(metric opsagent.Metric) bool {
 	if !f.isActive {
 		return true
 	}
@@ -114,7 +114,7 @@ func (f *Filter) Select(metric telegraf.Metric) bool {
 
 // Modify removes any tags and fields from the metric according to the
 // fieldpass/fielddrop and taginclude/tagexclude filters.
-func (f *Filter) Modify(metric telegraf.Metric) {
+func (f *Filter) Modify(metric opsagent.Metric) {
 	if !f.isActive {
 		return
 	}
@@ -171,7 +171,7 @@ func (f *Filter) shouldFieldPass(key string) bool {
 
 // shouldTagsPass returns true if the metric should pass, false if should drop
 // based on the tagdrop/tagpass filter parameters
-func (f *Filter) shouldTagsPass(tags []*telegraf.Tag) bool {
+func (f *Filter) shouldTagsPass(tags []*opsagent.Tag) bool {
 	pass := func(f *Filter) bool {
 		for _, pat := range f.TagPass {
 			if pat.filter == nil {
@@ -220,7 +220,7 @@ func (f *Filter) shouldTagsPass(tags []*telegraf.Tag) bool {
 }
 
 // filterFields removes fields according to fieldpass/fielddrop.
-func (f *Filter) filterFields(metric telegraf.Metric) {
+func (f *Filter) filterFields(metric opsagent.Metric) {
 	filterKeys := []string{}
 	for _, field := range metric.FieldList() {
 		if !f.shouldFieldPass(field.Key) {
@@ -234,7 +234,7 @@ func (f *Filter) filterFields(metric telegraf.Metric) {
 }
 
 // filterTags removes tags according to taginclude/tagexclude.
-func (f *Filter) filterTags(metric telegraf.Metric) {
+func (f *Filter) filterTags(metric opsagent.Metric) {
 	filterKeys := []string{}
 	if f.tagInclude != nil {
 		for _, tag := range metric.TagList() {

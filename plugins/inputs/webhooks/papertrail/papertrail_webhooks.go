@@ -12,10 +12,10 @@ import (
 
 type PapertrailWebhook struct {
 	Path string
-	acc  telegraf.Accumulator
+	acc  opsagent.Accumulator
 }
 
-func (pt *PapertrailWebhook) Register(router *mux.Router, acc telegraf.Accumulator) {
+func (pt *PapertrailWebhook) Register(router *mux.Router, acc opsagent.Accumulator) {
 	router.HandleFunc(pt.Path, pt.eventHandler).Methods("POST")
 	log.Printf("I! Started the papertrail_webhook on %s", pt.Path)
 	pt.acc = acc

@@ -50,7 +50,7 @@ type Kafka struct {
 	cancel  context.CancelFunc
 
 	// Unconfirmed messages
-	messages map[telegraf.TrackingID]*sarama.ConsumerMessage
+	messages map[opsagent.TrackingID]*sarama.ConsumerMessage
 
 	// doNotCommitMsgs tells the parser not to call CommitUpTo on the consumer
 	// this is mostly for test purposes, but there may be a use-case for it later.
@@ -61,12 +61,12 @@ var sampleConfig = `
   ## kafka servers
   brokers = ["localhost:9092"]
   ## topic(s) to consume
-  topics = ["telegraf"]
+  topics = ["opsagent"]
   ## Add topic as tag if topic_tag is not empty
   # topic_tag = ""
 
   ## Optional Client id
-  # client_id = "Telegraf"
+  # client_id = "Opsagent"
 
   ## Set the minimal supported Kafka version.  Setting this enables the use of new
   ## Kafka features and APIs.  Of particular interest, lz4 compression
@@ -75,9 +75,9 @@ var sampleConfig = `
   # version = ""
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 
@@ -86,7 +86,7 @@ var sampleConfig = `
   # sasl_password = "secret"
 
   ## the name of the consumer group
-  consumer_group = "telegraf_metrics_consumers"
+  consumer_group = "opsagent_metrics_consumers"
   ## Offset (must be either "oldest" or "newest")
   offset = "oldest"
   ## Maximum length of a message to consume, in bytes (default 0/unlimited);
@@ -122,7 +122,7 @@ func (k *Kafka) SetParser(parser parsers.Parser) {
 	k.parser = parser
 }
 
-func (k *Kafka) Start(acc telegraf.Accumulator) error {
+func (k *Kafka) Start(acc opsagent.Accumulator) error {
 	var clusterErr error
 
 	config := cluster.NewConfig()
@@ -145,7 +145,7 @@ func (k *Kafka) Start(acc telegraf.Accumulator) error {
 	if k.ClientID != "" {
 		config.ClientID = k.ClientID
 	} else {
-		config.ClientID = "Telegraf"
+		config.ClientID = "Opsagent"
 	}
 
 	if tlsConfig != nil {
@@ -205,8 +205,8 @@ func (k *Kafka) Start(acc telegraf.Accumulator) error {
 
 // receiver() reads all incoming messages from the consumer, and parses them into
 // influxdb metric points.
-func (k *Kafka) receiver(ctx context.Context, ac telegraf.Accumulator) {
-	k.messages = make(map[telegraf.TrackingID]*sarama.ConsumerMessage)
+func (k *Kafka) receiver(ctx context.Context, ac opsagent.Accumulator) {
+	k.messages = make(map[opsagent.TrackingID]*sarama.ConsumerMessage)
 
 	acc := ac.WithTracking(k.MaxUndeliveredMessages)
 	sem := make(semaphore, k.MaxUndeliveredMessages)
@@ -249,7 +249,7 @@ func (k *Kafka) markOffset(msg *sarama.ConsumerMessage) {
 	}
 }
 
-func (k *Kafka) onMessage(acc telegraf.TrackingAccumulator, msg *sarama.ConsumerMessage) error {
+func (k *Kafka) onMessage(acc opsagent.TrackingAccumulator, msg *sarama.ConsumerMessage) error {
 	if k.MaxMessageLen != 0 && len(msg.Value) > k.MaxMessageLen {
 		k.markOffset(msg)
 		return fmt.Errorf("Message longer than max_message_len (%d > %d)",
@@ -271,7 +271,7 @@ func (k *Kafka) onMessage(acc telegraf.TrackingAccumulator, msg *sarama.Consumer
 	return nil
 }
 
-func (k *Kafka) onDelivery(track telegraf.DeliveryInfo) {
+func (k *Kafka) onDelivery(track opsagent.DeliveryInfo) {
 	msg, ok := k.messages[track.ID()]
 	if !ok {
 		log.Printf("E! [inputs.kafka_consumer] Could not mark message delivered: %d", track.ID())
@@ -293,12 +293,12 @@ func (k *Kafka) Stop() {
 	}
 }
 
-func (k *Kafka) Gather(acc telegraf.Accumulator) error {
+func (k *Kafka) Gather(acc opsagent.Accumulator) error {
 	return nil
 }
 
 func init() {
-	inputs.Add("kafka_consumer", func() telegraf.Input {
+	inputs.Add("kafka_consumer", func() opsagent.Input {
 		return &Kafka{
 			MaxUndeliveredMessages: defaultMaxUndeliveredMessages,
 		}

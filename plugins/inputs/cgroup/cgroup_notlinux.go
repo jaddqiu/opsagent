@@ -6,6 +6,6 @@ import (
 	"github.com/jaddqiu/opsagent"
 )
 
-func (g *CGroup) Gather(acc telegraf.Accumulator) error {
+func (g *CGroup) Gather(acc opsagent.Accumulator) error {
 	return nil
 }

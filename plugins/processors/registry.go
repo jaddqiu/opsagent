@@ -2,7 +2,7 @@ package processors
 
 import "github.com/jaddqiu/opsagent"
 
-type Creator func() telegraf.Processor
+type Creator func() opsagent.Processor
 
 var Processors = map[string]Creator{}
 

@@ -84,7 +84,7 @@ func NewOpenldap() *Openldap {
 }
 
 // gather metrics
-func (o *Openldap) Gather(acc telegraf.Accumulator) error {
+func (o *Openldap) Gather(acc opsagent.Accumulator) error {
 	if o.TLS == "" {
 		o.TLS = o.SSL
 	}
@@ -164,7 +164,7 @@ func (o *Openldap) Gather(acc telegraf.Accumulator) error {
 	return nil
 }
 
-func gatherSearchResult(sr *ldap.SearchResult, o *Openldap, acc telegraf.Accumulator) {
+func gatherSearchResult(sr *ldap.SearchResult, o *Openldap, acc opsagent.Accumulator) {
 	fields := map[string]interface{}{}
 	tags := map[string]string{
 		"server": o.Host,
@@ -211,5 +211,5 @@ func dnToMetric(dn string, o *Openldap) string {
 }
 
 func init() {
-	inputs.Add("openldap", func() telegraf.Input { return NewOpenldap() })
+	inputs.Add("openldap", func() opsagent.Input { return NewOpenldap() })
 }

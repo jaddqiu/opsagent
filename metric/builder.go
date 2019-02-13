@@ -42,11 +42,11 @@ func (b *Builder) SetTime(tm time.Time) {
 
 func (b *Builder) Reset() {
 	b.metric = &metric{
-		tp: telegraf.Untyped,
+		tp: opsagent.Untyped,
 	}
 }
 
-func (b *Builder) Metric() (telegraf.Metric, error) {
+func (b *Builder) Metric() (opsagent.Metric, error) {
 	if b.tm.IsZero() {
 		b.tm = b.TimeFunc().Truncate(b.TimePrecision)
 	}

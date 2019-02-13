@@ -14,10 +14,10 @@ import (
 
 type MandrillWebhook struct {
 	Path string
-	acc  telegraf.Accumulator
+	acc  opsagent.Accumulator
 }
 
-func (md *MandrillWebhook) Register(router *mux.Router, acc telegraf.Accumulator) {
+func (md *MandrillWebhook) Register(router *mux.Router, acc opsagent.Accumulator) {
 	router.HandleFunc(md.Path, md.returnOK).Methods("HEAD")
 	router.HandleFunc(md.Path, md.eventHandler).Methods("POST")
 

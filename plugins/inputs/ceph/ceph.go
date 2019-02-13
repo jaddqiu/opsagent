@@ -76,7 +76,7 @@ func (c *Ceph) SampleConfig() string {
 	return sampleConfig
 }
 
-func (c *Ceph) Gather(acc telegraf.Accumulator) error {
+func (c *Ceph) Gather(acc opsagent.Accumulator) error {
 	if c.GatherAdminSocketStats {
 		if err := c.gatherAdminSocketStats(acc); err != nil {
 			return err
@@ -92,7 +92,7 @@ func (c *Ceph) Gather(acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (c *Ceph) gatherAdminSocketStats(acc telegraf.Accumulator) error {
+func (c *Ceph) gatherAdminSocketStats(acc opsagent.Accumulator) error {
 	sockets, err := findSockets(c)
 	if err != nil {
 		return fmt.Errorf("failed to find sockets at path '%s': %v", c.SocketDir, err)
@@ -118,10 +118,10 @@ func (c *Ceph) gatherAdminSocketStats(acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (c *Ceph) gatherClusterStats(acc telegraf.Accumulator) error {
+func (c *Ceph) gatherClusterStats(acc opsagent.Accumulator) error {
 	jobs := []struct {
 		command string
-		parser  func(telegraf.Accumulator, string) error
+		parser  func(opsagent.Accumulator, string) error
 	}{
 		{"status", decodeStatus},
 		{"df", decodeDf},
@@ -156,7 +156,7 @@ func init() {
 		GatherClusterStats:     false,
 	}
 
-	inputs.Add(measurement, func() telegraf.Input { return &c })
+	inputs.Add(measurement, func() opsagent.Input { return &c })
 
 }
 
@@ -351,13 +351,13 @@ type CephStatus struct {
 }
 
 // decodeStatus decodes the output of 'ceph -s'
-func decodeStatus(acc telegraf.Accumulator, input string) error {
+func decodeStatus(acc opsagent.Accumulator, input string) error {
 	data := &CephStatus{}
 	if err := json.Unmarshal([]byte(input), data); err != nil {
 		return fmt.Errorf("failed to parse json: '%s': %v", input, err)
 	}
 
-	decoders := []func(telegraf.Accumulator, *CephStatus) error{
+	decoders := []func(opsagent.Accumulator, *CephStatus) error{
 		decodeStatusOsdmap,
 		decodeStatusPgmap,
 		decodeStatusPgmapState,
@@ -373,7 +373,7 @@ func decodeStatus(acc telegraf.Accumulator, input string) error {
 }
 
 // decodeStatusOsdmap decodes the OSD map portion of the output of 'ceph -s'
-func decodeStatusOsdmap(acc telegraf.Accumulator, data *CephStatus) error {
+func decodeStatusOsdmap(acc opsagent.Accumulator, data *CephStatus) error {
 	fields := map[string]interface{}{
 		"epoch":            data.OSDMap.OSDMap.Epoch,
 		"num_osds":         data.OSDMap.OSDMap.NumOSDs,
@@ -388,7 +388,7 @@ func decodeStatusOsdmap(acc telegraf.Accumulator, data *CephStatus) error {
 }
 
 // decodeStatusPgmap decodes the PG map portion of the output of 'ceph -s'
-func decodeStatusPgmap(acc telegraf.Accumulator, data *CephStatus) error {
+func decodeStatusPgmap(acc opsagent.Accumulator, data *CephStatus) error {
 	fields := map[string]interface{}{
 		"version":          data.PGMap.Version,
 		"num_pgs":          data.PGMap.NumPGs,
@@ -407,7 +407,7 @@ func decodeStatusPgmap(acc telegraf.Accumulator, data *CephStatus) error {
 }
 
 // decodeStatusPgmapState decodes the PG map state portion of the output of 'ceph -s'
-func decodeStatusPgmapState(acc telegraf.Accumulator, data *CephStatus) error {
+func decodeStatusPgmapState(acc opsagent.Accumulator, data *CephStatus) error {
 	for _, pgState := range data.PGMap.PGsByState {
 		tags := map[string]string{
 			"state": pgState.StateName,
@@ -438,7 +438,7 @@ type CephDf struct {
 }
 
 // decodeDf decodes the output of 'ceph df'
-func decodeDf(acc telegraf.Accumulator, input string) error {
+func decodeDf(acc opsagent.Accumulator, input string) error {
 	data := &CephDf{}
 	if err := json.Unmarshal([]byte(input), data); err != nil {
 		return fmt.Errorf("failed to parse json: '%s': %v", input, err)
@@ -486,7 +486,7 @@ type CephOSDPoolStats []struct {
 }
 
 // decodeOsdPoolStats decodes the output of 'ceph osd pool stats'
-func decodeOsdPoolStats(acc telegraf.Accumulator, input string) error {
+func decodeOsdPoolStats(acc opsagent.Accumulator, input string) error {
 	data := CephOSDPoolStats{}
 	if err := json.Unmarshal([]byte(input), &data); err != nil {
 		return fmt.Errorf("failed to parse json: '%s': %v", input, err)

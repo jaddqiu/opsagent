@@ -93,7 +93,7 @@ func (c *CloudWatch) SampleConfig() string {
   # 3 minute, 5 minute, or larger intervals. See https://aws.amazon.com/cloudwatch/faqs/#monitoring.
   # Note that if a period is configured that is smaller than the minimum for a
   # particular metric, that metric will not be returned by the Cloudwatch API
-  # and will not be collected by Telegraf.
+  # and will not be collected by Opsagent.
   #
   ## Requested CloudWatch aggregation Period (required - must be a multiple of 60s)
   period = "5m"
@@ -187,7 +187,7 @@ func SelectMetrics(c *CloudWatch) ([]*cloudwatch.Metric, error) {
 	return metrics, nil
 }
 
-func (c *CloudWatch) Gather(acc telegraf.Accumulator) error {
+func (c *CloudWatch) Gather(acc opsagent.Accumulator) error {
 	if c.client == nil {
 		c.initializeCloudWatch()
 	}
@@ -240,7 +240,7 @@ func (c *CloudWatch) updateWindow(relativeTo time.Time) error {
 }
 
 func init() {
-	inputs.Add("cloudwatch", func() telegraf.Input {
+	inputs.Add("cloudwatch", func() opsagent.Input {
 		ttl, _ := time.ParseDuration("1hr")
 		return &CloudWatch{
 			CacheTTL:  internal.Duration{Duration: ttl},
@@ -312,7 +312,7 @@ func (c *CloudWatch) fetchNamespaceMetrics() ([]*cloudwatch.Metric, error) {
  * Gather given Metric and emit any error
  */
 func (c *CloudWatch) gatherMetric(
-	acc telegraf.Accumulator,
+	acc opsagent.Accumulator,
 	metric *cloudwatch.Metric,
 ) error {
 	params := c.getStatisticsInput(metric)

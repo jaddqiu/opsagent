@@ -32,10 +32,10 @@ func GetLocalHost() string {
 	return localhost
 }
 
-// MockMetrics returns a mock []telegraf.Metric object for using in unit tests
-// of telegraf output sinks.
-func MockMetrics() []telegraf.Metric {
-	metrics := make([]telegraf.Metric, 0)
+// MockMetrics returns a mock []opsagent.Metric object for using in unit tests
+// of opsagent output sinks.
+func MockMetrics() []opsagent.Metric {
+	metrics := make([]opsagent.Metric, 0)
 	// Create a new point batch
 	metrics = append(metrics, TestMetric(1.0))
 	return metrics
@@ -46,7 +46,7 @@ func MockMetrics() []telegraf.Metric {
 //     tags -> "tag1":"value1"
 //     value -> value
 //     time -> time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC)
-func TestMetric(value interface{}, name ...string) telegraf.Metric {
+func TestMetric(value interface{}, name ...string) opsagent.Metric {
 	if value == nil {
 		panic("Cannot use a nil value")
 	}

@@ -59,7 +59,7 @@ func (n *NginxPlusApi) Description() string {
 	return "Read Nginx Plus Api documentation"
 }
 
-func (n *NginxPlusApi) Gather(acc telegraf.Accumulator) error {
+func (n *NginxPlusApi) Gather(acc opsagent.Accumulator) error {
 	var wg sync.WaitGroup
 
 	// Create an HTTP client that is re-used for each
@@ -109,7 +109,7 @@ func (n *NginxPlusApi) createHttpClient() (*http.Client, error) {
 }
 
 func init() {
-	inputs.Add("nginx_plus_api", func() telegraf.Input {
+	inputs.Add("nginx_plus_api", func() opsagent.Input {
 		return &NginxPlusApi{}
 	})
 }

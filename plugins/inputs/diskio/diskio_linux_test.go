@@ -20,7 +20,7 @@ S:foo/bar/devlink1
 
 // setupNullDisk sets up fake udev info as if /dev/null were a disk.
 func setupNullDisk(t *testing.T) func() error {
-	td, err := ioutil.TempDir("", ".telegraf.TestDiskInfo")
+	td, err := ioutil.TempDir("", ".opsagent.TestDiskInfo")
 	require.NoError(t, err)
 
 	origUdevPath := udevPath

@@ -64,10 +64,10 @@ func TestAddDefaultLogLevel(t *testing.T) {
 	assert.Equal(t, f[19:], []byte("Z I! TEST\n"))
 }
 
-func BenchmarkTelegrafLogWrite(b *testing.B) {
+func BenchmarkOpsagentLogWrite(b *testing.B) {
 	var msg = []byte("test")
 	var buf bytes.Buffer
-	w := newTelegrafWriter(&buf)
+	w := newOpsagentWriter(&buf)
 	for i := 0; i < b.N; i++ {
 		buf.Reset()
 		w.Write(msg)

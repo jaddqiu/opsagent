@@ -41,7 +41,7 @@ type wirelessInterface struct {
 }
 
 // Gather collects the wireless information.
-func (w *Wireless) Gather(acc telegraf.Accumulator) error {
+func (w *Wireless) Gather(acc opsagent.Accumulator) error {
 	// load proc path, get default value if config value and env variable are empty
 	w.loadPath()
 
@@ -138,7 +138,7 @@ func proc(env, path string) string {
 }
 
 func init() {
-	inputs.Add("wireless", func() telegraf.Input {
+	inputs.Add("wireless", func() opsagent.Input {
 		return &Wireless{}
 	})
 }

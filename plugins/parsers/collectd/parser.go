@@ -73,13 +73,13 @@ func NewCollectdParser(
 	return &parser, nil
 }
 
-func (p *CollectdParser) Parse(buf []byte) ([]telegraf.Metric, error) {
+func (p *CollectdParser) Parse(buf []byte) ([]opsagent.Metric, error) {
 	valueLists, err := network.Parse(buf, p.popts)
 	if err != nil {
 		return nil, fmt.Errorf("Collectd parser error: %s", err)
 	}
 
-	metrics := []telegraf.Metric{}
+	metrics := []opsagent.Metric{}
 	for _, valueList := range valueLists {
 		metrics = append(metrics, UnmarshalValueList(valueList, p.ParseMultiValue)...)
 	}
@@ -98,7 +98,7 @@ func (p *CollectdParser) Parse(buf []byte) ([]telegraf.Metric, error) {
 	return metrics, nil
 }
 
-func (p *CollectdParser) ParseLine(line string) (telegraf.Metric, error) {
+func (p *CollectdParser) ParseLine(line string) (opsagent.Metric, error) {
 	metrics, err := p.Parse([]byte(line))
 	if err != nil {
 		return nil, err
@@ -115,11 +115,11 @@ func (p *CollectdParser) SetDefaultTags(tags map[string]string) {
 	p.DefaultTags = tags
 }
 
-// UnmarshalValueList translates a ValueList into a Telegraf metric.
-func UnmarshalValueList(vl *api.ValueList, multiValue string) []telegraf.Metric {
+// UnmarshalValueList translates a ValueList into a Opsagent metric.
+func UnmarshalValueList(vl *api.ValueList, multiValue string) []opsagent.Metric {
 	timestamp := vl.Time.UTC()
 
-	var metrics []telegraf.Metric
+	var metrics []opsagent.Metric
 
 	//set multiValue to default "split" if nothing is specified
 	if multiValue == "" {

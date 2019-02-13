@@ -88,7 +88,7 @@ var sampleConfig = `
 
 var description = "Input plugin to report Windows services info."
 
-//WinServices is an implementation if telegraf.Input interface, providing info about Windows Services
+//WinServices is an implementation if opsagent.Input interface, providing info about Windows Services
 type WinServices struct {
 	ServiceNames []string `toml:"service_names"`
 	mgrProvider  ManagerProvider
@@ -109,7 +109,7 @@ func (m *WinServices) SampleConfig() string {
 	return sampleConfig
 }
 
-func (m *WinServices) Gather(acc telegraf.Accumulator) error {
+func (m *WinServices) Gather(acc opsagent.Accumulator) error {
 	scmgr, err := m.mgrProvider.Connect()
 	if err != nil {
 		return fmt.Errorf("Could not open service manager: %s", err)
@@ -203,7 +203,7 @@ func collectServiceInfo(scmgr WinServiceManager, serviceName string) (*ServiceIn
 }
 
 func init() {
-	inputs.Add("win_services", func() telegraf.Input {
+	inputs.Add("win_services", func() opsagent.Input {
 		return &WinServices{
 			mgrProvider: &MgProvider{},
 		}

@@ -67,7 +67,7 @@ var sampleConfig = `
   ##   ex: endpoint_url = "http://localhost:8000"
   # endpoint_url = ""
 
-  ## Kinesis StreamName must exist prior to starting telegraf.
+  ## Kinesis StreamName must exist prior to starting opsagent.
   streamname = "StreamName"
   ## DEPRECATED: PartitionKey as used for sharding data.
   partitionkey = "PartitionKey"
@@ -91,7 +91,7 @@ var sampleConfig = `
   #    method = "measurement"
   #
   ## Use the value of a tag for all writes, if the tag is not set the empty
-  ## default option will be used. When no default, defaults to "telegraf"
+  ## default option will be used. When no default, defaults to "opsagent"
   #  [outputs.kinesis.partition]
   #    method = "tag"
   #    key = "host"
@@ -178,7 +178,7 @@ func writekinesis(k *KinesisOutput, r []*kinesis.PutRecordsRequestEntry) time.Du
 	return time.Since(start)
 }
 
-func (k *KinesisOutput) getPartitionKey(metric telegraf.Metric) string {
+func (k *KinesisOutput) getPartitionKey(metric opsagent.Metric) string {
 	if k.Partition != nil {
 		switch k.Partition.Method {
 		case "static":
@@ -195,7 +195,7 @@ func (k *KinesisOutput) getPartitionKey(metric telegraf.Metric) string {
 				return k.Partition.Default
 			}
 			// Default partition name if default is not set
-			return "telegraf"
+			return "opsagent"
 		default:
 			log.Printf("E! kinesis : You have configured a Partition method of %+v which is not supported", k.Partition.Method)
 		}
@@ -207,7 +207,7 @@ func (k *KinesisOutput) getPartitionKey(metric telegraf.Metric) string {
 	return k.PartitionKey
 }
 
-func (k *KinesisOutput) Write(metrics []telegraf.Metric) error {
+func (k *KinesisOutput) Write(metrics []opsagent.Metric) error {
 	var sz uint32
 
 	if len(metrics) == 0 {
@@ -251,7 +251,7 @@ func (k *KinesisOutput) Write(metrics []telegraf.Metric) error {
 }
 
 func init() {
-	outputs.Add("kinesis", func() telegraf.Output {
+	outputs.Add("kinesis", func() opsagent.Output {
 		return &KinesisOutput{}
 	})
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/jaddqiu/opsagent/metric"
 )
 
-func MustMetric(v telegraf.Metric, err error) telegraf.Metric {
+func MustMetric(v opsagent.Metric, err error) opsagent.Metric {
 	if err != nil {
 		panic(err)
 	}
@@ -100,7 +100,7 @@ func TestSerializeMetricIntHec(t *testing.T) {
 func TestSerializeMetricBool(t *testing.T) {
 	now := time.Unix(0, 0)
 	tags := map[string]string{
-		"container-name": "telegraf-test",
+		"container-name": "opsagent-test",
 	}
 	fields := map[string]interface{}{
 		"oomkiller": bool(true),
@@ -113,14 +113,14 @@ func TestSerializeMetricBool(t *testing.T) {
 	buf, err = s.Serialize(m)
 	assert.NoError(t, err)
 
-	expS := `{"_value":1,"container-name":"telegraf-test","metric_name":"docker.oomkiller","time":0}`
+	expS := `{"_value":1,"container-name":"opsagent-test","metric_name":"docker.oomkiller","time":0}`
 	assert.Equal(t, string(expS), string(buf))
 }
 
 func TestSerializeMetricBoolHec(t *testing.T) {
 	now := time.Unix(0, 0)
 	tags := map[string]string{
-		"container-name": "telegraf-test",
+		"container-name": "opsagent-test",
 	}
 	fields := map[string]interface{}{
 		"oomkiller": bool(false),
@@ -133,7 +133,7 @@ func TestSerializeMetricBoolHec(t *testing.T) {
 	buf, err = s.Serialize(m)
 	assert.NoError(t, err)
 
-	expS := `{"time":0,"event":"metric","fields":{"_value":0,"container-name":"telegraf-test","metric_name":"docker.oomkiller"}}`
+	expS := `{"time":0,"event":"metric","fields":{"_value":0,"container-name":"opsagent-test","metric_name":"docker.oomkiller"}}`
 	assert.Equal(t, string(expS), string(buf))
 }
 
@@ -181,7 +181,7 @@ func TestSerializeBatch(t *testing.T) {
 		),
 	)
 
-	metrics := []telegraf.Metric{m, n}
+	metrics := []opsagent.Metric{m, n}
 	s, _ := NewSerializer(false)
 	buf, err := s.SerializeBatch(metrics)
 	assert.NoError(t, err)
@@ -212,7 +212,7 @@ func TestSerializeBatchHec(t *testing.T) {
 		),
 	)
 
-	metrics := []telegraf.Metric{m, n}
+	metrics := []opsagent.Metric{m, n}
 	s, _ := NewSerializer(true)
 	buf, err := s.SerializeBatch(metrics)
 	assert.NoError(t, err)

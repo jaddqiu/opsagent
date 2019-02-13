@@ -12,7 +12,7 @@ import (
 )
 
 // NewTestHistogram creates new test histogram aggregation with specified config
-func NewTestHistogram(cfg []config) telegraf.Aggregator {
+func NewTestHistogram(cfg []config) opsagent.Aggregator {
 	htm := &HistogramAggregator{Configs: cfg}
 	htm.buckets = make(bucketsByMetrics)
 	htm.resetCache()

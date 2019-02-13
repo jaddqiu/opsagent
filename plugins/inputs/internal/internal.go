@@ -12,14 +12,14 @@ type Self struct {
 	CollectMemstats bool
 }
 
-func NewSelf() telegraf.Input {
+func NewSelf() opsagent.Input {
 	return &Self{
 		CollectMemstats: true,
 	}
 }
 
 var sampleConfig = `
-  ## If true, collect telegraf memory stats.
+  ## If true, collect opsagent memory stats.
   # collect_memstats = true
 `
 
@@ -31,7 +31,7 @@ func (s *Self) SampleConfig() string {
 	return sampleConfig
 }
 
-func (s *Self) Gather(acc telegraf.Accumulator) error {
+func (s *Self) Gather(acc opsagent.Accumulator) error {
 	if s.CollectMemstats {
 		m := &runtime.MemStats{}
 		runtime.ReadMemStats(m)

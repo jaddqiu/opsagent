@@ -32,10 +32,10 @@ func NewParser(metricName string, defaultTags map[string]string) *Parser {
 }
 
 // Parse converts a slice of bytes in logfmt format to metrics.
-func (p *Parser) Parse(b []byte) ([]telegraf.Metric, error) {
+func (p *Parser) Parse(b []byte) ([]opsagent.Metric, error) {
 	reader := bytes.NewReader(b)
 	decoder := logfmt.NewDecoder(reader)
-	metrics := make([]telegraf.Metric, 0)
+	metrics := make([]opsagent.Metric, 0)
 	for {
 		ok := decoder.ScanRecord()
 		if !ok {
@@ -79,7 +79,7 @@ func (p *Parser) Parse(b []byte) ([]telegraf.Metric, error) {
 }
 
 // ParseLine converts a single line of text in logfmt format to metrics.
-func (p *Parser) ParseLine(s string) (telegraf.Metric, error) {
+func (p *Parser) ParseLine(s string) (opsagent.Metric, error) {
 	metrics, err := p.Parse([]byte(s))
 	if err != nil {
 		return nil, err
@@ -96,7 +96,7 @@ func (p *Parser) SetDefaultTags(tags map[string]string) {
 	p.DefaultTags = tags
 }
 
-func (p *Parser) applyDefaultTags(metrics []telegraf.Metric) {
+func (p *Parser) applyDefaultTags(metrics []opsagent.Metric) {
 	if len(p.DefaultTags) == 0 {
 		return
 	}

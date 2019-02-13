@@ -54,7 +54,7 @@ func TestMakeMetricNoFields(t *testing.T) {
 		map[string]string{},
 		map[string]interface{}{},
 		now,
-		telegraf.Untyped)
+		opsagent.Untyped)
 	m = ri.MakeMetric(m)
 	require.NoError(t, err)
 	assert.Nil(t, m)
@@ -74,7 +74,7 @@ func TestMakeMetricNilFields(t *testing.T) {
 			"nil":   nil,
 		},
 		now,
-		telegraf.Untyped)
+		opsagent.Untyped)
 	require.NoError(t, err)
 	m = ri.MakeMetric(m)
 
@@ -105,7 +105,7 @@ func TestMakeMetricWithPluginTags(t *testing.T) {
 			"value": int64(101),
 		},
 		now,
-		telegraf.Untyped)
+		opsagent.Untyped)
 	m = ri.MakeMetric(m)
 
 	expected, err := metric.New("RITest",
@@ -139,7 +139,7 @@ func TestMakeMetricFilteredOut(t *testing.T) {
 			"value": int64(101),
 		},
 		now,
-		telegraf.Untyped)
+		opsagent.Untyped)
 	m = ri.MakeMetric(m)
 	require.NoError(t, err)
 	assert.Nil(t, m)
@@ -160,7 +160,7 @@ func TestMakeMetricWithDaemonTags(t *testing.T) {
 			"value": int64(101),
 		},
 		now,
-		telegraf.Untyped)
+		opsagent.Untyped)
 	m = ri.MakeMetric(m)
 	expected, err := metric.New("RITest",
 		map[string]string{
@@ -188,7 +188,7 @@ func TestMakeMetricNameOverride(t *testing.T) {
 			"value": int64(101),
 		},
 		now,
-		telegraf.Untyped)
+		opsagent.Untyped)
 	require.NoError(t, err)
 	m = ri.MakeMetric(m)
 	expected, err := metric.New("foobar",
@@ -215,7 +215,7 @@ func TestMakeMetricNamePrefix(t *testing.T) {
 			"value": int64(101),
 		},
 		now,
-		telegraf.Untyped)
+		opsagent.Untyped)
 	require.NoError(t, err)
 	m = ri.MakeMetric(m)
 	expected, err := metric.New("foobar_RITest",
@@ -242,7 +242,7 @@ func TestMakeMetricNameSuffix(t *testing.T) {
 			"value": int64(101),
 		},
 		now,
-		telegraf.Untyped)
+		opsagent.Untyped)
 	require.NoError(t, err)
 	m = ri.MakeMetric(m)
 	expected, err := metric.New("RITest_foobar",
@@ -260,4 +260,4 @@ type testInput struct{}
 
 func (t *testInput) Description() string                   { return "" }
 func (t *testInput) SampleConfig() string                  { return "" }
-func (t *testInput) Gather(acc telegraf.Accumulator) error { return nil }
+func (t *testInput) Gather(acc opsagent.Accumulator) error { return nil }

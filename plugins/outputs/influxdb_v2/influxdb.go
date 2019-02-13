@@ -49,7 +49,7 @@ var sampleConfig = `
   # http_proxy = "http://corporate.proxy:3128"
 
   ## HTTP User-Agent
-  # user_agent = "telegraf"
+  # user_agent = "opsagent"
 
   ## Content-Encoding for write request body, can be set to "gzip" to
   ## compress body or "identity" to apply no encoding.
@@ -59,15 +59,15 @@ var sampleConfig = `
   # influx_uint_support = false
 
   ## Optional TLS Config for use on HTTP connections.
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 `
 
 type Client interface {
-	Write(context.Context, []telegraf.Metric) error
+	Write(context.Context, []opsagent.Metric) error
 
 	URL() string // for logging
 }
@@ -145,7 +145,7 @@ func (i *InfluxDB) SampleConfig() string {
 
 // Write sends metrics to one of the configured servers, logging each
 // unsuccessful. If all servers fail, return an error.
-func (i *InfluxDB) Write(metrics []telegraf.Metric) error {
+func (i *InfluxDB) Write(metrics []opsagent.Metric) error {
 	ctx := context.Background()
 
 	var err error
@@ -192,7 +192,7 @@ func (i *InfluxDB) getHTTPClient(ctx context.Context, url *url.URL, proxy *url.U
 }
 
 func init() {
-	outputs.Add("influxdb_v2", func() telegraf.Output {
+	outputs.Add("influxdb_v2", func() opsagent.Output {
 		return &InfluxDB{
 			Timeout:         internal.Duration{Duration: time.Second * 5},
 			ContentEncoding: "gzip",

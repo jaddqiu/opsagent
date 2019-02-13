@@ -63,7 +63,7 @@ func (m *BasicStats) Description() string {
 	return "Keep the aggregate basicstats of each metric passing through."
 }
 
-func (m *BasicStats) Add(in telegraf.Metric) {
+func (m *BasicStats) Add(in opsagent.Metric) {
 	id := in.HashID()
 	if _, ok := m.cache[id]; !ok {
 		// hit an uncached metric, create caches for first time:
@@ -132,7 +132,7 @@ func (m *BasicStats) Add(in telegraf.Metric) {
 	}
 }
 
-func (m *BasicStats) Push(acc telegraf.Accumulator) {
+func (m *BasicStats) Push(acc opsagent.Accumulator) {
 	config := getConfiguredStats(m)
 
 	for _, aggregate := range m.cache {
@@ -253,7 +253,7 @@ func convert(in interface{}) (float64, bool) {
 }
 
 func init() {
-	aggregators.Add("basicstats", func() telegraf.Aggregator {
+	aggregators.Add("basicstats", func() opsagent.Aggregator {
 		return NewBasicStats()
 	})
 }

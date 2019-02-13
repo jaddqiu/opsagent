@@ -24,7 +24,7 @@ func (_ *SystemStats) Description() string {
 
 func (_ *SystemStats) SampleConfig() string { return "" }
 
-func (_ *SystemStats) Gather(acc telegraf.Accumulator) error {
+func (_ *SystemStats) Gather(acc opsagent.Accumulator) error {
 	loadavg, err := load.Avg()
 	if err != nil && !strings.Contains(err.Error(), "not implemented") {
 		return err
@@ -88,7 +88,7 @@ func format_uptime(uptime uint64) string {
 }
 
 func init() {
-	inputs.Add("system", func() telegraf.Input {
+	inputs.Add("system", func() opsagent.Input {
 		return &SystemStats{}
 	})
 }

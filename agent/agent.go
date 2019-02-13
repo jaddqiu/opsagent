@@ -45,9 +45,9 @@ func (a *Agent) Run(ctx context.Context) error {
 		return err
 	}
 
-	inputC := make(chan telegraf.Metric, 100)
-	procC := make(chan telegraf.Metric, 100)
-	outputC := make(chan telegraf.Metric, 100)
+	inputC := make(chan opsagent.Metric, 100)
+	procC := make(chan opsagent.Metric, 100)
+	outputC := make(chan opsagent.Metric, 100)
 
 	startTime := time.Now()
 
@@ -63,7 +63,7 @@ func (a *Agent) Run(ctx context.Context) error {
 	dst := inputC
 
 	wg.Add(1)
-	go func(dst chan telegraf.Metric) {
+	go func(dst chan opsagent.Metric) {
 		defer wg.Done()
 
 		err := a.runInputs(ctx, startTime, dst)
@@ -84,7 +84,7 @@ func (a *Agent) Run(ctx context.Context) error {
 		dst = procC
 
 		wg.Add(1)
-		go func(src, dst chan telegraf.Metric) {
+		go func(src, dst chan opsagent.Metric) {
 			defer wg.Done()
 
 			err := a.runProcessors(src, dst)
@@ -102,7 +102,7 @@ func (a *Agent) Run(ctx context.Context) error {
 		dst = outputC
 
 		wg.Add(1)
-		go func(src, dst chan telegraf.Metric) {
+		go func(src, dst chan opsagent.Metric) {
 			defer wg.Done()
 
 			err := a.runAggregators(startTime, src, dst)
@@ -117,7 +117,7 @@ func (a *Agent) Run(ctx context.Context) error {
 	}
 
 	wg.Add(1)
-	go func(src chan telegraf.Metric) {
+	go func(src chan opsagent.Metric) {
 		defer wg.Done()
 
 		err := a.runOutputs(startTime, src)
@@ -141,8 +141,8 @@ func (a *Agent) Run(ctx context.Context) error {
 // Test runs the inputs once and prints the output to stdout in line protocol.
 func (a *Agent) Test(ctx context.Context) error {
 	var wg sync.WaitGroup
-	metricC := make(chan telegraf.Metric)
-	nulC := make(chan telegraf.Metric)
+	metricC := make(chan opsagent.Metric)
+	nulC := make(chan opsagent.Metric)
 	defer func() {
 		close(metricC)
 		close(nulC)
@@ -176,7 +176,7 @@ func (a *Agent) Test(ctx context.Context) error {
 		case <-ctx.Done():
 			return nil
 		default:
-			if _, ok := input.Input.(telegraf.ServiceInput); ok {
+			if _, ok := input.Input.(opsagent.ServiceInput); ok {
 				log.Printf("W!: [agent] skipping plugin [[%s]]: service inputs not supported in --test mode",
 					input.Name())
 				continue
@@ -220,7 +220,7 @@ func (a *Agent) Test(ctx context.Context) error {
 func (a *Agent) runInputs(
 	ctx context.Context,
 	startTime time.Time,
-	dst chan<- telegraf.Metric,
+	dst chan<- opsagent.Metric,
 ) error {
 	var wg sync.WaitGroup
 	for _, input := range a.Config.Inputs {
@@ -260,7 +260,7 @@ func (a *Agent) runInputs(
 // done.
 func (a *Agent) gatherOnInterval(
 	ctx context.Context,
-	acc telegraf.Accumulator,
+	acc opsagent.Accumulator,
 	input *models.RunningInput,
 	interval time.Duration,
 	jitter time.Duration,
@@ -293,7 +293,7 @@ func (a *Agent) gatherOnInterval(
 // gatherOnce runs the input's Gather function once, logging a warning each
 // interval it fails to complete before.
 func (a *Agent) gatherOnce(
-	acc telegraf.Accumulator,
+	acc opsagent.Accumulator,
 	input *models.RunningInput,
 	timeout time.Duration,
 ) error {
@@ -318,8 +318,8 @@ func (a *Agent) gatherOnce(
 
 // runProcessors applies processors to metrics.
 func (a *Agent) runProcessors(
-	src <-chan telegraf.Metric,
-	agg chan<- telegraf.Metric,
+	src <-chan opsagent.Metric,
+	agg chan<- opsagent.Metric,
 ) error {
 	for metric := range src {
 		metrics := a.applyProcessors(metric)
@@ -333,8 +333,8 @@ func (a *Agent) runProcessors(
 }
 
 // applyProcessors applies all processors to a metric.
-func (a *Agent) applyProcessors(m telegraf.Metric) []telegraf.Metric {
-	metrics := []telegraf.Metric{m}
+func (a *Agent) applyProcessors(m opsagent.Metric) []opsagent.Metric {
+	metrics := []opsagent.Metric{m}
 	for _, processor := range a.Config.Processors {
 		metrics = processor.Apply(metrics...)
 	}
@@ -348,8 +348,8 @@ func (a *Agent) applyProcessors(m telegraf.Metric) []telegraf.Metric {
 // will return.
 func (a *Agent) runAggregators(
 	startTime time.Time,
-	src <-chan telegraf.Metric,
-	dst chan<- telegraf.Metric,
+	src <-chan opsagent.Metric,
+	dst chan<- opsagent.Metric,
 ) error {
 	ctx, cancel := context.WithCancel(context.Background())
 
@@ -374,7 +374,7 @@ func (a *Agent) runAggregators(
 
 	precision := a.Config.Agent.Precision.Duration
 	interval := a.Config.Agent.Interval.Duration
-	aggregations := make(chan telegraf.Metric, 100)
+	aggregations := make(chan opsagent.Metric, 100)
 	for _, agg := range a.Config.Aggregators {
 		wg.Add(1)
 		go func(agg *models.RunningAggregator) {
@@ -415,7 +415,7 @@ func (a *Agent) runAggregators(
 func (a *Agent) push(
 	ctx context.Context,
 	aggregator *models.RunningAggregator,
-	acc telegraf.Accumulator,
+	acc opsagent.Accumulator,
 ) {
 	ticker := time.NewTicker(aggregator.Period())
 	defer ticker.Stop()
@@ -439,7 +439,7 @@ func (a *Agent) push(
 // closed, afterwich they run flush once more.
 func (a *Agent) runOutputs(
 	startTime time.Time,
-	src <-chan telegraf.Metric,
+	src <-chan opsagent.Metric,
 ) error {
 	interval := a.Config.Agent.FlushInterval.Duration
 	jitter := a.Config.Agent.FlushJitter.Duration
@@ -598,12 +598,12 @@ func (a *Agent) closeOutputs() error {
 // startServiceInputs starts all service inputs.
 func (a *Agent) startServiceInputs(
 	ctx context.Context,
-	dst chan<- telegraf.Metric,
+	dst chan<- opsagent.Metric,
 ) error {
-	started := []telegraf.ServiceInput{}
+	started := []opsagent.ServiceInput{}
 
 	for _, input := range a.Config.Inputs {
-		if si, ok := input.Input.(telegraf.ServiceInput); ok {
+		if si, ok := input.Input.(opsagent.ServiceInput); ok {
 			// Service input plugins are not subject to timestamp rounding.
 			// This only applies to the accumulator passed to Start(), the
 			// Gather() accumulator does apply rounding according to the
@@ -633,7 +633,7 @@ func (a *Agent) startServiceInputs(
 // stopServiceInputs stops all service inputs.
 func (a *Agent) stopServiceInputs() {
 	for _, input := range a.Config.Inputs {
-		if si, ok := input.Input.(telegraf.ServiceInput); ok {
+		if si, ok := input.Input.(opsagent.ServiceInput); ok {
 			si.Stop()
 		}
 	}

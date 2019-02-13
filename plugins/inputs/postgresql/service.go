@@ -97,7 +97,7 @@ type Service struct {
 }
 
 // Start starts the ServiceInput's service, whatever that may be
-func (p *Service) Start(telegraf.Accumulator) (err error) {
+func (p *Service) Start(opsagent.Accumulator) (err error) {
 	const localhost = "host=localhost sslmode=disable"
 
 	if p.Address == "" || p.Address == "localhost" {

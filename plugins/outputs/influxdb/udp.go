@@ -77,7 +77,7 @@ func (c *udpClient) Database() string {
 	return ""
 }
 
-func (c *udpClient) Write(ctx context.Context, metrics []telegraf.Metric) error {
+func (c *udpClient) Write(ctx context.Context, metrics []opsagent.Metric) error {
 	if c.conn == nil {
 		conn, err := c.dialer.DialContext(ctx, c.url.Scheme, c.url.Host)
 		if err != nil {

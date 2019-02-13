@@ -34,7 +34,7 @@ type PSDiskDeps interface {
 	PSDiskUsage(path string) (*disk.UsageStat, error)
 }
 
-func add(acc telegraf.Accumulator,
+func add(acc opsagent.Accumulator,
 	name string, val float64, tags map[string]string) {
 	if val >= 0 {
 		acc.AddFields(name, map[string]interface{}{"value": val}, tags)

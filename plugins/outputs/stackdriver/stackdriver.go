@@ -47,7 +47,7 @@ var sampleConfig = `
   project = "erudite-bloom-151019"
 
   # The namespace for the metric descriptor
-  namespace = "telegraf"
+  namespace = "opsagent"
 `
 
 // Connect initiates the primary connection to the GCP project.
@@ -73,7 +73,7 @@ func (s *Stackdriver) Connect() error {
 }
 
 // Write the metrics to Google Cloud Stackdriver.
-func (s *Stackdriver) Write(metrics []telegraf.Metric) error {
+func (s *Stackdriver) Write(metrics []opsagent.Metric) error {
 	ctx := context.Background()
 
 	for _, m := range metrics {
@@ -173,18 +173,18 @@ func getStackdriverTimeInterval(
 	}
 }
 
-func getStackdriverMetricKind(vt telegraf.ValueType) (metricpb.MetricDescriptor_MetricKind, error) {
+func getStackdriverMetricKind(vt opsagent.ValueType) (metricpb.MetricDescriptor_MetricKind, error) {
 	switch vt {
-	case telegraf.Untyped:
+	case opsagent.Untyped:
 		return metricpb.MetricDescriptor_GAUGE, nil
-	case telegraf.Gauge:
+	case opsagent.Gauge:
 		return metricpb.MetricDescriptor_GAUGE, nil
-	case telegraf.Counter:
+	case opsagent.Counter:
 		return metricpb.MetricDescriptor_CUMULATIVE, nil
-	case telegraf.Histogram, telegraf.Summary:
+	case opsagent.Histogram, opsagent.Summary:
 		fallthrough
 	default:
-		return metricpb.MetricDescriptor_METRIC_KIND_UNSPECIFIED, fmt.Errorf("unsupported telegraf value type")
+		return metricpb.MetricDescriptor_METRIC_KIND_UNSPECIFIED, fmt.Errorf("unsupported opsagent value type")
 	}
 }
 
@@ -232,7 +232,7 @@ func getStackdriverTypedValue(value interface{}) (*monitoringpb.TypedValue, erro
 	}
 }
 
-func getStackdriverLabels(tags []*telegraf.Tag) map[string]string {
+func getStackdriverLabels(tags []*opsagent.Tag) map[string]string {
 	labels := make(map[string]string)
 	for _, t := range tags {
 		labels[t.Key] = t.Value
@@ -297,7 +297,7 @@ func newStackdriver() *Stackdriver {
 }
 
 func init() {
-	outputs.Add("stackdriver", func() telegraf.Output {
+	outputs.Add("stackdriver", func() opsagent.Output {
 		return newStackdriver()
 	})
 }

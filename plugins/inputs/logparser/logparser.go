@@ -45,7 +45,7 @@ type LogParserPlugin struct {
 	lines   chan logEntry
 	done    chan struct{}
 	wg      sync.WaitGroup
-	acc     telegraf.Accumulator
+	acc     opsagent.Accumulator
 
 	sync.Mutex
 
@@ -63,7 +63,7 @@ const sampleConfig = `
   files = ["/var/log/apache/access.log"]
 
   ## Read files that currently exist from the beginning. Files that are created
-  ## while telegraf is running (and that match the "files" globs) will always
+  ## while opsagent is running (and that match the "files" globs) will always
   ## be read from the beginning.
   from_beginning = false
 
@@ -113,7 +113,7 @@ func (l *LogParserPlugin) Description() string {
 }
 
 // Gather is the primary function to collect the metrics for the plugin
-func (l *LogParserPlugin) Gather(acc telegraf.Accumulator) error {
+func (l *LogParserPlugin) Gather(acc opsagent.Accumulator) error {
 	l.Lock()
 	defer l.Unlock()
 
@@ -122,7 +122,7 @@ func (l *LogParserPlugin) Gather(acc telegraf.Accumulator) error {
 }
 
 // Start kicks off collection of stats for the plugin
-func (l *LogParserPlugin) Start(acc telegraf.Accumulator) error {
+func (l *LogParserPlugin) Start(acc opsagent.Accumulator) error {
 	l.Lock()
 	defer l.Unlock()
 
@@ -249,7 +249,7 @@ func (l *LogParserPlugin) receiver(tailer *tail.Tail) {
 func (l *LogParserPlugin) parser() {
 	defer l.wg.Done()
 
-	var m telegraf.Metric
+	var m opsagent.Metric
 	var err error
 	var entry logEntry
 	for {
@@ -296,7 +296,7 @@ func (l *LogParserPlugin) Stop() {
 }
 
 func init() {
-	inputs.Add("logparser", func() telegraf.Input {
+	inputs.Add("logparser", func() opsagent.Input {
 		return &LogParserPlugin{
 			WatchMethod: defaultWatchMethod,
 		}

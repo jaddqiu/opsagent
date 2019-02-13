@@ -14,10 +14,10 @@ import (
 
 type RollbarWebhook struct {
 	Path string
-	acc  telegraf.Accumulator
+	acc  opsagent.Accumulator
 }
 
-func (rb *RollbarWebhook) Register(router *mux.Router, acc telegraf.Accumulator) {
+func (rb *RollbarWebhook) Register(router *mux.Router, acc opsagent.Accumulator) {
 	router.HandleFunc(rb.Path, rb.eventHandler).Methods("POST")
 	log.Printf("I! Started the webhooks_rollbar on %s\n", rb.Path)
 	rb.acc = acc

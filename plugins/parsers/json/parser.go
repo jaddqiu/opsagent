@@ -32,8 +32,8 @@ type JSONParser struct {
 	DefaultTags    map[string]string
 }
 
-func (p *JSONParser) parseArray(buf []byte) ([]telegraf.Metric, error) {
-	metrics := make([]telegraf.Metric, 0)
+func (p *JSONParser) parseArray(buf []byte) ([]opsagent.Metric, error) {
+	metrics := make([]opsagent.Metric, 0)
 
 	var jsonOut []map[string]interface{}
 	err := json.Unmarshal(buf, &jsonOut)
@@ -99,7 +99,7 @@ func parseUnixTimestamp(jsonValue interface{}, format string) (time.Time, error)
 	}
 }
 
-func (p *JSONParser) parseObject(metrics []telegraf.Metric, jsonOut map[string]interface{}) ([]telegraf.Metric, error) {
+func (p *JSONParser) parseObject(metrics []opsagent.Metric, jsonOut map[string]interface{}) ([]opsagent.Metric, error) {
 	tags := make(map[string]string)
 	for k, v := range p.DefaultTags {
 		tags[k] = v
@@ -216,7 +216,7 @@ func (p *JSONParser) switchFieldToTag(tags map[string]string, fields map[string]
 	return tags, fields
 }
 
-func (p *JSONParser) Parse(buf []byte) ([]telegraf.Metric, error) {
+func (p *JSONParser) Parse(buf []byte) ([]opsagent.Metric, error) {
 	if p.JSONQuery != "" {
 		result := gjson.GetBytes(buf, p.JSONQuery)
 		buf = []byte(result.Raw)
@@ -229,11 +229,11 @@ func (p *JSONParser) Parse(buf []byte) ([]telegraf.Metric, error) {
 	buf = bytes.TrimSpace(buf)
 	buf = bytes.TrimPrefix(buf, utf8BOM)
 	if len(buf) == 0 {
-		return make([]telegraf.Metric, 0), nil
+		return make([]opsagent.Metric, 0), nil
 	}
 
 	if !isarray(buf) {
-		metrics := make([]telegraf.Metric, 0)
+		metrics := make([]opsagent.Metric, 0)
 		var jsonOut map[string]interface{}
 		err := json.Unmarshal(buf, &jsonOut)
 		if err != nil {
@@ -245,7 +245,7 @@ func (p *JSONParser) Parse(buf []byte) ([]telegraf.Metric, error) {
 	return p.parseArray(buf)
 }
 
-func (p *JSONParser) ParseLine(line string) (telegraf.Metric, error) {
+func (p *JSONParser) ParseLine(line string) (opsagent.Metric, error) {
 	metrics, err := p.Parse([]byte(line + "\n"))
 
 	if err != nil {

@@ -24,7 +24,7 @@ var (
 	nagiosRegExp    = regexp.MustCompile(`^([^=]+)=([\d\.\-\+eE]+)([\w\/%]*);?([\d\.\-\+eE:~@]+)?;?([\d\.\-\+eE:~@]+)?;?([\d\.\-\+eE]+)?;?([\d\.\-\+eE]+)?;?\s*`)
 )
 
-func (p *NagiosParser) ParseLine(line string) (telegraf.Metric, error) {
+func (p *NagiosParser) ParseLine(line string) (opsagent.Metric, error) {
 	metrics, err := p.Parse([]byte(line))
 	return metrics[0], err
 }
@@ -33,8 +33,8 @@ func (p *NagiosParser) SetDefaultTags(tags map[string]string) {
 	p.DefaultTags = tags
 }
 
-func (p *NagiosParser) Parse(buf []byte) ([]telegraf.Metric, error) {
-	metrics := make([]telegraf.Metric, 0)
+func (p *NagiosParser) Parse(buf []byte) ([]opsagent.Metric, error) {
+	metrics := make([]opsagent.Metric, 0)
 	lines := strings.Split(strings.TrimSpace(string(buf)), "\n")
 
 	for _, line := range lines {
@@ -54,8 +54,8 @@ func (p *NagiosParser) Parse(buf []byte) ([]telegraf.Metric, error) {
 	return metrics, nil
 }
 
-func parsePerfData(perfdatas string) ([]telegraf.Metric, error) {
-	metrics := make([]telegraf.Metric, 0)
+func parsePerfData(perfdatas string) ([]opsagent.Metric, error) {
+	metrics := make([]opsagent.Metric, 0)
 
 	for _, unParsedPerf := range perfSplitRegExp.FindAllString(perfdatas, -1) {
 		trimedPerf := strings.TrimSpace(unParsedPerf)

@@ -155,7 +155,7 @@ func TestAggregateMetricCreated(t *testing.T) {
 			err = ai.Connect()
 			assert.NoError(err)
 
-			mSet := []telegraf.Metric{m}
+			mSet := []opsagent.Metric{m}
 			ai.Write(mSet)
 			transmitter.AssertNumberOfCalls(t, "Track", 1+len(tt.additionalMetricValueFields))
 			var pAggregateTelemetry *appinsights.AggregateMetricTelemetry
@@ -213,7 +213,7 @@ func TestSimpleMetricCreated(t *testing.T) {
 			err = ai.Connect()
 			assert.NoError(err)
 
-			mSet := []telegraf.Metric{m}
+			mSet := []opsagent.Metric{m}
 			ai.Write(mSet)
 
 			expectedNumberOfCalls := len(tt.additionalMetricValueFields)
@@ -283,7 +283,7 @@ func TestTagsAppliedToTelemetry(t *testing.T) {
 			err = ai.Connect()
 			assert.NoError(err)
 
-			mSet := []telegraf.Metric{m}
+			mSet := []opsagent.Metric{m}
 			ai.Write(mSet)
 			transmitter.AssertNumberOfCalls(t, "Track", len(tt.metricValueFields))
 			transmitter.AssertCalled(t, "Track", mock.AnythingOfType("*appinsights.MetricTelemetry"))
@@ -324,7 +324,7 @@ func TestContextTagsSetOnSimpleTelemetry(t *testing.T) {
 	err = ai.Connect()
 	assert.NoError(err)
 
-	mSet := []telegraf.Metric{m}
+	mSet := []opsagent.Metric{m}
 	ai.Write(mSet)
 	transmitter.AssertNumberOfCalls(t, "Track", 1)
 	metricTelemetry := transmitter.Calls[0].Arguments.Get(0).(*appinsights.MetricTelemetry)
@@ -361,7 +361,7 @@ func TestContextTagsSetOnAggregateTelemetry(t *testing.T) {
 	err = ai.Connect()
 	assert.NoError(err)
 
-	mSet := []telegraf.Metric{m}
+	mSet := []opsagent.Metric{m}
 	ai.Write(mSet)
 	transmitter.AssertNumberOfCalls(t, "Track", 1)
 	metricTelemetry := transmitter.Calls[0].Arguments.Get(0).(*appinsights.AggregateMetricTelemetry)
@@ -383,7 +383,7 @@ func unfinished() <-chan struct{} {
 
 func verifyAggregateTelemetry(
 	assert *assert.Assertions,
-	metric telegraf.Metric,
+	metric opsagent.Metric,
 	valueField string,
 	countField string,
 	telemetry *appinsights.AggregateMetricTelemetry,
@@ -412,7 +412,7 @@ func verifyAggregateTelemetry(
 
 func verifySimpleTelemetry(
 	assert *assert.Assertions,
-	metric telegraf.Metric,
+	metric opsagent.Metric,
 	valueField string,
 	expectedTelemetryName string,
 	telemetry *appinsights.MetricTelemetry,
@@ -426,7 +426,7 @@ func verifySimpleTelemetry(
 
 func verifyAdditionalTelemetry(
 	assert *assert.Assertions,
-	metric telegraf.Metric,
+	metric opsagent.Metric,
 	transmitter *mocks.Transmitter,
 	additionalMetricValueFields []string,
 	telemetryNamePrefix string,

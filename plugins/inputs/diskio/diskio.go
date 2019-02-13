@@ -34,7 +34,7 @@ func (_ *DiskIO) Description() string {
 }
 
 var diskIOsampleConfig = `
-  ## By default, telegraf will gather stats for all devices including
+  ## By default, opsagent will gather stats for all devices including
   ## disk partitions.
   ## Setting devices will restrict the stats to the specified devices.
   # devices = ["sda", "sdb", "vd*"]
@@ -84,7 +84,7 @@ func (s *DiskIO) init() error {
 	return nil
 }
 
-func (s *DiskIO) Gather(acc telegraf.Accumulator) error {
+func (s *DiskIO) Gather(acc opsagent.Accumulator) error {
 	if !s.initialized {
 		err := s.init()
 		if err != nil {
@@ -193,7 +193,7 @@ func (s *DiskIO) diskTags(devName string) map[string]string {
 
 func init() {
 	ps := system.NewSystemPS()
-	inputs.Add("diskio", func() telegraf.Input {
+	inputs.Add("diskio", func() opsagent.Input {
 		return &DiskIO{ps: ps, SkipSerialNumber: true}
 	})
 }

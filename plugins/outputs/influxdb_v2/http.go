@@ -39,7 +39,7 @@ func (e APIError) Error() string {
 const (
 	defaultRequestTimeout = time.Second * 5
 	defaultMaxWait        = 10 // seconds
-	defaultDatabase       = "telegraf"
+	defaultDatabase       = "opsagent"
 )
 
 type HTTPConfig struct {
@@ -81,7 +81,7 @@ func NewHTTPClient(config *HTTPConfig) (*httpClient, error) {
 
 	userAgent := config.UserAgent
 	if userAgent == "" {
-		userAgent = "Telegraf/" + internal.Version()
+		userAgent = "Opsagent/" + internal.Version()
 	}
 
 	var headers = make(map[string]string, len(config.Headers)+2)
@@ -169,7 +169,7 @@ func (g genericRespError) Error() string {
 	return errString
 }
 
-func (c *httpClient) Write(ctx context.Context, metrics []telegraf.Metric) error {
+func (c *httpClient) Write(ctx context.Context, metrics []opsagent.Metric) error {
 	if c.retryTime.After(time.Now()) {
 		return errors.New("Retry time has not elapsed")
 	}

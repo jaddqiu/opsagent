@@ -16,12 +16,12 @@ func (k *Kernel) Description() string {
 
 func (k *Kernel) SampleConfig() string { return "" }
 
-func (k *Kernel) Gather(acc telegraf.Accumulator) error {
+func (k *Kernel) Gather(acc opsagent.Accumulator) error {
 	return nil
 }
 
 func init() {
-	inputs.Add("kernel", func() telegraf.Input {
+	inputs.Add("kernel", func() opsagent.Input {
 		return &Kernel{}
 	})
 }

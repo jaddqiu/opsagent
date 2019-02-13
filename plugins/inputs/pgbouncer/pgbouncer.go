@@ -40,7 +40,7 @@ func (p *PgBouncer) Description() string {
 	return "Read metrics from one or many pgbouncer servers"
 }
 
-func (p *PgBouncer) Gather(acc telegraf.Accumulator) error {
+func (p *PgBouncer) Gather(acc opsagent.Accumulator) error {
 	var (
 		err     error
 		query   string
@@ -123,7 +123,7 @@ type scanner interface {
 	Scan(dest ...interface{}) error
 }
 
-func (p *PgBouncer) accRow(row scanner, acc telegraf.Accumulator, columns []string) (map[string]string,
+func (p *PgBouncer) accRow(row scanner, acc opsagent.Accumulator, columns []string) (map[string]string,
 	map[string]*interface{}, error) {
 	var columnVars []interface{}
 	var dbname bytes.Buffer
@@ -164,7 +164,7 @@ func (p *PgBouncer) accRow(row scanner, acc telegraf.Accumulator, columns []stri
 }
 
 func init() {
-	inputs.Add("pgbouncer", func() telegraf.Input {
+	inputs.Add("pgbouncer", func() opsagent.Input {
 		return &PgBouncer{
 			Service: postgresql.Service{
 				MaxIdle: 1,

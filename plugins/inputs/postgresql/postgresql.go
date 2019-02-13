@@ -67,7 +67,7 @@ func (p *Postgresql) IgnoredColumns() map[string]bool {
 	return ignoredColumns
 }
 
-func (p *Postgresql) Gather(acc telegraf.Accumulator) error {
+func (p *Postgresql) Gather(acc opsagent.Accumulator) error {
 	var (
 		err     error
 		query   string
@@ -131,7 +131,7 @@ type scanner interface {
 	Scan(dest ...interface{}) error
 }
 
-func (p *Postgresql) accRow(row scanner, acc telegraf.Accumulator, columns []string) error {
+func (p *Postgresql) accRow(row scanner, acc opsagent.Accumulator, columns []string) error {
 	var columnVars []interface{}
 	var dbname bytes.Buffer
 
@@ -181,7 +181,7 @@ func (p *Postgresql) accRow(row scanner, acc telegraf.Accumulator, columns []str
 }
 
 func init() {
-	inputs.Add("postgresql", func() telegraf.Input {
+	inputs.Add("postgresql", func() opsagent.Input {
 		return &Postgresql{
 			Service: Service{
 				MaxIdle: 1,

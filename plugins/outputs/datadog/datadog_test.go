@@ -80,11 +80,11 @@ func TestAuthenticatedUrl(t *testing.T) {
 
 func TestBuildTags(t *testing.T) {
 	var tagtests = []struct {
-		ptIn    []*telegraf.Tag
+		ptIn    []*opsagent.Tag
 		outTags []string
 	}{
 		{
-			[]*telegraf.Tag{
+			[]*opsagent.Tag{
 				{
 					Key:   "one",
 					Value: "two",
@@ -97,7 +97,7 @@ func TestBuildTags(t *testing.T) {
 			[]string{"one:two", "three:four"},
 		},
 		{
-			[]*telegraf.Tag{
+			[]*opsagent.Tag{
 				{
 					Key:   "aaa",
 					Value: "bbb",
@@ -106,7 +106,7 @@ func TestBuildTags(t *testing.T) {
 			[]string{"aaa:bbb"},
 		},
 		{
-			[]*telegraf.Tag{},
+			[]*opsagent.Tag{},
 			[]string{},
 		},
 	}
@@ -120,7 +120,7 @@ func TestBuildTags(t *testing.T) {
 
 func TestBuildPoint(t *testing.T) {
 	var tagtests = []struct {
-		ptIn  telegraf.Metric
+		ptIn  opsagent.Metric
 		outPt Point
 		err   error
 	}{
@@ -230,7 +230,7 @@ func TestBuildPoint(t *testing.T) {
 
 func TestVerifyValue(t *testing.T) {
 	var tagtests = []struct {
-		ptIn        telegraf.Metric
+		ptIn        opsagent.Metric
 		validMetric bool
 	}{
 		{

@@ -19,10 +19,10 @@ func TestAggregate(t *testing.T) {
 	tests := []struct {
 		name     string
 		plugin   *AzureMonitor
-		metrics  []telegraf.Metric
+		metrics  []opsagent.Metric
 		addTime  time.Time
 		pushTime time.Time
-		check    func(t *testing.T, plugin *AzureMonitor, metrics []telegraf.Metric)
+		check    func(t *testing.T, plugin *AzureMonitor, metrics []opsagent.Metric)
 	}{
 		{
 			name: "add metric outside window is dropped",
@@ -30,7 +30,7 @@ func TestAggregate(t *testing.T) {
 				Region:     "test",
 				ResourceID: "/test",
 			},
-			metrics: []telegraf.Metric{
+			metrics: []opsagent.Metric{
 				testutil.MustMetric(
 					"cpu",
 					map[string]string{},
@@ -42,7 +42,7 @@ func TestAggregate(t *testing.T) {
 			},
 			addTime:  time.Unix(3600, 0),
 			pushTime: time.Unix(3600, 0),
-			check: func(t *testing.T, plugin *AzureMonitor, metrics []telegraf.Metric) {
+			check: func(t *testing.T, plugin *AzureMonitor, metrics []opsagent.Metric) {
 				require.Equal(t, int64(1), plugin.MetricOutsideWindow.Get())
 				require.Len(t, metrics, 0)
 			},
@@ -53,7 +53,7 @@ func TestAggregate(t *testing.T) {
 				Region:     "test",
 				ResourceID: "/test",
 			},
-			metrics: []telegraf.Metric{
+			metrics: []opsagent.Metric{
 				testutil.MustMetric(
 					"cpu",
 					map[string]string{},
@@ -65,7 +65,7 @@ func TestAggregate(t *testing.T) {
 			},
 			addTime:  time.Unix(0, 0),
 			pushTime: time.Unix(0, 0),
-			check: func(t *testing.T, plugin *AzureMonitor, metrics []telegraf.Metric) {
+			check: func(t *testing.T, plugin *AzureMonitor, metrics []opsagent.Metric) {
 				require.Len(t, metrics, 0)
 			},
 		},
@@ -76,7 +76,7 @@ func TestAggregate(t *testing.T) {
 				ResourceID:          "/test",
 				StringsAsDimensions: true,
 			},
-			metrics: []telegraf.Metric{
+			metrics: []opsagent.Metric{
 				testutil.MustMetric(
 					"cpu",
 					map[string]string{
@@ -91,8 +91,8 @@ func TestAggregate(t *testing.T) {
 			},
 			addTime:  time.Unix(0, 0),
 			pushTime: time.Unix(3600, 0),
-			check: func(t *testing.T, plugin *AzureMonitor, metrics []telegraf.Metric) {
-				expected := []telegraf.Metric{
+			check: func(t *testing.T, plugin *AzureMonitor, metrics []opsagent.Metric) {
+				expected := []opsagent.Metric{
 					testutil.MustMetric(
 						"cpu-value",
 						map[string]string{
@@ -118,7 +118,7 @@ func TestAggregate(t *testing.T) {
 				ResourceID: "/test",
 				cache:      make(map[time.Time]map[uint64]*aggregate, 36),
 			},
-			metrics: []telegraf.Metric{
+			metrics: []opsagent.Metric{
 				testutil.MustMetric(
 					"cpu",
 					map[string]string{},
@@ -130,8 +130,8 @@ func TestAggregate(t *testing.T) {
 			},
 			addTime:  time.Unix(0, 0),
 			pushTime: time.Unix(3600, 0),
-			check: func(t *testing.T, plugin *AzureMonitor, metrics []telegraf.Metric) {
-				expected := []telegraf.Metric{
+			check: func(t *testing.T, plugin *AzureMonitor, metrics []opsagent.Metric) {
+				expected := []opsagent.Metric{
 					testutil.MustMetric(
 						"cpu-value",
 						map[string]string{},
@@ -155,7 +155,7 @@ func TestAggregate(t *testing.T) {
 				ResourceID: "/test",
 				cache:      make(map[time.Time]map[uint64]*aggregate, 36),
 			},
-			metrics: []telegraf.Metric{
+			metrics: []opsagent.Metric{
 				testutil.MustMetric(
 					"cpu",
 					map[string]string{},
@@ -183,8 +183,8 @@ func TestAggregate(t *testing.T) {
 			},
 			addTime:  time.Unix(0, 0),
 			pushTime: time.Unix(3600, 0),
-			check: func(t *testing.T, plugin *AzureMonitor, metrics []telegraf.Metric) {
-				expected := []telegraf.Metric{
+			check: func(t *testing.T, plugin *AzureMonitor, metrics []opsagent.Metric) {
+				expected := []opsagent.Metric{
 					testutil.MustMetric(
 						"cpu-value",
 						map[string]string{},
@@ -254,7 +254,7 @@ func TestWrite(t *testing.T) {
 	tests := []struct {
 		name    string
 		plugin  *AzureMonitor
-		metrics []telegraf.Metric
+		metrics []opsagent.Metric
 		handler func(t *testing.T, w http.ResponseWriter, r *http.Request)
 	}{
 		{
@@ -263,7 +263,7 @@ func TestWrite(t *testing.T) {
 				Region:     "test",
 				ResourceID: "/test",
 			},
-			metrics: []telegraf.Metric{
+			metrics: []opsagent.Metric{
 				testutil.MustMetric(
 					"cpu",
 					map[string]string{},
@@ -283,7 +283,7 @@ func TestWrite(t *testing.T) {
 				Region:     "test",
 				ResourceID: "/test",
 			},
-			metrics: []telegraf.Metric{
+			metrics: []opsagent.Metric{
 				testutil.MustMetric(
 					"cpu-value",
 					map[string]string{},
@@ -309,7 +309,7 @@ func TestWrite(t *testing.T) {
 				Region:     "test",
 				ResourceID: "/test",
 			},
-			metrics: []telegraf.Metric{
+			metrics: []opsagent.Metric{
 				testutil.MustMetric(
 					"cpu-value",
 					map[string]string{},

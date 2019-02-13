@@ -61,7 +61,7 @@ func (r *Riemann) Description() string {
 	return "Configuration for the Riemann server to send metrics to"
 }
 
-func (r *Riemann) Write(metrics []telegraf.Metric) error {
+func (r *Riemann) Write(metrics []opsagent.Metric) error {
 	log.Printf(deprecationMsg)
 	if len(metrics) == 0 {
 		return nil
@@ -92,7 +92,7 @@ func (r *Riemann) Write(metrics []telegraf.Metric) error {
 	return nil
 }
 
-func buildEvents(p telegraf.Metric, s string) []*raidman.Event {
+func buildEvents(p opsagent.Metric, s string) []*raidman.Event {
 	events := []*raidman.Event{}
 	for fieldName, value := range p.Fields() {
 		host, ok := p.Tags()["host"]
@@ -150,7 +150,7 @@ func serviceName(s string, n string, t map[string]string, f string) string {
 }
 
 func init() {
-	outputs.Add("riemann_legacy", func() telegraf.Output {
+	outputs.Add("riemann_legacy", func() opsagent.Output {
 		return &Riemann{}
 	})
 }

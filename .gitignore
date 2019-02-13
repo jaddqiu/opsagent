@@ -1,7 +1,11 @@
 /build
 /telegraf
+/opsagent
 /telegraf.exe
+/opsagent.exe
 /telegraf.gz
+/opsagent.gz
 /vendor
 /.vscode
 /cmd/telegraf/debug
+/cmd/opsagent/debug

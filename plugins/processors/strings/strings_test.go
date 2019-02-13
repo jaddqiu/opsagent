@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func newM1() telegraf.Metric {
+func newM1() opsagent.Metric {
 	m1, _ := metric.New("IIS_log",
 		map[string]string{
 			"verb":           "GET",
@@ -29,7 +29,7 @@ func TestFieldConversions(t *testing.T) {
 	tests := []struct {
 		name   string
 		plugin *Strings
-		check  func(t *testing.T, actual telegraf.Metric)
+		check  func(t *testing.T, actual opsagent.Metric)
 	}{
 		{
 			name: "Should change existing field to lowercase",
@@ -40,7 +40,7 @@ func TestFieldConversions(t *testing.T) {
 					},
 				},
 			},
-			check: func(t *testing.T, actual telegraf.Metric) {
+			check: func(t *testing.T, actual opsagent.Metric) {
 				fv, ok := actual.GetField("request")
 				require.True(t, ok)
 				require.Equal(t, "/mixed/case/path/?from=-1d&to=now", fv)
@@ -55,7 +55,7 @@ func TestFieldConversions(t *testing.T) {
 					},
 				},
 			},
-			check: func(t *testing.T, actual telegraf.Metric) {
+			check: func(t *testing.T, actual opsagent.Metric) {
 				fv, ok := actual.GetField("request")
 				require.True(t, ok)
 				require.Equal(t, "/MIXED/CASE/PATH/?FROM=-1D&TO=NOW", fv)
@@ -71,7 +71,7 @@ func TestFieldConversions(t *testing.T) {
 					},
 				},
 			},
-			check: func(t *testing.T, actual telegraf.Metric) {
+			check: func(t *testing.T, actual opsagent.Metric) {
 				fv, ok := actual.GetField("request")
 				require.True(t, ok)
 				require.Equal(t, "/mixed/CASE/paTH/?from=-1D&to=now", fv)
@@ -91,7 +91,7 @@ func TestFieldConversions(t *testing.T) {
 					},
 				},
 			},
-			check: func(t *testing.T, actual telegraf.Metric) {
+			check: func(t *testing.T, actual opsagent.Metric) {
 				fv, ok := actual.GetField("request")
 				require.True(t, ok)
 				require.Equal(t, "mixed/CASE/paTH/?from=-1D&to=no", fv)
@@ -112,7 +112,7 @@ func TestFieldConversions(t *testing.T) {
 					},
 				},
 			},
-			check: func(t *testing.T, actual telegraf.Metric) {
+			check: func(t *testing.T, actual opsagent.Metric) {
 				fv, ok := actual.GetField("request")
 				require.True(t, ok)
 				require.Equal(t, "mixed/case/path/?from=-1d&to=no", fv)
@@ -128,7 +128,7 @@ func TestFieldConversions(t *testing.T) {
 					},
 				},
 			},
-			check: func(t *testing.T, actual telegraf.Metric) {
+			check: func(t *testing.T, actual opsagent.Metric) {
 				fv, ok := actual.GetField("request")
 				require.True(t, ok)
 				require.Equal(t, "mixed/CASE/paTH/?from=-1D&to=now", fv)
@@ -144,7 +144,7 @@ func TestFieldConversions(t *testing.T) {
 					},
 				},
 			},
-			check: func(t *testing.T, actual telegraf.Metric) {
+			check: func(t *testing.T, actual opsagent.Metric) {
 				fv, ok := actual.GetField("request")
 				require.True(t, ok)
 				require.Equal(t, "/mixed/CASE/paTH/?from=-1D&to=no", fv)
@@ -160,7 +160,7 @@ func TestFieldConversions(t *testing.T) {
 					},
 				},
 			},
-			check: func(t *testing.T, actual telegraf.Metric) {
+			check: func(t *testing.T, actual opsagent.Metric) {
 				fv, ok := actual.GetField("request")
 				require.True(t, ok)
 				require.Equal(t, "/CASE/paTH/?from=-1D&to=now", fv)
@@ -176,7 +176,7 @@ func TestFieldConversions(t *testing.T) {
 					},
 				},
 			},
-			check: func(t *testing.T, actual telegraf.Metric) {
+			check: func(t *testing.T, actual opsagent.Metric) {
 				fv, ok := actual.GetField("request")
 				require.True(t, ok)
 				require.Equal(t, "/mixed/CASE/paTH/?from=", fv)
@@ -191,7 +191,7 @@ func TestFieldConversions(t *testing.T) {
 					},
 				},
 			},
-			check: func(t *testing.T, actual telegraf.Metric) {
+			check: func(t *testing.T, actual opsagent.Metric) {
 				fv, ok := actual.GetField("whitespace")
 				require.True(t, ok)
 				require.Equal(t, "whitespace", fv)
@@ -206,7 +206,7 @@ func TestFieldConversions(t *testing.T) {
 					},
 				},
 			},
-			check: func(t *testing.T, actual telegraf.Metric) {
+			check: func(t *testing.T, actual opsagent.Metric) {
 				fv, ok := actual.GetField("whitespace")
 				require.True(t, ok)
 				require.Equal(t, "whitespace\t", fv)
@@ -221,7 +221,7 @@ func TestFieldConversions(t *testing.T) {
 					},
 				},
 			},
-			check: func(t *testing.T, actual telegraf.Metric) {
+			check: func(t *testing.T, actual opsagent.Metric) {
 				fv, ok := actual.GetField("whitespace")
 				require.True(t, ok)
 				require.Equal(t, "  whitespace", fv)
@@ -237,7 +237,7 @@ func TestFieldConversions(t *testing.T) {
 					},
 				},
 			},
-			check: func(t *testing.T, actual telegraf.Metric) {
+			check: func(t *testing.T, actual opsagent.Metric) {
 				fv, ok := actual.GetField("request")
 				require.True(t, ok)
 				require.Equal(t, "/mixed/CASE/paTH/?from=-1D&to=now", fv)
@@ -257,7 +257,7 @@ func TestTagConversions(t *testing.T) {
 	tests := []struct {
 		name   string
 		plugin *Strings
-		check  func(t *testing.T, actual telegraf.Metric)
+		check  func(t *testing.T, actual opsagent.Metric)
 	}{
 		{
 			name: "Should change existing tag to lowercase",
@@ -268,7 +268,7 @@ func TestTagConversions(t *testing.T) {
 					},
 				},
 			},
-			check: func(t *testing.T, actual telegraf.Metric) {
+			check: func(t *testing.T, actual opsagent.Metric) {
 				tv, ok := actual.GetTag("verb")
 				require.True(t, ok)
 				require.Equal(t, "GET", tv)
@@ -288,7 +288,7 @@ func TestTagConversions(t *testing.T) {
 					},
 				},
 			},
-			check: func(t *testing.T, actual telegraf.Metric) {
+			check: func(t *testing.T, actual opsagent.Metric) {
 				tv, ok := actual.GetTag("verb")
 				require.True(t, ok)
 				require.Equal(t, "GET", tv)
@@ -312,7 +312,7 @@ func TestTagConversions(t *testing.T) {
 					},
 				},
 			},
-			check: func(t *testing.T, actual telegraf.Metric) {
+			check: func(t *testing.T, actual opsagent.Metric) {
 				tv, ok := actual.GetTag("verb")
 				require.True(t, ok)
 				require.Equal(t, "GET", tv)
@@ -341,7 +341,7 @@ func TestMeasurementConversions(t *testing.T) {
 	tests := []struct {
 		name   string
 		plugin *Strings
-		check  func(t *testing.T, actual telegraf.Metric)
+		check  func(t *testing.T, actual opsagent.Metric)
 	}{
 		{
 			name: "lowercase measurement",
@@ -352,7 +352,7 @@ func TestMeasurementConversions(t *testing.T) {
 					},
 				},
 			},
-			check: func(t *testing.T, actual telegraf.Metric) {
+			check: func(t *testing.T, actual opsagent.Metric) {
 				name := actual.Name()
 				require.Equal(t, "iis_log", name)
 			},
@@ -495,7 +495,7 @@ func TestReadmeExample(t *testing.T) {
 	assert.Equal(t, expectedTags, processed[0].Tags())
 }
 
-func newMetric(name string) telegraf.Metric {
+func newMetric(name string) opsagent.Metric {
 	tags := map[string]string{}
 	fields := map[string]interface{}{}
 	m, _ := metric.New(name, tags, fields, time.Now())
@@ -512,7 +512,7 @@ func TestMeasurementReplace(t *testing.T) {
 			},
 		},
 	}
-	metrics := []telegraf.Metric{
+	metrics := []opsagent.Metric{
 		newMetric("foo:some_value:bar"),
 		newMetric("average:cpu:usage"),
 		newMetric("average_cpu_usage"),
@@ -533,7 +533,7 @@ func TestMeasurementCharDeletion(t *testing.T) {
 			},
 		},
 	}
-	metrics := []telegraf.Metric{
+	metrics := []opsagent.Metric{
 		newMetric("foo:bar:baz"),
 		newMetric("foofoofoo"),
 		newMetric("barbarbar"),

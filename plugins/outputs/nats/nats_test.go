@@ -17,7 +17,7 @@ func TestConnectAndWrite(t *testing.T) {
 	s, _ := serializers.NewInfluxSerializer()
 	n := &NATS{
 		Servers:    server,
-		Subject:    "telegraf",
+		Subject:    "opsagent",
 		serializer: s,
 	}
 

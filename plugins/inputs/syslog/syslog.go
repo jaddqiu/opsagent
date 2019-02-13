@@ -61,9 +61,9 @@ var sampleConfig = `
   server = "tcp://:6514"
 
   ## TLS Config
-  # tls_allowed_cacerts = ["/etc/telegraf/ca.pem"]
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_allowed_cacerts = ["/etc/opsagent/ca.pem"]
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
 
   ## Period between keep alive probes.
   ## 0 disables keep alive probes.
@@ -113,12 +113,12 @@ func (s *Syslog) Description() string {
 }
 
 // Gather ...
-func (s *Syslog) Gather(_ telegraf.Accumulator) error {
+func (s *Syslog) Gather(_ opsagent.Accumulator) error {
 	return nil
 }
 
 // Start starts the service.
-func (s *Syslog) Start(acc telegraf.Accumulator) error {
+func (s *Syslog) Start(acc opsagent.Accumulator) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -214,7 +214,7 @@ func getAddressParts(a string) (string, string, error) {
 	return u.Scheme, host, nil
 }
 
-func (s *Syslog) listenPacket(acc telegraf.Accumulator) {
+func (s *Syslog) listenPacket(acc opsagent.Accumulator) {
 	defer s.wg.Done()
 	b := make([]byte, ipMaxPacketSize)
 	var p syslog.Machine
@@ -242,7 +242,7 @@ func (s *Syslog) listenPacket(acc telegraf.Accumulator) {
 	}
 }
 
-func (s *Syslog) listenStream(acc telegraf.Accumulator) {
+func (s *Syslog) listenStream(acc opsagent.Accumulator) {
 	defer s.wg.Done()
 
 	s.connections = map[string]net.Conn{}
@@ -289,7 +289,7 @@ func (s *Syslog) removeConnection(c net.Conn) {
 	s.connectionsMu.Unlock()
 }
 
-func (s *Syslog) handle(conn net.Conn, acc telegraf.Accumulator) {
+func (s *Syslog) handle(conn net.Conn, acc opsagent.Accumulator) {
 	defer func() {
 		s.removeConnection(conn)
 		conn.Close()
@@ -343,7 +343,7 @@ func (s *Syslog) setKeepAlive(c *net.TCPConn) error {
 	return c.SetKeepAlivePeriod(s.KeepAlivePeriod.Duration)
 }
 
-func (s *Syslog) store(res syslog.Result, acc telegraf.Accumulator) {
+func (s *Syslog) store(res syslog.Result, acc opsagent.Accumulator) {
 	if res.Error != nil {
 		acc.AddError(res.Error)
 	}
@@ -449,5 +449,5 @@ func init() {
 		Separator: "_",
 	}
 
-	inputs.Add("syslog", func() telegraf.Input { return receiver })
+	inputs.Add("syslog", func() opsagent.Input { return receiver })
 }

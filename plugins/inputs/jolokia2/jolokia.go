@@ -6,13 +6,13 @@ import (
 )
 
 func init() {
-	inputs.Add("jolokia2_agent", func() telegraf.Input {
+	inputs.Add("jolokia2_agent", func() opsagent.Input {
 		return &JolokiaAgent{
 			Metrics:               []MetricConfig{},
 			DefaultFieldSeparator: ".",
 		}
 	})
-	inputs.Add("jolokia2_proxy", func() telegraf.Input {
+	inputs.Add("jolokia2_proxy", func() opsagent.Input {
 		return &JolokiaProxy{
 			Metrics:               []MetricConfig{},
 			DefaultFieldSeparator: ".",

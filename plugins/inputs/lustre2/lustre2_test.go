@@ -97,7 +97,7 @@ const mdtJobStatsContents = `job_stats:
 
 func TestLustre2GeneratesMetrics(t *testing.T) {
 
-	tempdir := os.TempDir() + "/telegraf/proc/fs/lustre/"
+	tempdir := os.TempDir() + "/opsagent/proc/fs/lustre/"
 	ost_name := "OST0001"
 
 	mdtdir := tempdir + "/mdt/"
@@ -164,13 +164,13 @@ func TestLustre2GeneratesMetrics(t *testing.T) {
 
 	acc.AssertContainsTaggedFields(t, "lustre2", fields, tags)
 
-	err = os.RemoveAll(os.TempDir() + "/telegraf")
+	err = os.RemoveAll(os.TempDir() + "/opsagent")
 	require.NoError(t, err)
 }
 
 func TestLustre2GeneratesJobstatsMetrics(t *testing.T) {
 
-	tempdir := os.TempDir() + "/telegraf/proc/fs/lustre/"
+	tempdir := os.TempDir() + "/opsagent/proc/fs/lustre/"
 	ost_name := "OST0001"
 	job_name := "testjob1"
 
@@ -243,6 +243,6 @@ func TestLustre2GeneratesJobstatsMetrics(t *testing.T) {
 
 	acc.AssertContainsTaggedFields(t, "lustre2", fields, tags)
 
-	err = os.RemoveAll(os.TempDir() + "/telegraf")
+	err = os.RemoveAll(os.TempDir() + "/opsagent")
 	require.NoError(t, err)
 }

@@ -145,7 +145,7 @@ func (r *passenger) Description() string {
 	return "Read metrics of passenger using passenger-status"
 }
 
-func (g *passenger) Gather(acc telegraf.Accumulator) error {
+func (g *passenger) Gather(acc opsagent.Accumulator) error {
 	if g.Command == "" {
 		g.Command = "passenger-status -v --show=xml"
 	}
@@ -164,7 +164,7 @@ func (g *passenger) Gather(acc telegraf.Accumulator) error {
 	return nil
 }
 
-func importMetric(stat []byte, acc telegraf.Accumulator) error {
+func importMetric(stat []byte, acc opsagent.Accumulator) error {
 	var p info
 
 	decoder := xml.NewDecoder(bytes.NewReader(stat))
@@ -244,7 +244,7 @@ func importMetric(stat []byte, acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add("passenger", func() telegraf.Input {
+	inputs.Add("passenger", func() opsagent.Input {
 		return &passenger{}
 	})
 }

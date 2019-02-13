@@ -52,7 +52,7 @@ func NewWavefrontParser(defaultTags map[string]string) *PointParser {
 	return &PointParser{Elements: elements, defaultTags: defaultTags}
 }
 
-func (p *PointParser) Parse(buf []byte) ([]telegraf.Metric, error) {
+func (p *PointParser) Parse(buf []byte) ([]opsagent.Metric, error) {
 
 	// parse even if the buffer begins with a newline
 	buf = bytes.TrimPrefix(buf, []byte("\n"))
@@ -84,14 +84,14 @@ func (p *PointParser) Parse(buf []byte) ([]telegraf.Metric, error) {
 		points = append(points, point)
 	}
 
-	metrics, err := p.convertPointToTelegrafMetric(points)
+	metrics, err := p.convertPointToOpsagentMetric(points)
 	if err != nil {
 		return nil, err
 	}
 	return metrics, nil
 }
 
-func (p *PointParser) ParseLine(line string) (telegraf.Metric, error) {
+func (p *PointParser) ParseLine(line string) (opsagent.Metric, error) {
 	buf := []byte(line)
 	metrics, err := p.Parse(buf)
 	if err != nil {
@@ -109,9 +109,9 @@ func (p *PointParser) SetDefaultTags(tags map[string]string) {
 	p.defaultTags = tags
 }
 
-func (p *PointParser) convertPointToTelegrafMetric(points []Point) ([]telegraf.Metric, error) {
+func (p *PointParser) convertPointToOpsagentMetric(points []Point) ([]opsagent.Metric, error) {
 
-	metrics := make([]telegraf.Metric, 0)
+	metrics := make([]opsagent.Metric, 0)
 
 	for _, point := range points {
 		tags := make(map[string]string)

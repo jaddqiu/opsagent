@@ -42,7 +42,7 @@ var sampleConfig = `
   ## The default location of the varnishstat binary can be overridden with:
   binary = "/usr/bin/varnishstat"
 
-  ## By default, telegraf gather stats for 3 metric points.
+  ## By default, opsagent gather stats for 3 metric points.
   ## Setting stats will override the defaults shown below.
   ## Glob matching can be used, ie, stats = ["MAIN.*"]
   ## stats may also be set to ["*"], which will collect all stats
@@ -98,7 +98,7 @@ func varnishRunner(cmdName string, UseSudo bool, InstanceName string, Timeout in
 // The prefix of each stat (eg MAIN, MEMPOOL, LCK, etc) will be used as a
 // 'section' tag and all stats that share that prefix will be reported as fields
 // with that tag
-func (s *Varnish) Gather(acc telegraf.Accumulator) error {
+func (s *Varnish) Gather(acc opsagent.Accumulator) error {
 	if s.filter == nil {
 		var err error
 		if len(s.Stats) == 0 {
@@ -169,7 +169,7 @@ func (s *Varnish) Gather(acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add("varnish", func() telegraf.Input {
+	inputs.Add("varnish", func() opsagent.Input {
 		return &Varnish{
 			run:          varnishRunner,
 			Stats:        defaultStats,

@@ -87,7 +87,7 @@ func (s *Strings) Description() string {
 	return "Perform string processing on tags, fields, and measurements"
 }
 
-func (c *converter) convertTag(metric telegraf.Metric) {
+func (c *converter) convertTag(metric opsagent.Metric) {
 	var tags map[string]string
 	if c.Tag == "*" {
 		tags = metric.Tags()
@@ -109,7 +109,7 @@ func (c *converter) convertTag(metric telegraf.Metric) {
 	}
 }
 
-func (c *converter) convertField(metric telegraf.Metric) {
+func (c *converter) convertField(metric opsagent.Metric) {
 	var fields map[string]interface{}
 	if c.Field == "*" {
 		fields = metric.Fields()
@@ -133,7 +133,7 @@ func (c *converter) convertField(metric telegraf.Metric) {
 	}
 }
 
-func (c *converter) convertMeasurement(metric telegraf.Metric) {
+func (c *converter) convertMeasurement(metric opsagent.Metric) {
 	if metric.Name() != c.Measurement && c.Measurement != "*" {
 		return
 	}
@@ -141,7 +141,7 @@ func (c *converter) convertMeasurement(metric telegraf.Metric) {
 	metric.SetName(c.fn(metric.Name()))
 }
 
-func (c *converter) convert(metric telegraf.Metric) {
+func (c *converter) convert(metric opsagent.Metric) {
 	if c.Field != "" {
 		c.convertField(metric)
 	}
@@ -222,7 +222,7 @@ func (s *Strings) initOnce() {
 	s.init = true
 }
 
-func (s *Strings) Apply(in ...telegraf.Metric) []telegraf.Metric {
+func (s *Strings) Apply(in ...opsagent.Metric) []opsagent.Metric {
 	s.initOnce()
 
 	for _, metric := range in {
@@ -235,7 +235,7 @@ func (s *Strings) Apply(in ...telegraf.Metric) []telegraf.Metric {
 }
 
 func init() {
-	processors.Add("strings", func() telegraf.Processor {
+	processors.Add("strings", func() opsagent.Processor {
 		return &Strings{}
 	})
 }

@@ -22,7 +22,7 @@ func newTestKafka() (*Kafka, chan *sarama.ConsumerMessage) {
 	in := make(chan *sarama.ConsumerMessage, 1000)
 	k := Kafka{
 		ConsumerGroup:   "test",
-		Topics:          []string{"telegraf"},
+		Topics:          []string{"opsagent"},
 		ZookeeperPeers:  []string{"localhost:2181"},
 		Offset:          "oldest",
 		in:              in,

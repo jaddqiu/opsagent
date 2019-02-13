@@ -82,9 +82,9 @@ var sampleconfig = `
   # timeout = "5s"
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 `
@@ -97,7 +97,7 @@ func (s *Tomcat) SampleConfig() string {
 	return sampleconfig
 }
 
-func (s *Tomcat) Gather(acc telegraf.Accumulator) error {
+func (s *Tomcat) Gather(acc opsagent.Accumulator) error {
 	if s.client == nil {
 		client, err := s.createHttpClient()
 		if err != nil {
@@ -204,7 +204,7 @@ func (s *Tomcat) createHttpClient() (*http.Client, error) {
 }
 
 func init() {
-	inputs.Add("tomcat", func() telegraf.Input {
+	inputs.Add("tomcat", func() opsagent.Input {
 		return &Tomcat{
 			URL:      "http://127.0.0.1:8080/manager/status/all?XML=true",
 			Username: "tomcat",

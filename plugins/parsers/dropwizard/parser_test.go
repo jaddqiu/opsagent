@@ -474,7 +474,7 @@ func TestParseSampleTemplateJSON(t *testing.T) {
 	require.Equal(t, map[string]string{"metric_type": "gauge", "pool": "non-heap"}, vmMemoryNonHeapCommitted.Tags())
 }
 
-func search(metrics []telegraf.Metric, name string, tags map[string]string, fieldName string) telegraf.Metric {
+func search(metrics []opsagent.Metric, name string, tags map[string]string, fieldName string) opsagent.Metric {
 	for _, v := range metrics {
 		if v.Name() == name && containsAll(v.Tags(), tags) {
 			if len(fieldName) == 0 {
@@ -497,7 +497,7 @@ func containsAll(t1 map[string]string, t2 map[string]string) bool {
 	return true
 }
 
-func Metric(v telegraf.Metric, err error) telegraf.Metric {
+func Metric(v opsagent.Metric, err error) opsagent.Metric {
 	if err != nil {
 		panic(err)
 	}
@@ -512,13 +512,13 @@ func TestDropWizard(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   []byte
-		metrics []telegraf.Metric
+		metrics []opsagent.Metric
 		errFunc func(t *testing.T, err error)
 	}{
 		{
 			name:  "minimal",
 			input: []byte(`{"version": "3.0.0", "counters": {"cpu": {"value": 42}}}`),
-			metrics: []telegraf.Metric{
+			metrics: []opsagent.Metric{
 				Metric(
 					metric.New(
 						"cpu",
@@ -537,7 +537,7 @@ func TestDropWizard(t *testing.T) {
 		{
 			name:  "name with space unescaped",
 			input: []byte(`{"version": "3.0.0", "counters": {"hello world": {"value": 42}}}`),
-			metrics: []telegraf.Metric{
+			metrics: []opsagent.Metric{
 				Metric(
 					metric.New(
 						"hello world",
@@ -563,7 +563,7 @@ func TestDropWizard(t *testing.T) {
 		{
 			name:  "name with space double slash escape",
 			input: []byte(`{"version": "3.0.0", "counters": {"hello\\ world": {"value": 42}}}`),
-			metrics: []telegraf.Metric{
+			metrics: []opsagent.Metric{
 				Metric(
 					metric.New(
 						"hello world",

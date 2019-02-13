@@ -22,7 +22,7 @@ var sampleConfig = `
   ## If not specified, then default is:
   bcachePath = "/sys/fs/bcache"
 
-  ## By default, telegraf gather stats for all bcache devices
+  ## By default, opsagent gather stats for all bcache devices
   ## Setting devices will restrict the stats to the specified
   ## bcache devices.
   bcacheDevs = ["bcache0"]
@@ -70,7 +70,7 @@ func prettyToBytes(v string) uint64 {
 	return uint64(result)
 }
 
-func (b *Bcache) gatherBcache(bdev string, acc telegraf.Accumulator) error {
+func (b *Bcache) gatherBcache(bdev string, acc opsagent.Accumulator) error {
 	tags := getTags(bdev)
 	metrics, err := filepath.Glob(bdev + "/stats_total/*")
 	if len(metrics) < 0 {
@@ -105,7 +105,7 @@ func (b *Bcache) gatherBcache(bdev string, acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (b *Bcache) Gather(acc telegraf.Accumulator) error {
+func (b *Bcache) Gather(acc opsagent.Accumulator) error {
 	bcacheDevsChecked := make(map[string]bool)
 	var restrictDevs bool
 	if len(b.BcacheDevs) != 0 {
@@ -136,7 +136,7 @@ func (b *Bcache) Gather(acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add("bcache", func() telegraf.Input {
+	inputs.Add("bcache", func() opsagent.Input {
 		return &Bcache{}
 	})
 }

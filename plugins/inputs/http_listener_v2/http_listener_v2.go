@@ -46,7 +46,7 @@ type HTTPListenerV2 struct {
 	listener net.Listener
 
 	parsers.Parser
-	acc telegraf.Accumulator
+	acc opsagent.Accumulator
 }
 
 const sampleConfig = `
@@ -54,7 +54,7 @@ const sampleConfig = `
   service_address = ":8080"
 
   ## Path to listen to.
-  # path = "/telegraf"
+  # path = "/opsagent"
 
   ## HTTP methods to accept.
   # methods = ["POST", "PUT"]
@@ -70,11 +70,11 @@ const sampleConfig = `
 
   ## Set one or more allowed client CA certificate file names to 
   ## enable mutually authenticated TLS connections
-  # tls_allowed_cacerts = ["/etc/telegraf/clientca.pem"]
+  # tls_allowed_cacerts = ["/etc/opsagent/clientca.pem"]
 
   ## Add service certificate and key
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
 
   ## Optional username and password to accept for HTTP basic authentication.
   ## You probably want to make sure you have TLS configured above for this.
@@ -96,7 +96,7 @@ func (h *HTTPListenerV2) Description() string {
 	return "Generic HTTP write listener"
 }
 
-func (h *HTTPListenerV2) Gather(_ telegraf.Accumulator) error {
+func (h *HTTPListenerV2) Gather(_ opsagent.Accumulator) error {
 	return nil
 }
 
@@ -105,7 +105,7 @@ func (h *HTTPListenerV2) SetParser(parser parsers.Parser) {
 }
 
 // Start starts the http listener service.
-func (h *HTTPListenerV2) Start(acc telegraf.Accumulator) error {
+func (h *HTTPListenerV2) Start(acc opsagent.Accumulator) error {
 	if h.MaxBodySize.Size == 0 {
 		h.MaxBodySize.Size = defaultMaxBodySize
 	}
@@ -263,11 +263,11 @@ func (h *HTTPListenerV2) AuthenticateIfSet(handler http.HandlerFunc, res http.Re
 }
 
 func init() {
-	inputs.Add("http_listener_v2", func() telegraf.Input {
+	inputs.Add("http_listener_v2", func() opsagent.Input {
 		return &HTTPListenerV2{
 			ServiceAddress: ":8080",
 			TimeFunc:       time.Now,
-			Path:           "/telegraf",
+			Path:           "/opsagent",
 			Methods:        []string{"POST", "PUT"},
 		}
 	})

@@ -73,7 +73,7 @@ func (p *Converter) Description() string {
 	return "Convert values to another metric value type"
 }
 
-func (p *Converter) Apply(metrics ...telegraf.Metric) []telegraf.Metric {
+func (p *Converter) Apply(metrics ...opsagent.Metric) []opsagent.Metric {
 	if !p.initialized {
 		err := p.compile()
 		if err != nil {
@@ -151,7 +151,7 @@ func compileFilter(conv *Conversion) (*ConversionFilter, error) {
 }
 
 // convertTags converts tags into fields
-func (p *Converter) convertTags(metric telegraf.Metric) {
+func (p *Converter) convertTags(metric opsagent.Metric) {
 	if p.tagConversions == nil {
 		return
 	}
@@ -217,7 +217,7 @@ func (p *Converter) convertTags(metric telegraf.Metric) {
 }
 
 // convertFields converts fields into tags or other field types
-func (p *Converter) convertFields(metric telegraf.Metric) {
+func (p *Converter) convertFields(metric opsagent.Metric) {
 	if p.fieldConversions == nil {
 		return
 	}
@@ -424,7 +424,7 @@ func logPrintf(format string, v ...interface{}) {
 }
 
 func init() {
-	processors.Add("converter", func() telegraf.Processor {
+	processors.Add("converter", func() opsagent.Processor {
 		return &Converter{}
 	})
 }

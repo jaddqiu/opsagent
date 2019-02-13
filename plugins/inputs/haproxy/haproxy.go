@@ -54,9 +54,9 @@ var sampleConfig = `
   # keep_field_names = false
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 `
@@ -71,7 +71,7 @@ func (r *haproxy) Description() string {
 
 // Reads stats from all configured servers accumulates stats.
 // Returns one of the errors encountered while gather stats (if any).
-func (g *haproxy) Gather(acc telegraf.Accumulator) error {
+func (g *haproxy) Gather(acc opsagent.Accumulator) error {
 	if len(g.Servers) == 0 {
 		return g.gatherServer("http://127.0.0.1:1936/haproxy?stats", acc)
 	}
@@ -117,7 +117,7 @@ func (g *haproxy) Gather(acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (g *haproxy) gatherServerSocket(addr string, acc telegraf.Accumulator) error {
+func (g *haproxy) gatherServerSocket(addr string, acc opsagent.Accumulator) error {
 	socketPath := getSocketAddr(addr)
 
 	c, err := net.Dial("unix", socketPath)
@@ -135,7 +135,7 @@ func (g *haproxy) gatherServerSocket(addr string, acc telegraf.Accumulator) erro
 	return g.importCsvResult(c, acc, socketPath)
 }
 
-func (g *haproxy) gatherServer(addr string, acc telegraf.Accumulator) error {
+func (g *haproxy) gatherServer(addr string, acc opsagent.Accumulator) error {
 	if !strings.HasPrefix(addr, "http") {
 		return g.gatherServerSocket(addr, acc)
 	}
@@ -219,7 +219,7 @@ var fieldRenames = map[string]string{
 	"hrsp_other": "http_response.other",
 }
 
-func (g *haproxy) importCsvResult(r io.Reader, acc telegraf.Accumulator, host string) error {
+func (g *haproxy) importCsvResult(r io.Reader, acc opsagent.Accumulator, host string) error {
 	csvr := csv.NewReader(r)
 	now := time.Now()
 
@@ -301,7 +301,7 @@ func (g *haproxy) importCsvResult(r io.Reader, acc telegraf.Accumulator, host st
 }
 
 func init() {
-	inputs.Add("haproxy", func() telegraf.Input {
+	inputs.Add("haproxy", func() opsagent.Input {
 		return &haproxy{}
 	})
 }

@@ -25,7 +25,7 @@ type TopK struct {
 	AddRankFields      []string `toml:"add_rank_fields"`
 	AddAggregateFields []string `toml:"add_aggregate_fields"`
 
-	cache           map[string][]telegraf.Metric
+	cache           map[string][]opsagent.Metric
 	tagsGlobs       filter.Filter
 	rankFieldSet    map[string]bool
 	aggFieldSet     map[string]bool
@@ -129,7 +129,7 @@ func (t *TopK) SampleConfig() string {
 }
 
 func (t *TopK) Reset() {
-	t.cache = make(map[string][]telegraf.Metric)
+	t.cache = make(map[string][]opsagent.Metric)
 	t.lastAggregation = time.Now()
 }
 
@@ -137,7 +137,7 @@ func (t *TopK) Description() string {
 	return "Print all metrics that pass through this filter."
 }
 
-func (t *TopK) generateGroupByKey(m telegraf.Metric) (string, error) {
+func (t *TopK) generateGroupByKey(m opsagent.Metric) (string, error) {
 	// Create the filter.Filter objects if they have not been created
 	if t.tagsGlobs == nil && len(t.GroupBy) > 0 {
 		var err error
@@ -168,7 +168,7 @@ func (t *TopK) generateGroupByKey(m telegraf.Metric) (string, error) {
 	return groupkey, nil
 }
 
-func (t *TopK) groupBy(m telegraf.Metric) {
+func (t *TopK) groupBy(m opsagent.Metric) {
 	// Generate the metric group key
 	groupkey, err := t.generateGroupByKey(m)
 	if err != nil {
@@ -180,7 +180,7 @@ func (t *TopK) groupBy(m telegraf.Metric) {
 
 	// Initialize the key with an empty list if necessary
 	if _, ok := t.cache[groupkey]; !ok {
-		t.cache[groupkey] = make([]telegraf.Metric, 0, 10)
+		t.cache[groupkey] = make([]opsagent.Metric, 0, 10)
 	}
 
 	// Append the metric to the corresponding key list
@@ -192,7 +192,7 @@ func (t *TopK) groupBy(m telegraf.Metric) {
 	}
 }
 
-func (t *TopK) Apply(in ...telegraf.Metric) []telegraf.Metric {
+func (t *TopK) Apply(in ...opsagent.Metric) []opsagent.Metric {
 	// Init any internal datastructures that are not initialized yet
 	if t.rankFieldSet == nil {
 		t.rankFieldSet = make(map[string]bool)
@@ -239,7 +239,7 @@ func (t *TopK) Apply(in ...telegraf.Metric) []telegraf.Metric {
 		return t.push()
 	}
 
-	return []telegraf.Metric{}
+	return []opsagent.Metric{}
 }
 
 func min(a, b int) int {
@@ -262,7 +262,7 @@ func convert(in interface{}) (float64, bool) {
 	}
 }
 
-func (t *TopK) push() []telegraf.Metric {
+func (t *TopK) push() []opsagent.Metric {
 	// Generate aggregations list using the selected fields
 	aggregations := make([]MetricAggregation, 0, 100)
 	aggregator, err := t.getAggregationFunction(t.Aggregation)
@@ -270,14 +270,14 @@ func (t *TopK) push() []telegraf.Metric {
 		// If we could not generate the aggregation
 		// function, fail hard by dropping all metrics
 		log.Printf("E! [processors.topk]: %v", err)
-		return []telegraf.Metric{}
+		return []opsagent.Metric{}
 	}
 	for k, ms := range t.cache {
 		aggregations = append(aggregations, MetricAggregation{groupbykey: k, values: aggregator(ms, t.Fields)})
 	}
 
 	// The return value that will hold the returned metrics
-	var ret []telegraf.Metric = make([]telegraf.Metric, 0, 0)
+	var ret []opsagent.Metric = make([]opsagent.Metric, 0, 0)
 
 	// Get the top K metrics for each field and add them to the return value
 	addedKeys := make(map[string]bool)
@@ -316,7 +316,7 @@ func (t *TopK) push() []telegraf.Metric {
 
 	t.Reset()
 
-	result := make([]telegraf.Metric, 0, len(ret))
+	result := make([]opsagent.Metric, 0, len(ret))
 	for _, m := range ret {
 		copy, err := metric.New(m.Name(), m.Tags(), m.Fields(), m.Time(), m.Type())
 		if err != nil {
@@ -329,9 +329,9 @@ func (t *TopK) push() []telegraf.Metric {
 }
 
 // Function that generates the aggregation functions
-func (t *TopK) getAggregationFunction(aggOperation string) (func([]telegraf.Metric, []string) map[string]float64, error) {
+func (t *TopK) getAggregationFunction(aggOperation string) (func([]opsagent.Metric, []string) map[string]float64, error) {
 	// This is a function aggregates a set of metrics using a given aggregation function
-	var aggregator = func(ms []telegraf.Metric, fields []string, f func(map[string]float64, float64, string)) map[string]float64 {
+	var aggregator = func(ms []opsagent.Metric, fields []string, f func(map[string]float64, float64, string)) map[string]float64 {
 		agg := make(map[string]float64)
 		// Compute the sums of the selected fields over all the measurements collected for this metric
 		for _, m := range ms {
@@ -354,7 +354,7 @@ func (t *TopK) getAggregationFunction(aggOperation string) (func([]telegraf.Metr
 
 	switch aggOperation {
 	case "sum":
-		return func(ms []telegraf.Metric, fields []string) map[string]float64 {
+		return func(ms []opsagent.Metric, fields []string) map[string]float64 {
 			sum := func(agg map[string]float64, val float64, field string) {
 				agg[field] += val
 			}
@@ -362,7 +362,7 @@ func (t *TopK) getAggregationFunction(aggOperation string) (func([]telegraf.Metr
 		}, nil
 
 	case "min":
-		return func(ms []telegraf.Metric, fields []string) map[string]float64 {
+		return func(ms []opsagent.Metric, fields []string) map[string]float64 {
 			min := func(agg map[string]float64, val float64, field string) {
 				// If this field has not been set, set it to the maximum float64
 				_, ok := agg[field]
@@ -379,7 +379,7 @@ func (t *TopK) getAggregationFunction(aggOperation string) (func([]telegraf.Metr
 		}, nil
 
 	case "max":
-		return func(ms []telegraf.Metric, fields []string) map[string]float64 {
+		return func(ms []opsagent.Metric, fields []string) map[string]float64 {
 			max := func(agg map[string]float64, val float64, field string) {
 				// If this field has not been set, set it to the minimum float64
 				_, ok := agg[field]
@@ -396,7 +396,7 @@ func (t *TopK) getAggregationFunction(aggOperation string) (func([]telegraf.Metr
 		}, nil
 
 	case "mean":
-		return func(ms []telegraf.Metric, fields []string) map[string]float64 {
+		return func(ms []opsagent.Metric, fields []string) map[string]float64 {
 			mean := make(map[string]float64)
 			meanCounters := make(map[string]float64)
 			// Compute the sums of the selected fields over all the measurements collected for this metric
@@ -439,7 +439,7 @@ func (t *TopK) getAggregationFunction(aggOperation string) (func([]telegraf.Metr
 }
 
 func init() {
-	processors.Add("topk", func() telegraf.Processor {
+	processors.Add("topk", func() opsagent.Processor {
 		return New()
 	})
 }

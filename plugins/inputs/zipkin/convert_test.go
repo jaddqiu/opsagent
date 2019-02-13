@@ -13,7 +13,7 @@ import (
 func TestLineProtocolConverter_Record(t *testing.T) {
 	mockAcc := testutil.Accumulator{}
 	type fields struct {
-		acc telegraf.Accumulator
+		acc opsagent.Accumulator
 	}
 	type args struct {
 		t trace.Trace

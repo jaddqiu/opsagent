@@ -49,9 +49,9 @@ var sampleConfig = `
   endpoints  = ["http://localhost:4151"]
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 `
@@ -61,7 +61,7 @@ const (
 )
 
 func init() {
-	inputs.Add("nsq", func() telegraf.Input {
+	inputs.Add("nsq", func() opsagent.Input {
 		return New()
 	})
 }
@@ -78,7 +78,7 @@ func (n *NSQ) Description() string {
 	return "Read NSQ topic and channel statistics."
 }
 
-func (n *NSQ) Gather(acc telegraf.Accumulator) error {
+func (n *NSQ) Gather(acc opsagent.Accumulator) error {
 	var err error
 
 	if n.httpClient == nil {
@@ -116,7 +116,7 @@ func (n *NSQ) getHttpClient() (*http.Client, error) {
 	return httpClient, nil
 }
 
-func (n *NSQ) gatherEndpoint(e string, acc telegraf.Accumulator) error {
+func (n *NSQ) gatherEndpoint(e string, acc opsagent.Accumulator) error {
 	u, err := buildURL(e)
 	if err != nil {
 		return err
@@ -181,7 +181,7 @@ func buildURL(e string) (*url.URL, error) {
 	return addr, nil
 }
 
-func topicStats(t TopicStats, acc telegraf.Accumulator, host, version string) {
+func topicStats(t TopicStats, acc opsagent.Accumulator, host, version string) {
 	// per topic overall (tag: name, paused, channel count)
 	tags := map[string]string{
 		"server_host":    host,
@@ -202,7 +202,7 @@ func topicStats(t TopicStats, acc telegraf.Accumulator, host, version string) {
 	}
 }
 
-func channelStats(c ChannelStats, acc telegraf.Accumulator, host, version, topic string) {
+func channelStats(c ChannelStats, acc opsagent.Accumulator, host, version, topic string) {
 	tags := map[string]string{
 		"server_host":    host,
 		"server_version": version,
@@ -227,7 +227,7 @@ func channelStats(c ChannelStats, acc telegraf.Accumulator, host, version, topic
 	}
 }
 
-func clientStats(c ClientStats, acc telegraf.Accumulator, host, version, topic, channel string) {
+func clientStats(c ClientStats, acc opsagent.Accumulator, host, version, topic, channel string) {
 	tags := map[string]string{
 		"server_host":       host,
 		"server_version":    version,

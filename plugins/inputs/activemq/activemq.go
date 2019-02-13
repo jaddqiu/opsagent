@@ -103,9 +103,9 @@ var sampleConfig = `
   # response_timeout = "5s"
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   `
 
@@ -162,7 +162,7 @@ func (a *ActiveMQ) GetMetrics(keyword string) ([]byte, error) {
 	return ioutil.ReadAll(resp.Body)
 }
 
-func (a *ActiveMQ) GatherQueuesMetrics(acc telegraf.Accumulator, queues Queues) {
+func (a *ActiveMQ) GatherQueuesMetrics(acc opsagent.Accumulator, queues Queues) {
 	for _, queue := range queues.QueueItems {
 		records := make(map[string]interface{})
 		tags := make(map[string]string)
@@ -180,7 +180,7 @@ func (a *ActiveMQ) GatherQueuesMetrics(acc telegraf.Accumulator, queues Queues) 
 	}
 }
 
-func (a *ActiveMQ) GatherTopicsMetrics(acc telegraf.Accumulator, topics Topics) {
+func (a *ActiveMQ) GatherTopicsMetrics(acc opsagent.Accumulator, topics Topics) {
 	for _, topic := range topics.TopicItems {
 		records := make(map[string]interface{})
 		tags := make(map[string]string)
@@ -198,7 +198,7 @@ func (a *ActiveMQ) GatherTopicsMetrics(acc telegraf.Accumulator, topics Topics) 
 	}
 }
 
-func (a *ActiveMQ) GatherSubscribersMetrics(acc telegraf.Accumulator, subscribers Subscribers) {
+func (a *ActiveMQ) GatherSubscribersMetrics(acc opsagent.Accumulator, subscribers Subscribers) {
 	for _, subscriber := range subscribers.SubscriberItems {
 		records := make(map[string]interface{})
 		tags := make(map[string]string)
@@ -222,7 +222,7 @@ func (a *ActiveMQ) GatherSubscribersMetrics(acc telegraf.Accumulator, subscriber
 	}
 }
 
-func (a *ActiveMQ) Gather(acc telegraf.Accumulator) error {
+func (a *ActiveMQ) Gather(acc opsagent.Accumulator) error {
 	dataQueues, err := a.GetMetrics(QUEUES_STATS)
 	queues := Queues{}
 	err = xml.Unmarshal(dataQueues, &queues)
@@ -252,7 +252,7 @@ func (a *ActiveMQ) Gather(acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add("activemq", func() telegraf.Input {
+	inputs.Add("activemq", func() opsagent.Input {
 		return &ActiveMQ{
 			Server: "localhost",
 			Port:   8161,

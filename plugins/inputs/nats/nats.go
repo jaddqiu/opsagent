@@ -41,7 +41,7 @@ func (n *Nats) Description() string {
 	return "Provides metrics about the state of a NATS server"
 }
 
-func (n *Nats) Gather(acc telegraf.Accumulator) error {
+func (n *Nats) Gather(acc opsagent.Accumulator) error {
 	url, err := url.Parse(n.Server)
 	if err != nil {
 		return err
@@ -106,7 +106,7 @@ func (n *Nats) createHTTPClient() *http.Client {
 }
 
 func init() {
-	inputs.Add("nats", func() telegraf.Input {
+	inputs.Add("nats", func() opsagent.Input {
 		return &Nats{
 			Server: "http://localhost:8222",
 		}

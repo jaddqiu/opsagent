@@ -30,7 +30,7 @@ const sampleConfig = `
   data_format = "influx"
 
   ## Optional. Filepath for GCP credentials JSON file to authorize calls to
-  ## PubSub APIs. If not set explicitly, Telegraf will attempt to use
+  ## PubSub APIs. If not set explicitly, Opsagent will attempt to use
   ## Application Default Credentials, which is preferred.
   # credentials_file = "path/to/my/creds.json"
 
@@ -84,7 +84,7 @@ type PubSub struct {
 }
 
 func (ps *PubSub) Description() string {
-	return "Publish Telegraf metrics to a Google Cloud PubSub topic"
+	return "Publish Opsagent metrics to a Google Cloud PubSub topic"
 }
 
 func (ps *PubSub) SampleConfig() string {
@@ -118,7 +118,7 @@ func (ps *PubSub) Close() error {
 	return nil
 }
 
-func (ps *PubSub) Write(metrics []telegraf.Metric) error {
+func (ps *PubSub) Write(metrics []opsagent.Metric) error {
 	ps.refreshTopic()
 
 	// Serialize metrics and package into appropriate PubSub messages
@@ -202,7 +202,7 @@ func (ps *PubSub) publishSettings() pubsub.PublishSettings {
 	return settings
 }
 
-func (ps *PubSub) toMessages(metrics []telegraf.Metric) ([]*pubsub.Message, error) {
+func (ps *PubSub) toMessages(metrics []opsagent.Metric) ([]*pubsub.Message, error) {
 	if ps.SendBatched {
 		b, err := ps.serializer.SerializeBatch(metrics)
 		if err != nil {
@@ -258,7 +258,7 @@ func (ps *PubSub) waitForResults(ctx context.Context, cancel context.CancelFunc)
 }
 
 func init() {
-	outputs.Add("cloud_pubsub", func() telegraf.Output {
+	outputs.Add("cloud_pubsub", func() opsagent.Output {
 		return &PubSub{}
 	})
 }

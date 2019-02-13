@@ -12,7 +12,7 @@ import (
 )
 
 //compares metrics without comparing time
-func compareMetrics(t *testing.T, expected, actual []telegraf.Metric) {
+func compareMetrics(t *testing.T, expected, actual []opsagent.Metric) {
 	assert.Equal(t, len(expected), len(actual))
 	for i, metric := range actual {
 		require.Equal(t, expected[i].Name(), metric.Name())
@@ -21,7 +21,7 @@ func compareMetrics(t *testing.T, expected, actual []telegraf.Metric) {
 	}
 }
 
-func Metric(v telegraf.Metric, err error) telegraf.Metric {
+func Metric(v opsagent.Metric, err error) opsagent.Metric {
 	if err != nil {
 		panic(err)
 	}
@@ -35,8 +35,8 @@ func TestApply(t *testing.T) {
 		config       parsers.Config
 		dropOriginal bool
 		merge        string
-		input        telegraf.Metric
-		expected     []telegraf.Metric
+		input        opsagent.Metric
+		expected     []opsagent.Metric
 	}{
 		{
 			name:         "parse one field drop original",
@@ -61,7 +61,7 @@ func TestApply(t *testing.T) {
 						"sample": `{"ts":"2018-07-24T19:43:40.275Z","lvl":"info","msg":"http request","method":"POST"}`,
 					},
 					time.Unix(0, 0))),
-			expected: []telegraf.Metric{
+			expected: []opsagent.Metric{
 				Metric(metric.New(
 					"singleField",
 					map[string]string{
@@ -98,7 +98,7 @@ func TestApply(t *testing.T) {
 						"sample": `{"ts":"2018-07-24T19:43:40.275Z","lvl":"info","msg":"http request","method":"POST"}`,
 					},
 					time.Unix(0, 0))),
-			expected: []telegraf.Metric{
+			expected: []opsagent.Metric{
 				Metric(metric.New(
 					"singleField",
 					map[string]string{
@@ -137,7 +137,7 @@ func TestApply(t *testing.T) {
 						"sample": `{"ts":"2018-07-24T19:43:40.275Z","lvl":"info","msg":"http request","method":"POST"}`,
 					},
 					time.Unix(0, 0))),
-			expected: []telegraf.Metric{
+			expected: []opsagent.Metric{
 				Metric(metric.New(
 					"singleField",
 					map[string]string{
@@ -174,7 +174,7 @@ func TestApply(t *testing.T) {
 						"message": "deal,computer_name=hosta message=\"stuff\" 1530654676316265790",
 					},
 					time.Unix(0, 0))),
-			expected: []telegraf.Metric{
+			expected: []opsagent.Metric{
 				Metric(metric.New(
 					"influxField",
 					map[string]string{},
@@ -211,7 +211,7 @@ func TestApply(t *testing.T) {
 						"message": "deal,computer_name=hosta message=\"stuff\" 1530654676316265790",
 					},
 					time.Unix(0, 0))),
-			expected: []telegraf.Metric{
+			expected: []opsagent.Metric{
 				Metric(metric.New(
 					"deal",
 					map[string]string{
@@ -240,7 +240,7 @@ func TestApply(t *testing.T) {
 						"grokSample": "127.0.0.1 - - [11/Dec/2013:00:01:45 -0800] \"GET /xampp/status.php HTTP/1.1\" 200 3891 \"http://cadenza/xampp/navi.php\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:25.0) Gecko/20100101 Firefox/25.0\"",
 					},
 					time.Unix(0, 0))),
-			expected: []telegraf.Metric{
+			expected: []opsagent.Metric{
 				Metric(metric.New(
 					"success",
 					map[string]string{
@@ -277,7 +277,7 @@ func TestApply(t *testing.T) {
 						"field_2": `{"err":"fatal","fatal":"security threat"}`,
 					},
 					time.Unix(0, 0))),
-			expected: []telegraf.Metric{
+			expected: []opsagent.Metric{
 				Metric(metric.New(
 					"bigMeasure",
 					map[string]string{
@@ -312,7 +312,7 @@ func TestApply(t *testing.T) {
 						"field_2": `{"err":"fatal","fatal":"security threat"}`,
 					},
 					time.Unix(0, 0))),
-			expected: []telegraf.Metric{
+			expected: []opsagent.Metric{
 				Metric(metric.New(
 					"bigMeasure",
 					map[string]string{
@@ -345,7 +345,7 @@ func TestApply(t *testing.T) {
 						"field_2": `{"err":"fatal","fatal":"security threat"}`,
 					},
 					time.Unix(0, 0))),
-			expected: []telegraf.Metric{
+			expected: []opsagent.Metric{
 				Metric(metric.New(
 					"bigMeasure",
 					map[string]string{},
@@ -389,7 +389,7 @@ func TestApply(t *testing.T) {
 						"bad":  "why",
 					},
 					time.Unix(0, 0))),
-			expected: []telegraf.Metric{
+			expected: []opsagent.Metric{
 				Metric(metric.New(
 					"success",
 					map[string]string{},
@@ -425,7 +425,7 @@ func TestApply(t *testing.T) {
 						"ok":   `{"thing":"thang"}`,
 					},
 					time.Unix(0, 0))),
-			expected: []telegraf.Metric{
+			expected: []opsagent.Metric{
 				Metric(metric.New(
 					"success",
 					map[string]string{},
@@ -471,7 +471,7 @@ func TestApply(t *testing.T) {
 						"bad":  "why",
 					},
 					time.Unix(0, 0))),
-			expected: []telegraf.Metric{
+			expected: []opsagent.Metric{
 				Metric(metric.New(
 					"success",
 					map[string]string{
@@ -504,7 +504,7 @@ func TestApply(t *testing.T) {
 						"bad":  "why",
 					},
 					time.Unix(0, 0))),
-			expected: []telegraf.Metric{
+			expected: []opsagent.Metric{
 				Metric(metric.New(
 					"success",
 					map[string]string{
@@ -537,8 +537,8 @@ func TestBadApply(t *testing.T) {
 		name        string
 		parseFields []string
 		config      parsers.Config
-		input       telegraf.Metric
-		expected    []telegraf.Metric
+		input       opsagent.Metric
+		expected    []opsagent.Metric
 	}{
 		{
 			name:        "field not found",
@@ -554,7 +554,7 @@ func TestBadApply(t *testing.T) {
 						"some_field": 5,
 					},
 					time.Unix(0, 0))),
-			expected: []telegraf.Metric{
+			expected: []opsagent.Metric{
 				Metric(metric.New(
 					"bad",
 					map[string]string{},
@@ -578,7 +578,7 @@ func TestBadApply(t *testing.T) {
 						"some_field": 5,
 					},
 					time.Unix(0, 0))),
-			expected: []telegraf.Metric{
+			expected: []opsagent.Metric{
 				Metric(metric.New(
 					"bad",
 					map[string]string{},
@@ -606,7 +606,7 @@ func TestBadApply(t *testing.T) {
 
 // Benchmarks
 
-func getMetricFields(metric telegraf.Metric) interface{} {
+func getMetricFields(metric opsagent.Metric) interface{} {
 	key := "field3"
 	if value, ok := metric.Fields()[key]; ok {
 		return value
@@ -614,7 +614,7 @@ func getMetricFields(metric telegraf.Metric) interface{} {
 	return nil
 }
 
-func getMetricFieldList(metric telegraf.Metric) interface{} {
+func getMetricFieldList(metric opsagent.Metric) interface{} {
 	key := "field3"
 	fields := metric.FieldList()
 	for _, field := range fields {

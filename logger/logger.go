@@ -12,18 +12,18 @@ import (
 
 var prefixRegex = regexp.MustCompile("^[DIWE]!")
 
-// newTelegrafWriter returns a logging-wrapped writer.
-func newTelegrafWriter(w io.Writer) io.Writer {
-	return &telegrafLog{
+// newOpsagentWriter returns a logging-wrapped writer.
+func newOpsagentWriter(w io.Writer) io.Writer {
+	return &opsagentLog{
 		writer: wlog.NewWriter(w),
 	}
 }
 
-type telegrafLog struct {
+type opsagentLog struct {
 	writer io.Writer
 }
 
-func (t *telegrafLog) Write(b []byte) (n int, err error) {
+func (t *opsagentLog) Write(b []byte) (n int, err error) {
 	var line []byte
 	if !prefixRegex.Match(b) {
 		line = append([]byte(time.Now().UTC().Format(time.RFC3339)+" I! "), b...)
@@ -65,5 +65,5 @@ func SetupLogging(debug, quiet bool, logfile string) {
 		oFile = os.Stderr
 	}
 
-	log.SetOutput(newTelegrafWriter(oFile))
+	log.SetOutput(newOpsagentWriter(oFile))
 }

@@ -78,9 +78,9 @@ var sampleConfig = `
   cluster_url = "https://dcos-ee-master-1"
 
   ## The ID of the service account.
-  service_account_id = "telegraf"
+  service_account_id = "opsagent"
   ## The private key file for the service account.
-  service_account_private_key = "/etc/telegraf/telegraf-sa-key.pem"
+  service_account_private_key = "/etc/opsagent/opsagent-sa-key.pem"
 
   ## Path containing login token.  If set, will read on every gather.
   # token_file = "/home/dcos/.dcos/token"
@@ -105,9 +105,9 @@ var sampleConfig = `
   # response_timeout = "20s"
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## If false, skip chain & host verification
   # insecure_skip_verify = true
 
@@ -120,7 +120,7 @@ func (d *DCOS) SampleConfig() string {
 	return sampleConfig
 }
 
-func (d *DCOS) Gather(acc telegraf.Accumulator) error {
+func (d *DCOS) Gather(acc opsagent.Accumulator) error {
 	err := d.init()
 	if err != nil {
 		return err
@@ -152,7 +152,7 @@ func (d *DCOS) Gather(acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (d *DCOS) GatherNode(ctx context.Context, acc telegraf.Accumulator, cluster, node string) {
+func (d *DCOS) GatherNode(ctx context.Context, acc opsagent.Accumulator, cluster, node string) {
 	if !d.nodeFilter.Match(node) {
 		return
 	}
@@ -173,7 +173,7 @@ func (d *DCOS) GatherNode(ctx context.Context, acc telegraf.Accumulator, cluster
 	wg.Wait()
 }
 
-func (d *DCOS) GatherContainers(ctx context.Context, acc telegraf.Accumulator, cluster, node string) {
+func (d *DCOS) GatherContainers(ctx context.Context, acc opsagent.Accumulator, cluster, node string) {
 	containers, err := d.client.GetContainers(ctx, node)
 	if err != nil {
 		acc.AddError(err)
@@ -223,7 +223,7 @@ type point struct {
 	fields map[string]interface{}
 }
 
-func (d *DCOS) createPoints(acc telegraf.Accumulator, m *Metrics) []*point {
+func (d *DCOS) createPoints(acc opsagent.Accumulator, m *Metrics) []*point {
 	points := make(map[string]*point)
 	for _, dp := range m.Datapoints {
 		fieldKey := strings.Replace(dp.Name, ".", "_", -1)
@@ -285,7 +285,7 @@ func (d *DCOS) createPoints(acc telegraf.Accumulator, m *Metrics) []*point {
 	return results
 }
 
-func (d *DCOS) addMetrics(acc telegraf.Accumulator, cluster, mname string, m *Metrics, tagDimensions []string) {
+func (d *DCOS) addMetrics(acc opsagent.Accumulator, cluster, mname string, m *Metrics, tagDimensions []string) {
 	tm := time.Now()
 
 	points := d.createPoints(acc, m)
@@ -307,15 +307,15 @@ func (d *DCOS) addMetrics(acc telegraf.Accumulator, cluster, mname string, m *Me
 	}
 }
 
-func (d *DCOS) addNodeMetrics(acc telegraf.Accumulator, cluster string, m *Metrics) {
+func (d *DCOS) addNodeMetrics(acc opsagent.Accumulator, cluster string, m *Metrics) {
 	d.addMetrics(acc, cluster, "dcos_node", m, nodeDimensions)
 }
 
-func (d *DCOS) addContainerMetrics(acc telegraf.Accumulator, cluster string, m *Metrics) {
+func (d *DCOS) addContainerMetrics(acc opsagent.Accumulator, cluster string, m *Metrics) {
 	d.addMetrics(acc, cluster, "dcos_container", m, containerDimensions)
 }
 
-func (d *DCOS) addAppMetrics(acc telegraf.Accumulator, cluster string, m *Metrics) {
+func (d *DCOS) addAppMetrics(acc opsagent.Accumulator, cluster string, m *Metrics) {
 	d.addMetrics(acc, cluster, "dcos_app", m, appDimensions)
 }
 
@@ -420,7 +420,7 @@ func (d *DCOS) createFilters() error {
 }
 
 func init() {
-	inputs.Add("dcos", func() telegraf.Input {
+	inputs.Add("dcos", func() opsagent.Input {
 		return &DCOS{
 			MaxConnections: defaultMaxConnections,
 			ResponseTimeout: internal.Duration{

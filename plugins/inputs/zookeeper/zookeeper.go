@@ -43,9 +43,9 @@ var sampleConfig = `
 
   ## Optional TLS Config
   # enable_tls = true
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## If false, skip chain & host verification
   # insecure_skip_verify = true
 `
@@ -76,7 +76,7 @@ func (z *Zookeeper) dial(ctx context.Context, addr string) (net.Conn, error) {
 }
 
 // Gather reads stats from all configured servers accumulates stats
-func (z *Zookeeper) Gather(acc telegraf.Accumulator) error {
+func (z *Zookeeper) Gather(acc opsagent.Accumulator) error {
 	ctx := context.Background()
 
 	if !z.initialized {
@@ -105,7 +105,7 @@ func (z *Zookeeper) Gather(acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (z *Zookeeper) gatherServer(ctx context.Context, address string, acc telegraf.Accumulator) error {
+func (z *Zookeeper) gatherServer(ctx context.Context, address string, acc opsagent.Accumulator) error {
 	var zookeeper_state string
 	_, _, err := net.SplitHostPort(address)
 	if err != nil {
@@ -175,7 +175,7 @@ func (z *Zookeeper) gatherServer(ctx context.Context, address string, acc telegr
 }
 
 func init() {
-	inputs.Add("zookeeper", func() telegraf.Input {
+	inputs.Add("zookeeper", func() opsagent.Input {
 		return &Zookeeper{}
 	})
 }

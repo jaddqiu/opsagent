@@ -22,7 +22,7 @@ var sampleConfig = `
   ## Location of nsqd instance listening on TCP
   server = "localhost:4150"
   ## NSQ topic for producer messages
-  topic = "telegraf"
+  topic = "opsagent"
 
   ## Data format to output.
   ## Each data format has its own unique set of configuration options, read
@@ -57,10 +57,10 @@ func (n *NSQ) SampleConfig() string {
 }
 
 func (n *NSQ) Description() string {
-	return "Send telegraf measurements to NSQD"
+	return "Send opsagent measurements to NSQD"
 }
 
-func (n *NSQ) Write(metrics []telegraf.Metric) error {
+func (n *NSQ) Write(metrics []opsagent.Metric) error {
 	if len(metrics) == 0 {
 		return nil
 	}
@@ -80,7 +80,7 @@ func (n *NSQ) Write(metrics []telegraf.Metric) error {
 }
 
 func init() {
-	outputs.Add("nsq", func() telegraf.Output {
+	outputs.Add("nsq", func() opsagent.Output {
 		return &NSQ{}
 	})
 }

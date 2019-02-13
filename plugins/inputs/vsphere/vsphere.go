@@ -203,7 +203,7 @@ var sampleConfig = `
 `
 
 // SampleConfig returns a set of default configuration to be used as a boilerplate when setting up
-// Telegraf.
+// Opsagent.
 func (v *VSphere) SampleConfig() string {
 	return sampleConfig
 }
@@ -213,9 +213,9 @@ func (v *VSphere) Description() string {
 	return "Read metrics from VMware vCenter"
 }
 
-// Start is called from telegraf core when a plugin is started and allows it to
+// Start is called from opsagent core when a plugin is started and allows it to
 // perform initialization tasks.
-func (v *VSphere) Start(acc telegraf.Accumulator) error {
+func (v *VSphere) Start(acc opsagent.Accumulator) error {
 	log.Println("D! [input.vsphere]: Starting plugin")
 	ctx, cancel := context.WithCancel(context.Background())
 	v.cancel = cancel
@@ -236,7 +236,7 @@ func (v *VSphere) Start(acc telegraf.Accumulator) error {
 	return nil
 }
 
-// Stop is called from telegraf core when a plugin is stopped and allows it to
+// Stop is called from opsagent core when a plugin is stopped and allows it to
 // perform shutdown tasks.
 func (v *VSphere) Stop() {
 	log.Println("D! [input.vsphere]: Stopping plugin")
@@ -257,9 +257,9 @@ func (v *VSphere) Stop() {
 	}
 }
 
-// Gather is the main data collection function called by the Telegraf core. It performs all
+// Gather is the main data collection function called by the Opsagent core. It performs all
 // the data collection and writes all metrics into the Accumulator passed as an argument.
-func (v *VSphere) Gather(acc telegraf.Accumulator) error {
+func (v *VSphere) Gather(acc opsagent.Accumulator) error {
 	var wg sync.WaitGroup
 	for _, ep := range v.endpoints {
 		wg.Add(1)
@@ -282,7 +282,7 @@ func (v *VSphere) Gather(acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add("vsphere", func() telegraf.Input {
+	inputs.Add("vsphere", func() opsagent.Input {
 		return &VSphere{
 			Vcenters: []string{},
 

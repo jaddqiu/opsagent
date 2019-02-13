@@ -9,7 +9,7 @@ import (
 	"github.com/jaddqiu/opsagent/testutil"
 )
 
-func MustMetric(t *testing.T, m *testutil.Metric) telegraf.Metric {
+func MustMetric(t *testing.T, m *testutil.Metric) opsagent.Metric {
 	t.Helper()
 	v, err := metric.New(m.Measurement, m.Tags, m.Fields, m.Time)
 	if err != nil {
@@ -24,20 +24,20 @@ func TestParse(t *testing.T) {
 		measurement string
 		now         func() time.Time
 		bytes       []byte
-		want        []telegraf.Metric
+		want        []opsagent.Metric
 		wantErr     bool
 	}{
 		{
 			name: "no bytes returns no metrics",
 			now:  func() time.Time { return time.Unix(0, 0) },
-			want: []telegraf.Metric{},
+			want: []opsagent.Metric{},
 		},
 		{
 			name:        "test without trailing end",
 			bytes:       []byte("foo=\"bar\""),
 			now:         func() time.Time { return time.Unix(0, 0) },
 			measurement: "testlog",
-			want: []telegraf.Metric{
+			want: []opsagent.Metric{
 				testutil.MustMetric(
 					"testlog",
 					map[string]string{},
@@ -53,7 +53,7 @@ func TestParse(t *testing.T) {
 			bytes:       []byte("foo=\"bar\"\n"),
 			now:         func() time.Time { return time.Unix(0, 0) },
 			measurement: "testlog",
-			want: []telegraf.Metric{
+			want: []opsagent.Metric{
 				testutil.MustMetric(
 					"testlog",
 					map[string]string{},
@@ -69,7 +69,7 @@ func TestParse(t *testing.T) {
 			bytes:       []byte(`ts=2018-07-24T19:43:40.275Z lvl=info msg="http request" method=POST`),
 			now:         func() time.Time { return time.Unix(0, 0) },
 			measurement: "testlog",
-			want: []telegraf.Metric{
+			want: []opsagent.Metric{
 				testutil.MustMetric(
 					"testlog",
 					map[string]string{},
@@ -88,7 +88,7 @@ func TestParse(t *testing.T) {
 			bytes:       []byte("ts=2018-07-24T19:43:40.275Z lvl=info msg=\"http request\" method=POST\nparent_id=088876RL000 duration=7.45 log_id=09R4e4Rl000"),
 			now:         func() time.Time { return time.Unix(0, 0) },
 			measurement: "testlog",
-			want: []telegraf.Metric{
+			want: []opsagent.Metric{
 				testutil.MustMetric(
 					"testlog",
 					map[string]string{},
@@ -116,14 +116,14 @@ func TestParse(t *testing.T) {
 			name:    "keys without = or values are ignored",
 			now:     func() time.Time { return time.Unix(0, 0) },
 			bytes:   []byte(`i am no data.`),
-			want:    []telegraf.Metric{},
+			want:    []opsagent.Metric{},
 			wantErr: false,
 		},
 		{
 			name:    "keys without values are ignored",
 			now:     func() time.Time { return time.Unix(0, 0) },
 			bytes:   []byte(`foo="" bar=`),
-			want:    []telegraf.Metric{},
+			want:    []opsagent.Metric{},
 			wantErr: false,
 		},
 		{
@@ -131,7 +131,7 @@ func TestParse(t *testing.T) {
 			now:         func() time.Time { return time.Unix(0, 0) },
 			measurement: "testlog",
 			bytes:       []byte(`bar=baz foo="bar`),
-			want:        []telegraf.Metric{},
+			want:        []opsagent.Metric{},
 			wantErr:     true,
 		},
 		{
@@ -139,7 +139,7 @@ func TestParse(t *testing.T) {
 			now:         func() time.Time { return time.Unix(0, 0) },
 			measurement: "testlog",
 			bytes:       []byte(`"foo=" bar=baz`),
-			want:        []telegraf.Metric{},
+			want:        []opsagent.Metric{},
 			wantErr:     true,
 		},
 	}
@@ -166,7 +166,7 @@ func TestParseLine(t *testing.T) {
 		s           string
 		measurement string
 		now         func() time.Time
-		want        telegraf.Metric
+		want        opsagent.Metric
 		wantErr     bool
 	}{
 		{

@@ -136,7 +136,7 @@ func (w *Wavefront) Connect() error {
 	return nil
 }
 
-func (w *Wavefront) Write(metrics []telegraf.Metric) error {
+func (w *Wavefront) Write(metrics []opsagent.Metric) error {
 
 	for _, m := range metrics {
 		for _, point := range buildMetrics(m, w) {
@@ -150,7 +150,7 @@ func (w *Wavefront) Write(metrics []telegraf.Metric) error {
 	return nil
 }
 
-func buildMetrics(m telegraf.Metric, w *Wavefront) []*MetricPoint {
+func buildMetrics(m opsagent.Metric, w *Wavefront) []*MetricPoint {
 	ret := []*MetricPoint{}
 
 	for fieldName, value := range m.Fields() {
@@ -212,7 +212,7 @@ func buildTags(mTags map[string]string, w *Wavefront) (string, map[string]string
 			for k, v := range mTags {
 				if k == s {
 					source = v
-					mTags["telegraf_host"] = mTags["host"]
+					mTags["opsagent_host"] = mTags["host"]
 					sourceTagFound = true
 					delete(mTags, k)
 					break
@@ -297,7 +297,7 @@ func (w *Wavefront) Close() error {
 }
 
 func init() {
-	outputs.Add("wavefront", func() telegraf.Output {
+	outputs.Add("wavefront", func() opsagent.Output {
 		return &Wavefront{
 			Token:           "DUMMY_TOKEN",
 			MetricSeparator: ".",

@@ -38,7 +38,7 @@ func TestWrite(t *testing.T) {
 		time.Date(2010, time.November, 10, 23, 0, 0, 0, time.UTC),
 	)
 
-	metrics := []telegraf.Metric{m1, m2}
+	metrics := []opsagent.Metric{m1, m2}
 	i.Write(metrics)
 
 	// Counter and Histogram are increments
@@ -69,7 +69,7 @@ func TestWrite(t *testing.T) {
 		time.Date(2010, time.November, 10, 23, 0, 0, 0, time.UTC),
 	)
 
-	metrics = []telegraf.Metric{m3, m4, m5, m6}
+	metrics = []opsagent.Metric{m3, m4, m5, m6}
 	i.Write(metrics)
 
 	wg.Wait()
@@ -85,7 +85,7 @@ func TCPServer(t *testing.T, wg *sync.WaitGroup) {
 		tp := textproto.NewReader(reader)
 
 		hello, _ := tp.ReadLine()
-		assert.Equal(t, "hello version go/telegraf/1.1", hello)
+		assert.Equal(t, "hello version go/opsagent/1.1", hello)
 		auth, _ := tp.ReadLine()
 		assert.Equal(t, "authenticate abc123token", auth)
 		conn.Write([]byte("ok\nok\n"))
@@ -101,7 +101,7 @@ func TCPServer(t *testing.T, wg *sync.WaitGroup) {
 		tp = textproto.NewReader(reader)
 
 		hello, _ = tp.ReadLine()
-		assert.Equal(t, "hello version go/telegraf/1.1", hello)
+		assert.Equal(t, "hello version go/opsagent/1.1", hello)
 		auth, _ = tp.ReadLine()
 		assert.Equal(t, "authenticate abc123token", auth)
 		conn.Write([]byte("ok\nok\n"))

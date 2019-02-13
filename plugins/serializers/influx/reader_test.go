@@ -16,14 +16,14 @@ func TestReader(t *testing.T) {
 		name         string
 		maxLineBytes int
 		bufferSize   int
-		input        []telegraf.Metric
+		input        []opsagent.Metric
 		expected     []byte
 	}{
 		{
 			name:         "minimal",
 			maxLineBytes: 4096,
 			bufferSize:   20,
-			input: []telegraf.Metric{
+			input: []opsagent.Metric{
 				MustMetric(
 					metric.New(
 						"cpu",
@@ -41,7 +41,7 @@ func TestReader(t *testing.T) {
 			name:         "multiple lines",
 			maxLineBytes: 4096,
 			bufferSize:   20,
-			input: []telegraf.Metric{
+			input: []opsagent.Metric{
 				MustMetric(
 					metric.New(
 						"cpu",
@@ -69,7 +69,7 @@ func TestReader(t *testing.T) {
 			name:         "exact fit",
 			maxLineBytes: 4096,
 			bufferSize:   15,
-			input: []telegraf.Metric{
+			input: []opsagent.Metric{
 				MustMetric(
 					metric.New(
 						"cpu",
@@ -87,7 +87,7 @@ func TestReader(t *testing.T) {
 			name:         "continue on failed metrics",
 			maxLineBytes: 4096,
 			bufferSize:   15,
-			input: []telegraf.Metric{
+			input: []opsagent.Metric{
 				MustMetric(
 					metric.New(
 						"",
@@ -115,7 +115,7 @@ func TestReader(t *testing.T) {
 			name:         "last metric failed regression",
 			maxLineBytes: 4096,
 			bufferSize:   15,
-			input: []telegraf.Metric{
+			input: []opsagent.Metric{
 				MustMetric(
 					metric.New(
 						"cpu",
@@ -181,7 +181,7 @@ func TestZeroLengthBufferNoError(t *testing.T) {
 	)
 	serializer := NewSerializer()
 	serializer.SetFieldSortOrder(SortFields)
-	reader := NewReader([]telegraf.Metric{m}, serializer)
+	reader := NewReader([]opsagent.Metric{m}, serializer)
 
 	readbuf := make([]byte, 0)
 

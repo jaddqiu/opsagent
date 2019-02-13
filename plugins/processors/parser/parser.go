@@ -42,7 +42,7 @@ func (p *Parser) Description() string {
 	return "Parse a value in a specified field/tag(s) and add the result in a new metric"
 }
 
-func (p *Parser) Apply(metrics ...telegraf.Metric) []telegraf.Metric {
+func (p *Parser) Apply(metrics ...opsagent.Metric) []opsagent.Metric {
 	if p.Parser == nil {
 		var err error
 		p.Parser, err = parsers.NewParser(&p.Config)
@@ -52,10 +52,10 @@ func (p *Parser) Apply(metrics ...telegraf.Metric) []telegraf.Metric {
 		}
 	}
 
-	results := []telegraf.Metric{}
+	results := []opsagent.Metric{}
 
 	for _, metric := range metrics {
-		newMetrics := []telegraf.Metric{}
+		newMetrics := []opsagent.Metric{}
 		if !p.DropOriginal {
 			newMetrics = append(newMetrics, metric)
 		}
@@ -100,7 +100,7 @@ func (p *Parser) Apply(metrics ...telegraf.Metric) []telegraf.Metric {
 	return results
 }
 
-func merge(base telegraf.Metric, metrics []telegraf.Metric) telegraf.Metric {
+func merge(base opsagent.Metric, metrics []opsagent.Metric) opsagent.Metric {
 	for _, metric := range metrics {
 		for _, field := range metric.FieldList() {
 			base.AddField(field.Key, field.Value)
@@ -113,12 +113,12 @@ func merge(base telegraf.Metric, metrics []telegraf.Metric) telegraf.Metric {
 	return base
 }
 
-func (p *Parser) parseField(value string) ([]telegraf.Metric, error) {
+func (p *Parser) parseField(value string) ([]opsagent.Metric, error) {
 	return p.Parser.Parse([]byte(value))
 }
 
 func init() {
-	processors.Add("parser", func() telegraf.Processor {
+	processors.Add("parser", func() opsagent.Processor {
 		return &Parser{DropOriginal: false}
 	})
 }

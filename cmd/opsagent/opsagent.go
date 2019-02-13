@@ -54,10 +54,10 @@ var fAggregatorFilters = flag.String("aggregator-filter", "",
 var fProcessorFilters = flag.String("processor-filter", "",
 	"filter the processors to enable, separator is :")
 var fUsage = flag.String("usage", "",
-	"print usage for a plugin, ie, 'telegraf --usage mysql'")
+	"print usage for a plugin, ie, 'opsagent --usage mysql'")
 var fService = flag.String("service", "",
 	"operate on the service (windows only)")
-var fServiceName = flag.String("service-name", "telegraf", "service name (windows only)")
+var fServiceName = flag.String("service-name", "opsagent", "service name (windows only)")
 var fRunAsConsole = flag.Bool("console", false, "run as console application (windows only)")
 
 var (
@@ -89,7 +89,7 @@ func reloadLoop(
 			select {
 			case sig := <-signals:
 				if sig == syscall.SIGHUP {
-					log.Printf("I! Reloading Telegraf config")
+					log.Printf("I! Reloading Opsagent config")
 					<-reload
 					reload <- true
 				}
@@ -101,7 +101,7 @@ func reloadLoop(
 
 		err := runAgent(ctx, inputFilters, outputFilters)
 		if err != nil {
-			log.Fatalf("E! [telegraf] Error running agent: %v", err)
+			log.Fatalf("E! [opsagent] Error running agent: %v", err)
 		}
 	}
 }
@@ -113,7 +113,7 @@ func runAgent(ctx context.Context,
 	// Setup default logging. This may need to change after reading the config
 	// file, but we can configure it to use our logger implementation now.
 	logger.SetupLogging(false, false, "")
-	log.Printf("I! Starting Telegraf %s", version)
+	log.Printf("I! Starting Opsagent %s", version)
 
 	// If no other options are specified, load the config file and run.
 	c := config.NewConfig()
@@ -222,7 +222,7 @@ func (p *program) Stop(s service.Service) error {
 }
 
 func formatFullVersion() string {
-	var parts = []string{"Telegraf"}
+	var parts = []string{"Opsagent"}
 
 	if version != "" {
 		parts = append(parts, version)
@@ -339,16 +339,16 @@ func main() {
 
 	// Configure version
 	if err := internal.SetVersion(shortVersion); err != nil {
-		log.Println("Telegraf version already configured to: " + internal.Version())
+		log.Println("Opsagent version already configured to: " + internal.Version())
 	}
 
 	if runtime.GOOS == "windows" && !(*fRunAsConsole) {
 		svcConfig := &service.Config{
 			Name:        *fServiceName,
-			DisplayName: "Telegraf Data Collector Service",
+			DisplayName: "Opsagent Data Collector Service",
 			Description: "Collects data using a series of plugins and publishes it to" +
 				"another series of plugins.",
-			Arguments: []string{"--config", "C:\\Program Files\\Telegraf\\telegraf.conf"},
+			Arguments: []string{"--config", "C:\\Program Files\\Opsagent\\opsagent.conf"},
 		}
 
 		prg := &program{

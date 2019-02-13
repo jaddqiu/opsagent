@@ -91,10 +91,10 @@ func (s *Serializer) SetFieldTypeSupport(typeSupport FieldTypeSupport) {
 	s.fieldTypeSupport = typeSupport
 }
 
-// Serialize writes the telegraf.Metric to a byte slice.  May produce multiple
+// Serialize writes the opsagent.Metric to a byte slice.  May produce multiple
 // lines of output if longer than maximum line length.  Lines are terminated
 // with a newline (LF) char.
-func (s *Serializer) Serialize(m telegraf.Metric) ([]byte, error) {
+func (s *Serializer) Serialize(m opsagent.Metric) ([]byte, error) {
 	s.buf.Reset()
 	err := s.writeMetric(&s.buf, m)
 	if err != nil {
@@ -108,7 +108,7 @@ func (s *Serializer) Serialize(m telegraf.Metric) ([]byte, error) {
 
 // SerializeBatch writes the slice of metrics and returns a byte slice of the
 // results.  The returned byte slice may contain multiple lines of data.
-func (s *Serializer) SerializeBatch(metrics []telegraf.Metric) ([]byte, error) {
+func (s *Serializer) SerializeBatch(metrics []opsagent.Metric) ([]byte, error) {
 	s.buf.Reset()
 	for _, m := range metrics {
 		_, err := s.Write(&s.buf, m)
@@ -120,7 +120,7 @@ func (s *Serializer) SerializeBatch(metrics []telegraf.Metric) ([]byte, error) {
 	copy(out, s.buf.Bytes())
 	return out, nil
 }
-func (s *Serializer) Write(w io.Writer, m telegraf.Metric) (int, error) {
+func (s *Serializer) Write(w io.Writer, m opsagent.Metric) (int, error) {
 	err := s.writeMetric(w, m)
 	return s.bytesWritten, err
 }
@@ -137,7 +137,7 @@ func (s *Serializer) write(w io.Writer, b []byte) error {
 	return err
 }
 
-func (s *Serializer) buildHeader(m telegraf.Metric) error {
+func (s *Serializer) buildHeader(m opsagent.Metric) error {
 	s.header = s.header[:0]
 
 	name := nameEscape(m.Name())
@@ -167,7 +167,7 @@ func (s *Serializer) buildHeader(m telegraf.Metric) error {
 	return nil
 }
 
-func (s *Serializer) buildFooter(m telegraf.Metric) {
+func (s *Serializer) buildFooter(m opsagent.Metric) {
 	s.footer = s.footer[:0]
 	s.footer = append(s.footer, ' ')
 	s.footer = strconv.AppendInt(s.footer, m.Time().UnixNano(), 10)
@@ -194,7 +194,7 @@ func (s *Serializer) buildFieldPair(key string, value interface{}) error {
 	return nil
 }
 
-func (s *Serializer) writeMetric(w io.Writer, m telegraf.Metric) error {
+func (s *Serializer) writeMetric(w io.Writer, m opsagent.Metric) error {
 	var err error
 
 	err = s.buildHeader(m)

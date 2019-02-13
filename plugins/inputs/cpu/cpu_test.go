@@ -186,7 +186,7 @@ func TestCPUCountIncrease(t *testing.T) {
 	require.NoError(t, err)
 }
 
-// TestCPUTimesDecrease tests that telegraf continue to works after
+// TestCPUTimesDecrease tests that opsagent continue to works after
 // CPU times decrease, which seems to occur when Linux system is suspended.
 func TestCPUTimesDecrease(t *testing.T) {
 	var mps system.MockPS

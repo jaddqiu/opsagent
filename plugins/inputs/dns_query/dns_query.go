@@ -70,7 +70,7 @@ func (d *DnsQuery) SampleConfig() string {
 func (d *DnsQuery) Description() string {
 	return "Query given DNS server and gives statistics"
 }
-func (d *DnsQuery) Gather(acc telegraf.Accumulator) error {
+func (d *DnsQuery) Gather(acc opsagent.Accumulator) error {
 	var wg sync.WaitGroup
 	d.setDefaultValues()
 
@@ -206,7 +206,7 @@ func setResult(result ResultType, fields map[string]interface{}, tags map[string
 }
 
 func init() {
-	inputs.Add("dns_query", func() telegraf.Input {
+	inputs.Add("dns_query", func() opsagent.Input {
 		return &DnsQuery{}
 	})
 }

@@ -168,7 +168,7 @@ type SocketListener struct {
 	tlsint.ServerConfig
 
 	parsers.Parser
-	telegraf.Accumulator
+	opsagent.Accumulator
 	io.Closer
 }
 
@@ -187,8 +187,8 @@ func (sl *SocketListener) SampleConfig() string {
   # service_address = "udp://:8094"
   # service_address = "udp4://:8094"
   # service_address = "udp6://:8094"
-  # service_address = "unix:///tmp/telegraf.sock"
-  # service_address = "unixgram:///tmp/telegraf.sock"
+  # service_address = "unix:///tmp/opsagent.sock"
+  # service_address = "unixgram:///tmp/opsagent.sock"
 
   ## Maximum number of concurrent connections.
   ## Only applies to stream sockets (e.g. TCP).
@@ -202,10 +202,10 @@ func (sl *SocketListener) SampleConfig() string {
 
   ## Optional TLS configuration.
   ## Only applies to stream sockets (e.g. TCP).
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key  = "/etc/telegraf/key.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key  = "/etc/opsagent/key.pem"
   ## Enables client authentication if set.
-  # tls_allowed_cacerts = ["/etc/telegraf/clientca.pem"]
+  # tls_allowed_cacerts = ["/etc/opsagent/clientca.pem"]
 
   ## Maximum socket buffer size (in bytes when no unit specified).
   ## For stream sockets, once the buffer fills up, the sender will start backing up.
@@ -227,7 +227,7 @@ func (sl *SocketListener) SampleConfig() string {
 `
 }
 
-func (sl *SocketListener) Gather(_ telegraf.Accumulator) error {
+func (sl *SocketListener) Gather(_ opsagent.Accumulator) error {
 	return nil
 }
 
@@ -235,7 +235,7 @@ func (sl *SocketListener) SetParser(parser parsers.Parser) {
 	sl.Parser = parser
 }
 
-func (sl *SocketListener) Start(acc telegraf.Accumulator) error {
+func (sl *SocketListener) Start(acc opsagent.Accumulator) error {
 	sl.Accumulator = acc
 	spl := strings.SplitN(sl.ServiceAddress, "://", 2)
 	if len(spl) != 2 {
@@ -337,5 +337,5 @@ func (uc unixCloser) Close() error {
 }
 
 func init() {
-	inputs.Add("socket_listener", func() telegraf.Input { return newSocketListener() })
+	inputs.Add("socket_listener", func() opsagent.Input { return newSocketListener() })
 }

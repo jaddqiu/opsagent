@@ -45,7 +45,7 @@ var sampleConfig = `
   ## Server address (default http://localhost)
   # address = "http://localhost"
 
-  ## Set http_proxy (telegraf uses the system wide proxy settings if it's is not set)
+  ## Set http_proxy (opsagent uses the system wide proxy settings if it's is not set)
   # http_proxy = "http://localhost:8888"
 
   ## Set response_timeout (default 5 seconds)
@@ -68,9 +68,9 @@ var sampleConfig = `
   # response_string_match = "\".*_status\".?:.?\"up\""
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 
@@ -266,7 +266,7 @@ func (h *HTTPResponse) httpGather() (map[string]interface{}, map[string]string, 
 }
 
 // Gather gets all metric fields and tags and returns any errors it encounters
-func (h *HTTPResponse) Gather(acc telegraf.Accumulator) error {
+func (h *HTTPResponse) Gather(acc opsagent.Accumulator) error {
 	// Compile the body regex if it exist
 	if h.compiledStringMatch == nil {
 		var err error
@@ -319,7 +319,7 @@ func (h *HTTPResponse) Gather(acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add("http_response", func() telegraf.Input {
+	inputs.Add("http_response", func() opsagent.Input {
 		return &HTTPResponse{}
 	})
 }

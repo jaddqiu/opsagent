@@ -12,13 +12,13 @@ import (
 
 type metricDiff struct {
 	Measurement string
-	Tags        []*telegraf.Tag
-	Fields      []*telegraf.Field
-	Type        telegraf.ValueType
+	Tags        []*opsagent.Tag
+	Fields      []*opsagent.Field
+	Type        opsagent.ValueType
 	Time        time.Time
 }
 
-func newMetricDiff(metric telegraf.Metric) *metricDiff {
+func newMetricDiff(metric opsagent.Metric) *metricDiff {
 	if metric == nil {
 		return nil
 	}
@@ -45,7 +45,7 @@ func newMetricDiff(metric telegraf.Metric) *metricDiff {
 	return m
 }
 
-func MetricEqual(expected, actual telegraf.Metric) bool {
+func MetricEqual(expected, actual opsagent.Metric) bool {
 	var lhs, rhs *metricDiff
 	if expected != nil {
 		lhs = newMetricDiff(expected)
@@ -57,7 +57,7 @@ func MetricEqual(expected, actual telegraf.Metric) bool {
 	return cmp.Equal(lhs, rhs)
 }
 
-func RequireMetricEqual(t *testing.T, expected, actual telegraf.Metric) {
+func RequireMetricEqual(t *testing.T, expected, actual opsagent.Metric) {
 	t.Helper()
 
 	var lhs, rhs *metricDiff
@@ -69,11 +69,11 @@ func RequireMetricEqual(t *testing.T, expected, actual telegraf.Metric) {
 	}
 
 	if diff := cmp.Diff(lhs, rhs); diff != "" {
-		t.Fatalf("telegraf.Metric\n--- expected\n+++ actual\n%s", diff)
+		t.Fatalf("opsagent.Metric\n--- expected\n+++ actual\n%s", diff)
 	}
 }
 
-func RequireMetricsEqual(t *testing.T, expected, actual []telegraf.Metric) {
+func RequireMetricsEqual(t *testing.T, expected, actual []opsagent.Metric) {
 	t.Helper()
 
 	lhs := make([]*metricDiff, 0, len(expected))
@@ -85,7 +85,7 @@ func RequireMetricsEqual(t *testing.T, expected, actual []telegraf.Metric) {
 		rhs = append(rhs, newMetricDiff(m))
 	}
 	if diff := cmp.Diff(lhs, rhs); diff != "" {
-		t.Fatalf("[]telegraf.Metric\n--- expected\n+++ actual\n%s", diff)
+		t.Fatalf("[]opsagent.Metric\n--- expected\n+++ actual\n%s", diff)
 	}
 }
 
@@ -95,8 +95,8 @@ func MustMetric(
 	tags map[string]string,
 	fields map[string]interface{},
 	tm time.Time,
-	tp ...telegraf.ValueType,
-) telegraf.Metric {
+	tp ...opsagent.ValueType,
+) opsagent.Metric {
 	m, err := metric.New(name, tags, fields, tm, tp...)
 	if err != nil {
 		panic("MustMetric")

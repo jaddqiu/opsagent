@@ -62,7 +62,7 @@ func TestLogin(t *testing.T) {
 
 			ctx := context.Background()
 			sa := &ServiceAccount{
-				AccountID:  "telegraf",
+				AccountID:  "opsagent",
 				PrivateKey: key,
 			}
 			client := NewClusterClient(u, defaultResponseTimeout, 1, nil)

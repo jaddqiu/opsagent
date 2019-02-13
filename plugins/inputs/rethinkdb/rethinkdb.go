@@ -44,7 +44,7 @@ var localhost = &Server{Url: &url.URL{Host: "127.0.0.1:28015"}}
 
 // Reads stats from all configured servers accumulates stats.
 // Returns one of the errors encountered while gather stats (if any).
-func (r *RethinkDB) Gather(acc telegraf.Accumulator) error {
+func (r *RethinkDB) Gather(acc opsagent.Accumulator) error {
 	if len(r.Servers) == 0 {
 		r.gatherServer(localhost, acc)
 		return nil
@@ -73,7 +73,7 @@ func (r *RethinkDB) Gather(acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (r *RethinkDB) gatherServer(server *Server, acc telegraf.Accumulator) error {
+func (r *RethinkDB) gatherServer(server *Server, acc opsagent.Accumulator) error {
 	var err error
 	connectOpts := gorethink.ConnectOpts{
 		Address:       server.Url.Host,
@@ -105,7 +105,7 @@ func (r *RethinkDB) gatherServer(server *Server, acc telegraf.Accumulator) error
 }
 
 func init() {
-	inputs.Add("rethinkdb", func() telegraf.Input {
+	inputs.Add("rethinkdb", func() opsagent.Input {
 		return &RethinkDB{}
 	})
 }

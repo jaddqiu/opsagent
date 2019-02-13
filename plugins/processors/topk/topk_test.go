@@ -9,7 +9,7 @@ import (
 	"github.com/jaddqiu/opsagent/testutil"
 )
 
-// Key, value pair that represents a telegraf.Metric Field
+// Key, value pair that represents a opsagent.Metric Field
 type field struct {
 	key string
 	val interface{}
@@ -19,7 +19,7 @@ func fieldList(fields ...field) []field {
 	return fields
 }
 
-// Key, value pair that represents a telegraf.Metric Tag
+// Key, value pair that represents a opsagent.Metric Tag
 type tag struct {
 	key string
 	val string
@@ -35,7 +35,7 @@ type metricChange struct {
 	newTags   []tag   // Tags that should be added to the metric
 
 	runHash bool // Sometimes the metrics' HashID must be run so reflect.DeepEqual works
-	// This happens because telegraf.Metric mantains an internal cache of
+	// This happens because opsagent.Metric mantains an internal cache of
 	// its hash value that is set when HashID() is called for the first time
 }
 
@@ -47,8 +47,8 @@ type metricChange struct {
 //       comparing metrics that have the same fields/tags added in different orders will return false, although
 //       they are semantically equal.
 //       Therefore the fields and tags must be in the same order that the processor would add them
-func generateAns(input []telegraf.Metric, changeSet map[int]metricChange) []telegraf.Metric {
-	answer := []telegraf.Metric{}
+func generateAns(input []opsagent.Metric, changeSet map[int]metricChange) []opsagent.Metric {
+	answer := []opsagent.Metric{}
 
 	// For every input metric, we check if there is a change we need to apply
 	// If there is no change for a given input metric, the metric is dropped
@@ -84,8 +84,8 @@ func generateAns(input []telegraf.Metric, changeSet map[int]metricChange) []tele
 	return answer
 }
 
-func deepCopy(a []telegraf.Metric) []telegraf.Metric {
-	ret := make([]telegraf.Metric, 0, len(a))
+func deepCopy(a []opsagent.Metric) []opsagent.Metric {
+	ret := make([]opsagent.Metric, 0, len(a))
 	for _, m := range a {
 		ret = append(ret, m.Copy())
 	}
@@ -93,7 +93,7 @@ func deepCopy(a []telegraf.Metric) []telegraf.Metric {
 	return ret
 }
 
-func belongs(m telegraf.Metric, ms []telegraf.Metric) bool {
+func belongs(m opsagent.Metric, ms []opsagent.Metric) bool {
 	for _, i := range ms {
 		if testutil.MetricEqual(i, m) {
 			return true
@@ -102,7 +102,7 @@ func belongs(m telegraf.Metric, ms []telegraf.Metric) bool {
 	return false
 }
 
-func subSet(a []telegraf.Metric, b []telegraf.Metric) bool {
+func subSet(a []opsagent.Metric, b []opsagent.Metric) bool {
 	subset := true
 	for _, m := range a {
 		if !belongs(m, b) {
@@ -113,7 +113,7 @@ func subSet(a []telegraf.Metric, b []telegraf.Metric) bool {
 	return subset
 }
 
-func equalSets(l1 []telegraf.Metric, l2 []telegraf.Metric) bool {
+func equalSets(l1 []opsagent.Metric, l2 []opsagent.Metric) bool {
 	return subSet(l1, l2) && subSet(l2, l1)
 }
 
@@ -121,7 +121,7 @@ func createDuration(t int) internal.Duration {
 	return internal.Duration{Duration: time.Second * time.Duration(t)}
 }
 
-func runAndCompare(topk *TopK, metrics []telegraf.Metric, answer []telegraf.Metric, testID string, t *testing.T) {
+func runAndCompare(topk *TopK, metrics []opsagent.Metric, answer []opsagent.Metric, testID string, t *testing.T) {
 	// Sleep for `period`, otherwise the processor will only
 	// cache the metrics, but it will not process them
 	time.Sleep(topk.Period.Duration)

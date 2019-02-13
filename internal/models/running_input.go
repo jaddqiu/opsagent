@@ -10,7 +10,7 @@ import (
 var GlobalMetricsGathered = selfstat.Register("agent", "metrics_gathered", map[string]string{})
 
 type RunningInput struct {
-	Input  telegraf.Input
+	Input  opsagent.Input
 	Config *InputConfig
 
 	defaultTags map[string]string
@@ -19,7 +19,7 @@ type RunningInput struct {
 	GatherTime      selfstat.Stat
 }
 
-func NewRunningInput(input telegraf.Input, config *InputConfig) *RunningInput {
+func NewRunningInput(input opsagent.Input, config *InputConfig) *RunningInput {
 	return &RunningInput{
 		Input:  input,
 		Config: config,
@@ -52,11 +52,11 @@ func (r *RunningInput) Name() string {
 	return "inputs." + r.Config.Name
 }
 
-func (r *RunningInput) metricFiltered(metric telegraf.Metric) {
+func (r *RunningInput) metricFiltered(metric opsagent.Metric) {
 	metric.Drop()
 }
 
-func (r *RunningInput) MakeMetric(metric telegraf.Metric) telegraf.Metric {
+func (r *RunningInput) MakeMetric(metric opsagent.Metric) opsagent.Metric {
 	if ok := r.Config.Filter.Select(metric); !ok {
 		r.metricFiltered(metric)
 		return nil
@@ -81,7 +81,7 @@ func (r *RunningInput) MakeMetric(metric telegraf.Metric) telegraf.Metric {
 	return m
 }
 
-func (r *RunningInput) Gather(acc telegraf.Accumulator) error {
+func (r *RunningInput) Gather(acc opsagent.Accumulator) error {
 	start := time.Now()
 	err := r.Input.Gather(acc)
 	elapsed := time.Since(start)

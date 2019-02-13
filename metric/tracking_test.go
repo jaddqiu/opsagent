@@ -13,8 +13,8 @@ func mustMetric(
 	tags map[string]string,
 	fields map[string]interface{},
 	tm time.Time,
-	tp ...telegraf.ValueType,
-) telegraf.Metric {
+	tp ...opsagent.ValueType,
+) opsagent.Metric {
 	m, err := New(name, tags, fields, tm, tp...)
 	if err != nil {
 		panic("mustMetric")
@@ -23,18 +23,18 @@ func mustMetric(
 }
 
 type deliveries struct {
-	Info map[telegraf.TrackingID]telegraf.DeliveryInfo
+	Info map[opsagent.TrackingID]opsagent.DeliveryInfo
 }
 
-func (d *deliveries) onDelivery(info telegraf.DeliveryInfo) {
+func (d *deliveries) onDelivery(info opsagent.DeliveryInfo) {
 	d.Info[info.ID()] = info
 }
 
 func TestTracking(t *testing.T) {
 	tests := []struct {
 		name      string
-		metric    telegraf.Metric
-		actions   func(metric telegraf.Metric)
+		metric    opsagent.Metric
+		actions   func(metric opsagent.Metric)
 		delivered bool
 	}{
 		{
@@ -47,7 +47,7 @@ func TestTracking(t *testing.T) {
 				},
 				time.Unix(0, 0),
 			),
-			actions: func(m telegraf.Metric) {
+			actions: func(m opsagent.Metric) {
 				m.Accept()
 			},
 			delivered: true,
@@ -62,7 +62,7 @@ func TestTracking(t *testing.T) {
 				},
 				time.Unix(0, 0),
 			),
-			actions: func(m telegraf.Metric) {
+			actions: func(m opsagent.Metric) {
 				m.Reject()
 			},
 			delivered: false,
@@ -77,7 +77,7 @@ func TestTracking(t *testing.T) {
 				},
 				time.Unix(0, 0),
 			),
-			actions: func(m telegraf.Metric) {
+			actions: func(m opsagent.Metric) {
 				m2 := m.Copy()
 				m.Accept()
 				m2.Accept()
@@ -94,7 +94,7 @@ func TestTracking(t *testing.T) {
 				},
 				time.Unix(0, 0),
 			),
-			actions: func(m telegraf.Metric) {
+			actions: func(m opsagent.Metric) {
 				m2 := m.Copy()
 				m.Accept()
 				m2.Drop()
@@ -111,7 +111,7 @@ func TestTracking(t *testing.T) {
 				},
 				time.Unix(0, 0),
 			),
-			actions: func(m telegraf.Metric) {
+			actions: func(m opsagent.Metric) {
 				m2 := m.Copy()
 				m.Accept()
 				m2.Reject()
@@ -122,7 +122,7 @@ func TestTracking(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			d := &deliveries{
-				Info: make(map[telegraf.TrackingID]telegraf.DeliveryInfo),
+				Info: make(map[opsagent.TrackingID]opsagent.DeliveryInfo),
 			}
 			metric, id := WithTracking(tt.metric, d.onDelivery)
 			tt.actions(metric)
@@ -136,13 +136,13 @@ func TestTracking(t *testing.T) {
 func TestGroupTracking(t *testing.T) {
 	tests := []struct {
 		name      string
-		metrics   []telegraf.Metric
-		actions   func(metrics []telegraf.Metric)
+		metrics   []opsagent.Metric
+		actions   func(metrics []opsagent.Metric)
 		delivered bool
 	}{
 		{
 			name: "accept",
-			metrics: []telegraf.Metric{
+			metrics: []opsagent.Metric{
 				mustMetric(
 					"cpu",
 					map[string]string{},
@@ -160,7 +160,7 @@ func TestGroupTracking(t *testing.T) {
 					time.Unix(0, 0),
 				),
 			},
-			actions: func(metrics []telegraf.Metric) {
+			actions: func(metrics []opsagent.Metric) {
 				metrics[0].Accept()
 				metrics[1].Accept()
 			},
@@ -168,7 +168,7 @@ func TestGroupTracking(t *testing.T) {
 		},
 		{
 			name: "reject",
-			metrics: []telegraf.Metric{
+			metrics: []opsagent.Metric{
 				mustMetric(
 					"cpu",
 					map[string]string{},
@@ -186,7 +186,7 @@ func TestGroupTracking(t *testing.T) {
 					time.Unix(0, 0),
 				),
 			},
-			actions: func(metrics []telegraf.Metric) {
+			actions: func(metrics []opsagent.Metric) {
 				metrics[0].Reject()
 				metrics[1].Reject()
 			},
@@ -194,7 +194,7 @@ func TestGroupTracking(t *testing.T) {
 		},
 		{
 			name: "remove",
-			metrics: []telegraf.Metric{
+			metrics: []opsagent.Metric{
 				mustMetric(
 					"cpu",
 					map[string]string{},
@@ -212,7 +212,7 @@ func TestGroupTracking(t *testing.T) {
 					time.Unix(0, 0),
 				),
 			},
-			actions: func(metrics []telegraf.Metric) {
+			actions: func(metrics []opsagent.Metric) {
 				metrics[0].Drop()
 				metrics[1].Drop()
 			},
@@ -220,7 +220,7 @@ func TestGroupTracking(t *testing.T) {
 		},
 		{
 			name: "mixed",
-			metrics: []telegraf.Metric{
+			metrics: []opsagent.Metric{
 				mustMetric(
 					"cpu",
 					map[string]string{},
@@ -238,7 +238,7 @@ func TestGroupTracking(t *testing.T) {
 					time.Unix(0, 0),
 				),
 			},
-			actions: func(metrics []telegraf.Metric) {
+			actions: func(metrics []opsagent.Metric) {
 				metrics[0].Accept()
 				metrics[1].Reject()
 			},
@@ -248,7 +248,7 @@ func TestGroupTracking(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			d := &deliveries{
-				Info: make(map[telegraf.TrackingID]telegraf.DeliveryInfo),
+				Info: make(map[opsagent.TrackingID]opsagent.DeliveryInfo),
 			}
 			metrics, id := WithGroupTracking(tt.metrics, d.onDelivery)
 			tt.actions(metrics)

@@ -22,7 +22,7 @@ func (m *MockPlugin) SampleConfig() string {
 }
 
 // Gather defines what data the plugin will gather.
-func (m *MockPlugin) Gather(_a0 telegraf.Accumulator) error {
+func (m *MockPlugin) Gather(_a0 opsagent.Accumulator) error {
 	ret := m.Called(_a0)
 
 	r0 := ret.Error(0)

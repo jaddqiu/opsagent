@@ -11,11 +11,11 @@ import (
 
 type metric struct {
 	name   string
-	tags   []*telegraf.Tag
-	fields []*telegraf.Field
+	tags   []*opsagent.Tag
+	fields []*opsagent.Field
 	tm     time.Time
 
-	tp        telegraf.ValueType
+	tp        opsagent.ValueType
 	aggregate bool
 }
 
@@ -24,13 +24,13 @@ func New(
 	tags map[string]string,
 	fields map[string]interface{},
 	tm time.Time,
-	tp ...telegraf.ValueType,
-) (telegraf.Metric, error) {
-	var vtype telegraf.ValueType
+	tp ...opsagent.ValueType,
+) (opsagent.Metric, error) {
+	var vtype opsagent.ValueType
 	if len(tp) > 0 {
 		vtype = tp[0]
 	} else {
-		vtype = telegraf.Untyped
+		vtype = opsagent.Untyped
 	}
 
 	m := &metric{
@@ -42,15 +42,15 @@ func New(
 	}
 
 	if len(tags) > 0 {
-		m.tags = make([]*telegraf.Tag, 0, len(tags))
+		m.tags = make([]*opsagent.Tag, 0, len(tags))
 		for k, v := range tags {
 			m.tags = append(m.tags,
-				&telegraf.Tag{Key: k, Value: v})
+				&opsagent.Tag{Key: k, Value: v})
 		}
 		sort.Slice(m.tags, func(i, j int) bool { return m.tags[i].Key < m.tags[j].Key })
 	}
 
-	m.fields = make([]*telegraf.Field, 0, len(fields))
+	m.fields = make([]*opsagent.Field, 0, len(fields))
 	for k, v := range fields {
 		v := convertField(v)
 		if v == nil {
@@ -78,7 +78,7 @@ func (m *metric) Tags() map[string]string {
 	return tags
 }
 
-func (m *metric) TagList() []*telegraf.Tag {
+func (m *metric) TagList() []*opsagent.Tag {
 	return m.tags
 }
 
@@ -91,7 +91,7 @@ func (m *metric) Fields() map[string]interface{} {
 	return fields
 }
 
-func (m *metric) FieldList() []*telegraf.Field {
+func (m *metric) FieldList() []*opsagent.Field {
 	return m.fields
 }
 
@@ -99,7 +99,7 @@ func (m *metric) Time() time.Time {
 	return m.tm
 }
 
-func (m *metric) Type() telegraf.ValueType {
+func (m *metric) Type() opsagent.ValueType {
 	return m.tp
 }
 
@@ -128,11 +128,11 @@ func (m *metric) AddTag(key, value string) {
 
 		m.tags = append(m.tags, nil)
 		copy(m.tags[i+1:], m.tags[i:])
-		m.tags[i] = &telegraf.Tag{Key: key, Value: value}
+		m.tags[i] = &opsagent.Tag{Key: key, Value: value}
 		return
 	}
 
-	m.tags = append(m.tags, &telegraf.Tag{Key: key, Value: value})
+	m.tags = append(m.tags, &opsagent.Tag{Key: key, Value: value})
 }
 
 func (m *metric) HasTag(key string) bool {
@@ -167,11 +167,11 @@ func (m *metric) RemoveTag(key string) {
 func (m *metric) AddField(key string, value interface{}) {
 	for i, field := range m.fields {
 		if key == field.Key {
-			m.fields[i] = &telegraf.Field{Key: key, Value: convertField(value)}
+			m.fields[i] = &opsagent.Field{Key: key, Value: convertField(value)}
 			return
 		}
 	}
-	m.fields = append(m.fields, &telegraf.Field{Key: key, Value: convertField(value)})
+	m.fields = append(m.fields, &opsagent.Field{Key: key, Value: convertField(value)})
 }
 
 func (m *metric) HasField(key string) bool {
@@ -207,11 +207,11 @@ func (m *metric) SetTime(t time.Time) {
 	m.tm = t
 }
 
-func (m *metric) Copy() telegraf.Metric {
+func (m *metric) Copy() opsagent.Metric {
 	m2 := &metric{
 		name:      m.name,
-		tags:      make([]*telegraf.Tag, len(m.tags)),
-		fields:    make([]*telegraf.Field, len(m.fields)),
+		tags:      make([]*opsagent.Tag, len(m.tags)),
+		fields:    make([]*opsagent.Field, len(m.fields)),
 		tm:        m.tm,
 		tp:        m.tp,
 		aggregate: m.aggregate,

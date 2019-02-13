@@ -62,7 +62,7 @@ func (d *Datadog) Connect() error {
 	return nil
 }
 
-func (d *Datadog) Write(metrics []telegraf.Metric) error {
+func (d *Datadog) Write(metrics []opsagent.Metric) error {
 	if len(metrics) == 0 {
 		return nil
 	}
@@ -139,7 +139,7 @@ func (d *Datadog) authenticatedUrl() string {
 	return fmt.Sprintf("%s?%s", d.URL, q.Encode())
 }
 
-func buildMetrics(m telegraf.Metric) (map[string]Point, error) {
+func buildMetrics(m opsagent.Metric) (map[string]Point, error) {
 	ms := make(map[string]Point)
 	for _, field := range m.FieldList() {
 		if !verifyValue(field.Value) {
@@ -155,7 +155,7 @@ func buildMetrics(m telegraf.Metric) (map[string]Point, error) {
 	return ms, nil
 }
 
-func buildTags(tagList []*telegraf.Tag) []string {
+func buildTags(tagList []*opsagent.Tag) []string {
 	tags := make([]string, len(tagList))
 	index := 0
 	for _, tag := range tagList {
@@ -197,7 +197,7 @@ func (d *Datadog) Close() error {
 }
 
 func init() {
-	outputs.Add("datadog", func() telegraf.Output {
+	outputs.Add("datadog", func() opsagent.Output {
 		return &Datadog{
 			URL: datadog_api,
 		}

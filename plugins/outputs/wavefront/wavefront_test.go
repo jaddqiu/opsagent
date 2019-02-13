@@ -40,7 +40,7 @@ func TestBuildMetrics(t *testing.T) {
 	var timestamp int64 = 1257894000
 
 	var metricTests = []struct {
-		metric       telegraf.Metric
+		metric       opsagent.Metric
 		metricPoints []MetricPoint
 	}{
 		{
@@ -82,7 +82,7 @@ func TestBuildMetricsWithSimpleFields(t *testing.T) {
 	)
 
 	var metricTests = []struct {
-		metric      telegraf.Metric
+		metric      opsagent.Metric
 		metricLines []MetricPoint
 	}{
 		{
@@ -180,17 +180,17 @@ func TestBuildTagsWithSource(t *testing.T) {
 		{
 			map[string]string{"snmp_host": "realHost", "host": "origHost"},
 			"realHost",
-			map[string]string{"telegraf_host": "origHost"},
+			map[string]string{"opsagent_host": "origHost"},
 		},
 		{
 			map[string]string{"hostagent": "realHost", "host": "origHost"},
 			"realHost",
-			map[string]string{"telegraf_host": "origHost"},
+			map[string]string{"opsagent_host": "origHost"},
 		},
 		{
 			map[string]string{"hostagent": "abc", "snmp_host": "realHost", "host": "origHost"},
 			"realHost",
-			map[string]string{"hostagent": "abc", "telegraf_host": "origHost"},
+			map[string]string{"hostagent": "abc", "opsagent_host": "origHost"},
 		},
 		{
 			map[string]string{"something": "abc", "host": "r*@l\"Ho/st"},

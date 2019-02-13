@@ -18,7 +18,7 @@ var sampleConfig = `
   ## By default this plugin returns basic CPU and Disk statistics.
   ## See the README file for more examples.
   ## Uncomment examples below or write your own as you see fit. If the system
-  ## being polled for data does not have the Object at startup of the Telegraf
+  ## being polled for data does not have the Object at startup of the Opsagent
   ## agent, it will not be gathered.
   ## Settings:
   # PrintValid = false # Print All matching performance counters
@@ -277,7 +277,7 @@ func (m *Win_PerfCounters) ParseConfig() error {
 
 }
 
-func (m *Win_PerfCounters) Gather(acc telegraf.Accumulator) error {
+func (m *Win_PerfCounters) Gather(acc opsagent.Accumulator) error {
 	// Parse the config once
 	var err error
 
@@ -402,7 +402,7 @@ func isKnownCounterDataError(err error) bool {
 }
 
 func init() {
-	inputs.Add("win_perf_counters", func() telegraf.Input {
+	inputs.Add("win_perf_counters", func() opsagent.Input {
 		return &Win_PerfCounters{query: &PerformanceQueryImpl{}, CountersRefreshInterval: internal.Duration{Duration: time.Second * 60}}
 	})
 }

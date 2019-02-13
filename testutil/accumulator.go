@@ -18,9 +18,9 @@ var (
 	lastID uint64
 )
 
-func newTrackingID() telegraf.TrackingID {
+func newTrackingID() opsagent.TrackingID {
 	atomic.AddUint64(&lastID, 1)
-	return telegraf.TrackingID(lastID)
+	return opsagent.TrackingID(lastID)
 }
 
 // Metric defines a single point measurement
@@ -45,7 +45,7 @@ type Accumulator struct {
 	Discard   bool
 	Errors    []error
 	debug     bool
-	delivered chan telegraf.DeliveryInfo
+	delivered chan opsagent.DeliveryInfo
 }
 
 func (a *Accumulator) NMetrics() uint64 {
@@ -140,7 +140,7 @@ func (a *Accumulator) AddGauge(
 	a.AddFields(measurement, fields, tags, timestamp...)
 }
 
-func (a *Accumulator) AddMetrics(metrics []telegraf.Metric) {
+func (a *Accumulator) AddMetrics(metrics []opsagent.Metric) {
 	for _, m := range metrics {
 		a.AddFields(m.Name(), m.Fields(), m.Tags(), m.Time())
 	}
@@ -164,29 +164,29 @@ func (a *Accumulator) AddHistogram(
 	a.AddFields(measurement, fields, tags, timestamp...)
 }
 
-func (a *Accumulator) AddMetric(m telegraf.Metric) {
+func (a *Accumulator) AddMetric(m opsagent.Metric) {
 	a.AddFields(m.Name(), m.Fields(), m.Tags(), m.Time())
 }
 
-func (a *Accumulator) WithTracking(maxTracked int) telegraf.TrackingAccumulator {
+func (a *Accumulator) WithTracking(maxTracked int) opsagent.TrackingAccumulator {
 	return a
 }
 
-func (a *Accumulator) AddTrackingMetric(m telegraf.Metric) telegraf.TrackingID {
+func (a *Accumulator) AddTrackingMetric(m opsagent.Metric) opsagent.TrackingID {
 	a.AddMetric(m)
 	return newTrackingID()
 }
 
-func (a *Accumulator) AddTrackingMetricGroup(group []telegraf.Metric) telegraf.TrackingID {
+func (a *Accumulator) AddTrackingMetricGroup(group []opsagent.Metric) opsagent.TrackingID {
 	for _, m := range group {
 		a.AddMetric(m)
 	}
 	return newTrackingID()
 }
 
-func (a *Accumulator) Delivered() <-chan telegraf.DeliveryInfo {
+func (a *Accumulator) Delivered() <-chan opsagent.DeliveryInfo {
 	if a.delivered == nil {
-		a.delivered = make(chan telegraf.DeliveryInfo)
+		a.delivered = make(chan opsagent.DeliveryInfo)
 	}
 	return a.delivered
 }
@@ -257,7 +257,7 @@ func (a *Accumulator) TagValue(measurement string, key string) string {
 }
 
 // Calls the given Gather function and returns the first error found.
-func (a *Accumulator) GatherError(gf func(telegraf.Accumulator) error) error {
+func (a *Accumulator) GatherError(gf func(opsagent.Accumulator) error) error {
 	if err := gf(a); err != nil {
 		return err
 	}

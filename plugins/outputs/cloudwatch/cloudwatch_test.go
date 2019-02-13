@@ -57,7 +57,7 @@ func TestBuildMetricDatums(t *testing.T) {
 	assert := assert.New(t)
 
 	zero := 0.0
-	validMetrics := []telegraf.Metric{
+	validMetrics := []opsagent.Metric{
 		testutil.TestMetric(1),
 		testutil.TestMetric(int32(1)),
 		testutil.TestMetric(int64(1)),
@@ -68,7 +68,7 @@ func TestBuildMetricDatums(t *testing.T) {
 		testutil.TestMetric(float64(1.174271e+108)), // largest should be 1.174271e+108
 		testutil.TestMetric(true),
 	}
-	invalidMetrics := []telegraf.Metric{
+	invalidMetrics := []opsagent.Metric{
 		testutil.TestMetric("Foo"),
 		testutil.TestMetric(math.Log(-1.0)),
 		testutil.TestMetric(float64(8.515919e-109)), // smallest should be 8.515920e-109

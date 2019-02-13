@@ -72,7 +72,7 @@ func (m *Ipmi) Description() string {
 }
 
 // Gather is the main execution function for the plugin
-func (m *Ipmi) Gather(acc telegraf.Accumulator) error {
+func (m *Ipmi) Gather(acc opsagent.Accumulator) error {
 	if len(m.Path) == 0 {
 		return fmt.Errorf("ipmitool not found: verify that ipmitool is installed and that ipmitool is in your PATH")
 	}
@@ -81,7 +81,7 @@ func (m *Ipmi) Gather(acc telegraf.Accumulator) error {
 		wg := sync.WaitGroup{}
 		for _, server := range m.Servers {
 			wg.Add(1)
-			go func(a telegraf.Accumulator, s string) {
+			go func(a opsagent.Accumulator, s string) {
 				defer wg.Done()
 				err := m.parse(a, s)
 				if err != nil {
@@ -100,7 +100,7 @@ func (m *Ipmi) Gather(acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (m *Ipmi) parse(acc telegraf.Accumulator, server string) error {
+func (m *Ipmi) parse(acc opsagent.Accumulator, server string) error {
 	opts := make([]string, 0)
 	hostname := ""
 	if server != "" {
@@ -124,7 +124,7 @@ func (m *Ipmi) parse(acc telegraf.Accumulator, server string) error {
 	return parseV1(acc, hostname, out, timestamp)
 }
 
-func parseV1(acc telegraf.Accumulator, hostname string, cmdOut []byte, measured_at time.Time) error {
+func parseV1(acc opsagent.Accumulator, hostname string, cmdOut []byte, measured_at time.Time) error {
 	// each line will look something like
 	// Planar VBAT      | 3.05 Volts        | ok
 	scanner := bufio.NewScanner(bytes.NewReader(cmdOut))
@@ -171,7 +171,7 @@ func parseV1(acc telegraf.Accumulator, hostname string, cmdOut []byte, measured_
 	return scanner.Err()
 }
 
-func parseV2(acc telegraf.Accumulator, hostname string, cmdOut []byte, measured_at time.Time) error {
+func parseV2(acc opsagent.Accumulator, hostname string, cmdOut []byte, measured_at time.Time) error {
 	// each line will look something like
 	// CMOS Battery     | 65h | ok  |  7.1 |
 	// Temp             | 0Eh | ok  |  3.1 | 55 degrees C
@@ -268,7 +268,7 @@ func init() {
 		m.Path = path
 	}
 	m.Timeout = internal.Duration{Duration: time.Second * 20}
-	inputs.Add("ipmi_sensor", func() telegraf.Input {
+	inputs.Add("ipmi_sensor", func() opsagent.Input {
 		m := m
 		return &m
 	})

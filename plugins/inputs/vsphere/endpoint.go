@@ -618,7 +618,7 @@ func (e *Endpoint) Close() {
 }
 
 // Collect runs a round of data collections as specified in the configuration.
-func (e *Endpoint) Collect(ctx context.Context, acc telegraf.Accumulator) error {
+func (e *Endpoint) Collect(ctx context.Context, acc opsagent.Accumulator) error {
 
 	// If we never managed to do a discovery, collection will be a no-op. Therefore,
 	// we need to check that a connection is available, or the collection will
@@ -668,7 +668,7 @@ func submitChunkJob(ctx context.Context, te *ThrottledExecutor, job func([]types
 	})
 }
 
-func (e *Endpoint) chunkify(ctx context.Context, res *resourceKind, now time.Time, latest time.Time, acc telegraf.Accumulator, job func([]types.PerfQuerySpec)) {
+func (e *Endpoint) chunkify(ctx context.Context, res *resourceKind, now time.Time, latest time.Time, acc opsagent.Accumulator, job func([]types.PerfQuerySpec)) {
 	te := NewThrottledExecutor(e.Parent.CollectConcurrency)
 	maxMetrics := e.Parent.MaxQueryMetrics
 	if maxMetrics < 1 {
@@ -749,7 +749,7 @@ func (e *Endpoint) chunkify(ctx context.Context, res *resourceKind, now time.Tim
 	te.Wait()
 }
 
-func (e *Endpoint) collectResource(ctx context.Context, resourceType string, acc telegraf.Accumulator) error {
+func (e *Endpoint) collectResource(ctx context.Context, resourceType string, acc opsagent.Accumulator) error {
 	res := e.resourceKinds[resourceType]
 	client, err := e.clientFactory.GetClient(ctx)
 	if err != nil {
@@ -858,7 +858,7 @@ func alignSamples(info []types.PerfSampleInfo, values []int64, interval time.Dur
 	return rInfo, rValues
 }
 
-func (e *Endpoint) collectChunk(ctx context.Context, pqs []types.PerfQuerySpec, res *resourceKind, acc telegraf.Accumulator, now time.Time, interval time.Duration) (int, time.Time, error) {
+func (e *Endpoint) collectChunk(ctx context.Context, pqs []types.PerfQuerySpec, res *resourceKind, acc opsagent.Accumulator, now time.Time, interval time.Duration) (int, time.Time, error) {
 	log.Printf("D! [inputs.vsphere] Query for %s has %d QuerySpecs", res.name, len(pqs))
 	latestSample := time.Time{}
 	count := 0

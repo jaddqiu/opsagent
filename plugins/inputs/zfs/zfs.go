@@ -16,7 +16,7 @@ var sampleConfig = `
   ## If not specified, then default is:
   # kstatPath = "/proc/spl/kstat/zfs"
 
-  ## By default, telegraf gather all zfs stats
+  ## By default, opsagent gather all zfs stats
   ## If not specified, then default is:
   # kstatMetrics = ["arcstats", "zfetchstats", "vdev_cache_stats"]
   ## For Linux, the default is:

@@ -63,7 +63,7 @@ var sampleConfig = `
   #
   ## On most platforms smartctl requires root access.
   ## Setting 'use_sudo' to true will make use of sudo to run smartctl.
-  ## Sudo must be configured to to allow the telegraf user to run smartctl
+  ## Sudo must be configured to to allow the opsagent user to run smartctl
   ## with out password.
   # use_sudo = false
   #
@@ -98,7 +98,7 @@ func (m *Smart) Description() string {
 	return "Read metrics from storage devices supporting S.M.A.R.T."
 }
 
-func (m *Smart) Gather(acc telegraf.Accumulator) error {
+func (m *Smart) Gather(acc opsagent.Accumulator) error {
 	if len(m.Path) == 0 {
 		return fmt.Errorf("smartctl not found: verify that smartctl is installed and that smartctl is in your PATH")
 	}
@@ -157,7 +157,7 @@ func excludedDev(excludes []string, deviceLine string) bool {
 }
 
 // Get info and attributes for each S.M.A.R.T. device
-func (m *Smart) getAttributes(acc telegraf.Accumulator, devices []string) {
+func (m *Smart) getAttributes(acc opsagent.Accumulator, devices []string) {
 
 	var wg sync.WaitGroup
 	wg.Add(len(devices))
@@ -180,7 +180,7 @@ func exitStatus(err error) (int, error) {
 	return 0, err
 }
 
-func gatherDisk(acc telegraf.Accumulator, usesudo, attributes bool, smartctl, nockeck, device string, wg *sync.WaitGroup) {
+func gatherDisk(acc opsagent.Accumulator, usesudo, attributes bool, smartctl, nockeck, device string, wg *sync.WaitGroup) {
 
 	defer wg.Done()
 	// smartctl 5.41 & 5.42 have are broken regarding handling of --nocheck/-n
@@ -340,7 +340,7 @@ func init() {
 	}
 	m.Nocheck = "standby"
 
-	inputs.Add("smart", func() telegraf.Input {
+	inputs.Add("smart", func() opsagent.Input {
 		return &m
 	})
 }

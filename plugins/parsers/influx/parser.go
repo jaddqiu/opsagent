@@ -54,10 +54,10 @@ func NewSeriesParser(handler *MetricHandler) *Parser {
 	}
 }
 
-func (p *Parser) Parse(input []byte) ([]telegraf.Metric, error) {
+func (p *Parser) Parse(input []byte) ([]opsagent.Metric, error) {
 	p.Lock()
 	defer p.Unlock()
-	metrics := make([]telegraf.Metric, 0)
+	metrics := make([]opsagent.Metric, 0)
 	p.machine.SetData(input)
 
 	for p.machine.ParseLine() {
@@ -83,7 +83,7 @@ func (p *Parser) Parse(input []byte) ([]telegraf.Metric, error) {
 	return metrics, nil
 }
 
-func (p *Parser) ParseLine(line string) (telegraf.Metric, error) {
+func (p *Parser) ParseLine(line string) (opsagent.Metric, error) {
 	metrics, err := p.Parse([]byte(line + "\n"))
 	if err != nil {
 		return nil, err
@@ -100,7 +100,7 @@ func (p *Parser) SetDefaultTags(tags map[string]string) {
 	p.DefaultTags = tags
 }
 
-func (p *Parser) applyDefaultTags(metrics []telegraf.Metric) {
+func (p *Parser) applyDefaultTags(metrics []opsagent.Metric) {
 	if len(p.DefaultTags) == 0 {
 		return
 	}

@@ -92,9 +92,9 @@ func TestHTTP_CreateDatabase(t *testing.T) {
 				URL:      u,
 				Username: "guy",
 				Password: "smiley",
-				Database: "telegraf",
+				Database: "opsagent",
 			},
-			database: "telegraf",
+			database: "opsagent",
 			queryHandlerFunc: func(t *testing.T, w http.ResponseWriter, r *http.Request) {
 				username, password, ok := r.BasicAuth()
 				require.True(t, ok)
@@ -112,7 +112,7 @@ func TestHTTP_CreateDatabase(t *testing.T) {
 					"A": "B",
 					"C": "D",
 				},
-				Database: "telegraf",
+				Database: "opsagent",
 			},
 			database: `a " b`,
 			queryHandlerFunc: func(t *testing.T, w http.ResponseWriter, r *http.Request) {
@@ -130,7 +130,7 @@ func TestHTTP_CreateDatabase(t *testing.T) {
 					"A": "B",
 					"C": "D",
 				},
-				Database: "telegraf",
+				Database: "opsagent",
 			},
 			queryHandlerFunc: func(t *testing.T, w http.ResponseWriter, r *http.Request) {
 				require.Equal(t, r.Header.Get("A"), "B")
@@ -145,7 +145,7 @@ func TestHTTP_CreateDatabase(t *testing.T) {
 				URL: u,
 			},
 			queryHandlerFunc: func(t *testing.T, w http.ResponseWriter, r *http.Request) {
-				require.Equal(t, `CREATE DATABASE "telegraf"`, r.FormValue("q"))
+				require.Equal(t, `CREATE DATABASE "opsagent"`, r.FormValue("q"))
 				w.WriteHeader(http.StatusOK)
 				w.Write(successResponse)
 			},
@@ -187,7 +187,7 @@ func TestHTTP_CreateDatabase(t *testing.T) {
 			name: "error with no response body",
 			config: &influxdb.HTTPConfig{
 				URL:      u,
-				Database: "telegraf",
+				Database: "opsagent",
 			},
 			queryHandlerFunc: func(t *testing.T, w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusNotFound)
@@ -205,7 +205,7 @@ func TestHTTP_CreateDatabase(t *testing.T) {
 			name: "ok with no response body",
 			config: &influxdb.HTTPConfig{
 				URL:      u,
-				Database: "telegraf",
+				Database: "opsagent",
 			},
 			queryHandlerFunc: func(t *testing.T, w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusOK)
@@ -260,10 +260,10 @@ func TestHTTP_Write(t *testing.T) {
 			name: "success",
 			config: &influxdb.HTTPConfig{
 				URL:      u,
-				Database: "telegraf",
+				Database: "opsagent",
 			},
 			queryHandlerFunc: func(t *testing.T, w http.ResponseWriter, r *http.Request) {
-				require.Equal(t, r.FormValue("db"), "telegraf")
+				require.Equal(t, r.FormValue("db"), "opsagent")
 				body, err := ioutil.ReadAll(r.Body)
 				require.NoError(t, err)
 				require.Contains(t, string(body), "cpu value=42")
@@ -274,7 +274,7 @@ func TestHTTP_Write(t *testing.T) {
 			name: "send basic auth",
 			config: &influxdb.HTTPConfig{
 				URL:      u,
-				Database: "telegraf",
+				Database: "opsagent",
 				Username: "guy",
 				Password: "smiley",
 			},
@@ -290,11 +290,11 @@ func TestHTTP_Write(t *testing.T) {
 			name: "send user agent",
 			config: &influxdb.HTTPConfig{
 				URL:       u,
-				Database:  "telegraf",
-				UserAgent: "telegraf",
+				Database:  "opsagent",
+				UserAgent: "opsagent",
 			},
 			queryHandlerFunc: func(t *testing.T, w http.ResponseWriter, r *http.Request) {
-				require.Equal(t, r.Header.Get("User-Agent"), "telegraf")
+				require.Equal(t, r.Header.Get("User-Agent"), "opsagent")
 				w.WriteHeader(http.StatusNoContent)
 			},
 		},
@@ -302,10 +302,10 @@ func TestHTTP_Write(t *testing.T) {
 			name: "default user agent",
 			config: &influxdb.HTTPConfig{
 				URL:      u,
-				Database: "telegraf",
+				Database: "opsagent",
 			},
 			queryHandlerFunc: func(t *testing.T, w http.ResponseWriter, r *http.Request) {
-				require.Equal(t, r.Header.Get("User-Agent"), "Telegraf/1.2.3")
+				require.Equal(t, r.Header.Get("User-Agent"), "Opsagent/1.2.3")
 				w.WriteHeader(http.StatusNoContent)
 			},
 		},
@@ -315,7 +315,7 @@ func TestHTTP_Write(t *testing.T) {
 				URL: u,
 			},
 			queryHandlerFunc: func(t *testing.T, w http.ResponseWriter, r *http.Request) {
-				require.Equal(t, "telegraf", r.FormValue("db"))
+				require.Equal(t, "opsagent", r.FormValue("db"))
 				w.WriteHeader(http.StatusNoContent)
 			},
 		},
@@ -338,7 +338,7 @@ func TestHTTP_Write(t *testing.T) {
 			name: "send retention policy",
 			config: &influxdb.HTTPConfig{
 				URL:             u,
-				Database:        "telegraf",
+				Database:        "opsagent",
 				RetentionPolicy: "foo",
 			},
 			queryHandlerFunc: func(t *testing.T, w http.ResponseWriter, r *http.Request) {
@@ -350,7 +350,7 @@ func TestHTTP_Write(t *testing.T) {
 			name: "send consistency",
 			config: &influxdb.HTTPConfig{
 				URL:         u,
-				Database:    "telegraf",
+				Database:    "opsagent",
 				Consistency: "all",
 			},
 			queryHandlerFunc: func(t *testing.T, w http.ResponseWriter, r *http.Request) {
@@ -362,7 +362,7 @@ func TestHTTP_Write(t *testing.T) {
 			name: "hinted handoff not empty no log no error",
 			config: &influxdb.HTTPConfig{
 				URL:      u,
-				Database: "telegraf",
+				Database: "opsagent",
 			},
 			queryHandlerFunc: func(t *testing.T, w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusBadRequest)
@@ -376,7 +376,7 @@ func TestHTTP_Write(t *testing.T) {
 			name: "partial write errors are logged no error",
 			config: &influxdb.HTTPConfig{
 				URL:      u,
-				Database: "telegraf",
+				Database: "opsagent",
 			},
 			queryHandlerFunc: func(t *testing.T, w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusBadRequest)
@@ -390,7 +390,7 @@ func TestHTTP_Write(t *testing.T) {
 			name: "parse errors are logged no error",
 			config: &influxdb.HTTPConfig{
 				URL:      u,
-				Database: "telegraf",
+				Database: "opsagent",
 			},
 			queryHandlerFunc: func(t *testing.T, w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusBadRequest)
@@ -404,7 +404,7 @@ func TestHTTP_Write(t *testing.T) {
 			name: "http error",
 			config: &influxdb.HTTPConfig{
 				URL:      u,
-				Database: "telegraf",
+				Database: "opsagent",
 			},
 			queryHandlerFunc: func(t *testing.T, w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusBadGateway)
@@ -421,7 +421,7 @@ func TestHTTP_Write(t *testing.T) {
 			name: "http error with desc",
 			config: &influxdb.HTTPConfig{
 				URL:      u,
-				Database: "telegraf",
+				Database: "opsagent",
 			},
 			queryHandlerFunc: func(t *testing.T, w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusServiceUnavailable)
@@ -467,7 +467,7 @@ func TestHTTP_Write(t *testing.T) {
 				time.Unix(0, 0),
 			)
 			require.NoError(t, err)
-			metrics := []telegraf.Metric{m}
+			metrics := []opsagent.Metric{m}
 
 			client, err := influxdb.NewHTTPClient(tt.config)
 			require.NoError(t, err)
@@ -518,11 +518,11 @@ func TestHTTP_WritePathPrefix(t *testing.T) {
 		time.Unix(0, 0),
 	)
 	require.NoError(t, err)
-	metrics := []telegraf.Metric{m}
+	metrics := []opsagent.Metric{m}
 
 	config := &influxdb.HTTPConfig{
 		URL:      u,
-		Database: "telegraf",
+		Database: "opsagent",
 	}
 
 	client, err := influxdb.NewHTTPClient(config)
@@ -571,11 +571,11 @@ func TestHTTP_WriteContentEncodingGzip(t *testing.T) {
 		time.Unix(0, 0),
 	)
 	require.NoError(t, err)
-	metrics := []telegraf.Metric{m}
+	metrics := []opsagent.Metric{m}
 
 	config := &influxdb.HTTPConfig{
 		URL:             u,
-		Database:        "telegraf",
+		Database:        "opsagent",
 		ContentEncoding: "gzip",
 	}
 
@@ -586,7 +586,7 @@ func TestHTTP_WriteContentEncodingGzip(t *testing.T) {
 }
 
 func TestHTTP_UnixSocket(t *testing.T) {
-	tmpdir, err := ioutil.TempDir("", "telegraf-test")
+	tmpdir, err := ioutil.TempDir("", "opsagent-test")
 	if err != nil {
 		require.NoError(t, err)
 	}

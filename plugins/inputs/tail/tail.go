@@ -29,7 +29,7 @@ type Tail struct {
 	tailers    map[string]*tail.Tail
 	parserFunc parsers.ParserFunc
 	wg         sync.WaitGroup
-	acc        telegraf.Accumulator
+	acc        opsagent.Accumulator
 
 	sync.Mutex
 }
@@ -74,14 +74,14 @@ func (t *Tail) Description() string {
 	return "Stream a log file, like the tail -f command"
 }
 
-func (t *Tail) Gather(acc telegraf.Accumulator) error {
+func (t *Tail) Gather(acc opsagent.Accumulator) error {
 	t.Lock()
 	defer t.Unlock()
 
 	return t.tailNewFiles(true)
 }
 
-func (t *Tail) Start(acc telegraf.Accumulator) error {
+func (t *Tail) Start(acc opsagent.Accumulator) error {
 	t.Lock()
 	defer t.Unlock()
 
@@ -154,8 +154,8 @@ func (t *Tail) receiver(parser parsers.Parser, tailer *tail.Tail) {
 	defer t.wg.Done()
 
 	var firstLine = true
-	var metrics []telegraf.Metric
-	var m telegraf.Metric
+	var metrics []opsagent.Metric
+	var m opsagent.Metric
 	var err error
 	var line *tail.Line
 	for line = range tailer.Lines {
@@ -224,7 +224,7 @@ func (t *Tail) SetParserFunc(fn parsers.ParserFunc) {
 }
 
 func init() {
-	inputs.Add("tail", func() telegraf.Input {
+	inputs.Add("tail", func() opsagent.Input {
 		return NewTail()
 	})
 }

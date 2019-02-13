@@ -31,7 +31,7 @@ func (p *Override) Description() string {
 	return "Apply metric modifications using override semantics."
 }
 
-func (p *Override) Apply(in ...telegraf.Metric) []telegraf.Metric {
+func (p *Override) Apply(in ...opsagent.Metric) []opsagent.Metric {
 	for _, metric := range in {
 		if len(p.NameOverride) > 0 {
 			metric.SetName(p.NameOverride)
@@ -50,7 +50,7 @@ func (p *Override) Apply(in ...telegraf.Metric) []telegraf.Metric {
 }
 
 func init() {
-	processors.Add("override", func() telegraf.Processor {
+	processors.Add("override", func() opsagent.Processor {
 		return &Override{}
 	})
 }

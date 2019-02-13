@@ -37,7 +37,7 @@ func TestReadsMetricsFromNSQ(t *testing.T) {
 
 	consumer := &NSQConsumer{
 		Server:                 "127.0.0.1:4155",
-		Topic:                  "telegraf",
+		Topic:                  "opsagent",
 		Channel:                "consume",
 		MaxInFlight:            1,
 		MaxUndeliveredMessages: defaultMaxUndeliveredMessages,

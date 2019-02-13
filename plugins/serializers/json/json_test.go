@@ -12,7 +12,7 @@ import (
 	"github.com/jaddqiu/opsagent/metric"
 )
 
-func MustMetric(v telegraf.Metric, err error) telegraf.Metric {
+func MustMetric(v opsagent.Metric, err error) opsagent.Metric {
 	if err != nil {
 		panic(err)
 	}
@@ -187,7 +187,7 @@ func TestSerializeBatch(t *testing.T) {
 		),
 	)
 
-	metrics := []telegraf.Metric{m, m}
+	metrics := []opsagent.Metric{m, m}
 	s, _ := NewSerializer(0)
 	buf, err := s.SerializeBatch(metrics)
 	require.NoError(t, err)

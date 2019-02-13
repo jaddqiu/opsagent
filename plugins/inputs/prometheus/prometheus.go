@@ -161,7 +161,7 @@ func (p *Prometheus) GetAllURLs() (map[string]URLAndAddress, error) {
 
 // Reads stats from all configured servers accumulates stats.
 // Returns one of the errors encountered while gather stats (if any).
-func (p *Prometheus) Gather(acc telegraf.Accumulator) error {
+func (p *Prometheus) Gather(acc opsagent.Accumulator) error {
 	if p.client == nil {
 		client, err := p.createHTTPClient()
 		if err != nil {
@@ -206,7 +206,7 @@ func (p *Prometheus) createHTTPClient() (*http.Client, error) {
 	return client, nil
 }
 
-func (p *Prometheus) gatherURL(u URLAndAddress, acc telegraf.Accumulator) error {
+func (p *Prometheus) gatherURL(u URLAndAddress, acc opsagent.Accumulator) error {
 	var req *http.Request
 	var err error
 	var uClient *http.Client
@@ -288,13 +288,13 @@ func (p *Prometheus) gatherURL(u URLAndAddress, acc telegraf.Accumulator) error 
 		}
 
 		switch metric.Type() {
-		case telegraf.Counter:
+		case opsagent.Counter:
 			acc.AddCounter(metric.Name(), metric.Fields(), tags, metric.Time())
-		case telegraf.Gauge:
+		case opsagent.Gauge:
 			acc.AddGauge(metric.Name(), metric.Fields(), tags, metric.Time())
-		case telegraf.Summary:
+		case opsagent.Summary:
 			acc.AddSummary(metric.Name(), metric.Fields(), tags, metric.Time())
-		case telegraf.Histogram:
+		case opsagent.Histogram:
 			acc.AddHistogram(metric.Name(), metric.Fields(), tags, metric.Time())
 		default:
 			acc.AddFields(metric.Name(), metric.Fields(), tags, metric.Time())
@@ -305,7 +305,7 @@ func (p *Prometheus) gatherURL(u URLAndAddress, acc telegraf.Accumulator) error 
 }
 
 // Start will start the Kubernetes scraping if enabled in the configuration
-func (p *Prometheus) Start(a telegraf.Accumulator) error {
+func (p *Prometheus) Start(a opsagent.Accumulator) error {
 	if p.MonitorPods {
 		var ctx context.Context
 		ctx, p.cancel = context.WithCancel(context.Background())
@@ -322,7 +322,7 @@ func (p *Prometheus) Stop() {
 }
 
 func init() {
-	inputs.Add("prometheus", func() telegraf.Input {
+	inputs.Add("prometheus", func() opsagent.Input {
 		return &Prometheus{
 			ResponseTimeout: internal.Duration{Duration: time.Second * 3},
 			kubernetesPods:  map[string]URLAndAddress{},

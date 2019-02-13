@@ -52,11 +52,11 @@ type MQTTConsumer struct {
 	tls.ClientConfig
 
 	client     mqtt.Client
-	acc        telegraf.TrackingAccumulator
+	acc        opsagent.TrackingAccumulator
 	state      ConnectionState
 	subscribed bool
 	sem        semaphore
-	messages   map[telegraf.TrackingID]bool
+	messages   map[opsagent.TrackingID]bool
 
 	ctx    context.Context
 	cancel context.CancelFunc
@@ -91,8 +91,8 @@ var sampleConfig = `
 
   ## Topics to subscribe to
   topics = [
-    "telegraf/host01/cpu",
-    "telegraf/+/mem",
+    "opsagent/host01/cpu",
+    "opsagent/+/mem",
     "sensors/#",
   ]
 
@@ -104,13 +104,13 @@ var sampleConfig = `
   client_id = ""
 
   ## username and password to connect MQTT server.
-  # username = "telegraf"
+  # username = "opsagent"
   # password = "metricsmetricsmetricsmetrics"
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 
@@ -133,7 +133,7 @@ func (m *MQTTConsumer) SetParser(parser parsers.Parser) {
 	m.parser = parser
 }
 
-func (m *MQTTConsumer) Start(acc telegraf.Accumulator) error {
+func (m *MQTTConsumer) Start(acc opsagent.Accumulator) error {
 	m.state = Disconnected
 
 	if m.PersistentSession && m.ClientID == "" {
@@ -173,7 +173,7 @@ func (m *MQTTConsumer) connect() error {
 	log.Printf("I! [inputs.mqtt_consumer] Connected %v", m.Servers)
 	m.state = Connected
 	m.sem = make(semaphore, m.MaxUndeliveredMessages)
-	m.messages = make(map[telegraf.TrackingID]bool)
+	m.messages = make(map[opsagent.TrackingID]bool)
 
 	// Only subscribe on first connection when using persistent sessions.  On
 	// subsequent connections the subscriptions should be stored in the
@@ -226,7 +226,7 @@ func (m *MQTTConsumer) recvMessage(c mqtt.Client, msg mqtt.Message) {
 	}
 }
 
-func (m *MQTTConsumer) onMessage(acc telegraf.TrackingAccumulator, msg mqtt.Message) error {
+func (m *MQTTConsumer) onMessage(acc opsagent.TrackingAccumulator, msg mqtt.Message) error {
 	metrics, err := m.parser.Parse(msg.Payload())
 	if err != nil {
 		return err
@@ -252,7 +252,7 @@ func (m *MQTTConsumer) Stop() {
 	m.cancel()
 }
 
-func (m *MQTTConsumer) Gather(acc telegraf.Accumulator) error {
+func (m *MQTTConsumer) Gather(acc opsagent.Accumulator) error {
 	if m.state == Disconnected {
 		m.state = Connecting
 		log.Printf("D! [inputs.mqtt_consumer] Connecting %v", m.Servers)
@@ -268,7 +268,7 @@ func (m *MQTTConsumer) createOpts() (*mqtt.ClientOptions, error) {
 	opts.ConnectTimeout = m.ConnectionTimeout.Duration
 
 	if m.ClientID == "" {
-		opts.SetClientID("Telegraf-Consumer-" + internal.RandomString(5))
+		opts.SetClientID("Opsagent-Consumer-" + internal.RandomString(5))
 	} else {
 		opts.SetClientID(m.ClientID)
 	}
@@ -296,7 +296,7 @@ func (m *MQTTConsumer) createOpts() (*mqtt.ClientOptions, error) {
 	}
 
 	for _, server := range m.Servers {
-		// Preserve support for host:port style servers; deprecated in Telegraf 1.4.4
+		// Preserve support for host:port style servers; deprecated in Opsagent 1.4.4
 		if !strings.Contains(server, "://") {
 			log.Printf("W! [inputs.mqtt_consumer] Server %q should be updated to use `scheme://host:port` format", server)
 			if tlsCfg == nil {
@@ -317,7 +317,7 @@ func (m *MQTTConsumer) createOpts() (*mqtt.ClientOptions, error) {
 }
 
 func init() {
-	inputs.Add("mqtt_consumer", func() telegraf.Input {
+	inputs.Add("mqtt_consumer", func() opsagent.Input {
 		return &MQTTConsumer{
 			ConnectionTimeout:      defaultConnectionTimeout,
 			MaxUndeliveredMessages: defaultMaxUndeliveredMessages,

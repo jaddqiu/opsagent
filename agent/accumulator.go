@@ -15,19 +15,19 @@ var (
 
 type MetricMaker interface {
 	Name() string
-	MakeMetric(metric telegraf.Metric) telegraf.Metric
+	MakeMetric(metric opsagent.Metric) opsagent.Metric
 }
 
 type accumulator struct {
 	maker     MetricMaker
-	metrics   chan<- telegraf.Metric
+	metrics   chan<- opsagent.Metric
 	precision time.Duration
 }
 
 func NewAccumulator(
 	maker MetricMaker,
-	metrics chan<- telegraf.Metric,
-) telegraf.Accumulator {
+	metrics chan<- opsagent.Metric,
+) opsagent.Accumulator {
 	acc := accumulator{
 		maker:     maker,
 		metrics:   metrics,
@@ -42,7 +42,7 @@ func (ac *accumulator) AddFields(
 	tags map[string]string,
 	t ...time.Time,
 ) {
-	ac.addFields(measurement, tags, fields, telegraf.Untyped, t...)
+	ac.addFields(measurement, tags, fields, opsagent.Untyped, t...)
 }
 
 func (ac *accumulator) AddGauge(
@@ -51,7 +51,7 @@ func (ac *accumulator) AddGauge(
 	tags map[string]string,
 	t ...time.Time,
 ) {
-	ac.addFields(measurement, tags, fields, telegraf.Gauge, t...)
+	ac.addFields(measurement, tags, fields, opsagent.Gauge, t...)
 }
 
 func (ac *accumulator) AddCounter(
@@ -60,7 +60,7 @@ func (ac *accumulator) AddCounter(
 	tags map[string]string,
 	t ...time.Time,
 ) {
-	ac.addFields(measurement, tags, fields, telegraf.Counter, t...)
+	ac.addFields(measurement, tags, fields, opsagent.Counter, t...)
 }
 
 func (ac *accumulator) AddSummary(
@@ -69,7 +69,7 @@ func (ac *accumulator) AddSummary(
 	tags map[string]string,
 	t ...time.Time,
 ) {
-	ac.addFields(measurement, tags, fields, telegraf.Summary, t...)
+	ac.addFields(measurement, tags, fields, opsagent.Summary, t...)
 }
 
 func (ac *accumulator) AddHistogram(
@@ -78,10 +78,10 @@ func (ac *accumulator) AddHistogram(
 	tags map[string]string,
 	t ...time.Time,
 ) {
-	ac.addFields(measurement, tags, fields, telegraf.Histogram, t...)
+	ac.addFields(measurement, tags, fields, opsagent.Histogram, t...)
 }
 
-func (ac *accumulator) AddMetric(m telegraf.Metric) {
+func (ac *accumulator) AddMetric(m opsagent.Metric) {
 	m.SetTime(m.Time().Round(ac.precision))
 	if m := ac.maker.MakeMetric(m); m != nil {
 		ac.metrics <- m
@@ -92,7 +92,7 @@ func (ac *accumulator) addFields(
 	measurement string,
 	tags map[string]string,
 	fields map[string]interface{},
-	tp telegraf.ValueType,
+	tp opsagent.ValueType,
 	t ...time.Time,
 ) {
 	m, err := metric.New(measurement, tags, fields, ac.getTime(t), tp)
@@ -141,25 +141,25 @@ func (ac *accumulator) getTime(t []time.Time) time.Time {
 	return timestamp.Round(ac.precision)
 }
 
-func (ac *accumulator) WithTracking(maxTracked int) telegraf.TrackingAccumulator {
+func (ac *accumulator) WithTracking(maxTracked int) opsagent.TrackingAccumulator {
 	return &trackingAccumulator{
 		Accumulator: ac,
-		delivered:   make(chan telegraf.DeliveryInfo, maxTracked),
+		delivered:   make(chan opsagent.DeliveryInfo, maxTracked),
 	}
 }
 
 type trackingAccumulator struct {
-	telegraf.Accumulator
-	delivered chan telegraf.DeliveryInfo
+	opsagent.Accumulator
+	delivered chan opsagent.DeliveryInfo
 }
 
-func (a *trackingAccumulator) AddTrackingMetric(m telegraf.Metric) telegraf.TrackingID {
+func (a *trackingAccumulator) AddTrackingMetric(m opsagent.Metric) opsagent.TrackingID {
 	dm, id := metric.WithTracking(m, a.onDelivery)
 	a.AddMetric(dm)
 	return id
 }
 
-func (a *trackingAccumulator) AddTrackingMetricGroup(group []telegraf.Metric) telegraf.TrackingID {
+func (a *trackingAccumulator) AddTrackingMetricGroup(group []opsagent.Metric) opsagent.TrackingID {
 	db, id := metric.WithGroupTracking(group, a.onDelivery)
 	for _, m := range db {
 		a.AddMetric(m)
@@ -167,11 +167,11 @@ func (a *trackingAccumulator) AddTrackingMetricGroup(group []telegraf.Metric) te
 	return id
 }
 
-func (a *trackingAccumulator) Delivered() <-chan telegraf.DeliveryInfo {
+func (a *trackingAccumulator) Delivered() <-chan opsagent.DeliveryInfo {
 	return a.delivered
 }
 
-func (a *trackingAccumulator) onDelivery(info telegraf.DeliveryInfo) {
+func (a *trackingAccumulator) onDelivery(info opsagent.DeliveryInfo) {
 	select {
 	case a.delivered <- info:
 	default:

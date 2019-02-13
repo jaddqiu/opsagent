@@ -53,7 +53,7 @@ type natsConsumer struct {
 	in chan *nats.Msg
 	// channel for all NATS read errors
 	errs   chan error
-	acc    telegraf.TrackingAccumulator
+	acc    opsagent.TrackingAccumulator
 	wg     sync.WaitGroup
 	cancel context.CancelFunc
 }
@@ -64,9 +64,9 @@ var sampleConfig = `
   ## Use Transport Layer Security
   secure = false
   ## subject(s) to consume
-  subjects = ["telegraf"]
+  subjects = ["opsagent"]
   ## name a queue group
-  queue_group = "telegraf_consumers"
+  queue_group = "opsagent_consumers"
 
   ## Sets the limits for pending msgs and bytes for each subscription
   ## These shouldn't need to be adjusted except in very high throughput scenarios
@@ -111,7 +111,7 @@ func (n *natsConsumer) natsErrHandler(c *nats.Conn, s *nats.Subscription, e erro
 }
 
 // Start the nats consumer. Caller must call *natsConsumer.Stop() to clean up.
-func (n *natsConsumer) Start(acc telegraf.Accumulator) error {
+func (n *natsConsumer) Start(acc opsagent.Accumulator) error {
 	n.acc = acc.WithTracking(n.MaxUndeliveredMessages)
 
 	var connectErr error
@@ -174,7 +174,7 @@ func (n *natsConsumer) Start(acc telegraf.Accumulator) error {
 }
 
 // receiver() reads all incoming messages from NATS, and parses them into
-// telegraf metrics.
+// opsagent metrics.
 func (n *natsConsumer) receiver(ctx context.Context) {
 	sem := make(semaphore, n.MaxUndeliveredMessages)
 
@@ -229,17 +229,17 @@ func (n *natsConsumer) Stop() {
 	n.clean()
 }
 
-func (n *natsConsumer) Gather(acc telegraf.Accumulator) error {
+func (n *natsConsumer) Gather(acc opsagent.Accumulator) error {
 	return nil
 }
 
 func init() {
-	inputs.Add("nats_consumer", func() telegraf.Input {
+	inputs.Add("nats_consumer", func() opsagent.Input {
 		return &natsConsumer{
 			Servers:                []string{"nats://localhost:4222"},
 			Secure:                 false,
-			Subjects:               []string{"telegraf"},
-			QueueGroup:             "telegraf_consumers",
+			Subjects:               []string{"opsagent"},
+			QueueGroup:             "opsagent_consumers",
 			PendingBytesLimit:      nats.DefaultSubPendingBytesLimit,
 			PendingMessageLimit:    nats.DefaultSubPendingMsgsLimit,
 			MaxUndeliveredMessages: defaultMaxUndeliveredMessages,

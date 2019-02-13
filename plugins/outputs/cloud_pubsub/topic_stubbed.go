@@ -23,7 +23,7 @@ const (
 
 type (
 	testMetric struct {
-		m         telegraf.Metric
+		m         opsagent.Metric
 		returnErr bool
 	}
 
@@ -57,10 +57,10 @@ type (
 	}
 )
 
-func getTestResources(tT *testing.T, settings pubsub.PublishSettings, testM []testMetric) (*PubSub, *stubTopic, []telegraf.Metric) {
+func getTestResources(tT *testing.T, settings pubsub.PublishSettings, testM []testMetric) (*PubSub, *stubTopic, []opsagent.Metric) {
 	s, _ := serializers.NewInfluxSerializer()
 
-	metrics := make([]telegraf.Metric, len(testM))
+	metrics := make([]opsagent.Metric, len(testM))
 	t := &stubTopic{
 		T:         tT,
 		ReturnErr: make(map[string]bool),

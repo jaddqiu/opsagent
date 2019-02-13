@@ -31,14 +31,14 @@ func (pf *PF) SampleConfig() string {
 	return `
   ## PF require root access on most systems.
   ## Setting 'use_sudo' to true will make use of sudo to run pfctl.
-  ## Users must configure sudo to allow telegraf user to run pfctl with no password.
+  ## Users must configure sudo to allow opsagent user to run pfctl with no password.
   ## pfctl can be restricted to only list command "pfctl -s info".
   use_sudo = false
 `
 }
 
 // Gather is the entrypoint for the plugin.
-func (pf *PF) Gather(acc telegraf.Accumulator) error {
+func (pf *PF) Gather(acc opsagent.Accumulator) error {
 	if pf.PfctlCommand == "" {
 		var err error
 		if pf.PfctlCommand, pf.PfctlArgs, err = pf.buildPfctlCmd(); err != nil {
@@ -84,7 +84,7 @@ var pfctlOutputStanzas = []*pfctlOutputStanza{
 
 var anyTableHeaderRE = regexp.MustCompile("^[A-Z]")
 
-func (pf *PF) parsePfctlOutput(pfoutput string, acc telegraf.Accumulator) error {
+func (pf *PF) parsePfctlOutput(pfoutput string, acc opsagent.Accumulator) error {
 	fields := make(map[string]interface{})
 	scanner := bufio.NewScanner(strings.NewReader(pfoutput))
 	for scanner.Scan() {
@@ -222,7 +222,7 @@ func (pf *PF) buildPfctlCmd() (string, []string, error) {
 }
 
 func init() {
-	inputs.Add("pf", func() telegraf.Input {
+	inputs.Add("pf", func() opsagent.Input {
 		pf := new(PF)
 		pf.infoFunc = pf.callPfctl
 		return pf

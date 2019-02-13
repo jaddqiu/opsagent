@@ -48,19 +48,19 @@ type outlet struct {
 	Xstatus  *string `xml:"xstatus"`
 }
 
-// NeptuneApex implements telegraf.Input.
+// NeptuneApex implements opsagent.Input.
 type NeptuneApex struct {
 	Servers         []string
 	ResponseTimeout internal.Duration
 	httpClient      *http.Client
 }
 
-// Description implements telegraf.Input.Description
+// Description implements opsagent.Input.Description
 func (*NeptuneApex) Description() string {
 	return "Neptune Apex data collector"
 }
 
-// SampleConfig implements telegraf.Input.SampleConfig
+// SampleConfig implements opsagent.Input.SampleConfig
 func (*NeptuneApex) SampleConfig() string {
 	return `
   ## The Neptune Apex plugin reads the publicly available status.xml data from a local Apex.
@@ -77,8 +77,8 @@ func (*NeptuneApex) SampleConfig() string {
 `
 }
 
-// Gather implements telegraf.Input.Gather
-func (n *NeptuneApex) Gather(acc telegraf.Accumulator) error {
+// Gather implements opsagent.Input.Gather
+func (n *NeptuneApex) Gather(acc opsagent.Accumulator) error {
 	var wg sync.WaitGroup
 	for _, server := range n.Servers {
 		wg.Add(1)
@@ -92,7 +92,7 @@ func (n *NeptuneApex) Gather(acc telegraf.Accumulator) error {
 }
 
 func (n *NeptuneApex) gatherServer(
-	acc telegraf.Accumulator, server string) error {
+	acc opsagent.Accumulator, server string) error {
 	resp, err := n.sendRequest(server)
 	if err != nil {
 		return err
@@ -102,7 +102,7 @@ func (n *NeptuneApex) gatherServer(
 
 // parseXML is strict on the input and does not do best-effort parsing.
 //This is because of the life-support nature of the Neptune Apex.
-func (n *NeptuneApex) parseXML(acc telegraf.Accumulator, data []byte) error {
+func (n *NeptuneApex) parseXML(acc opsagent.Accumulator, data []byte) error {
 	r := xmlReply{}
 	err := xml.Unmarshal(data, &r)
 	if err != nil {
@@ -290,7 +290,7 @@ func (n *NeptuneApex) sendRequest(server string) ([]byte, error) {
 }
 
 func init() {
-	inputs.Add("neptune_apex", func() telegraf.Input {
+	inputs.Add("neptune_apex", func() opsagent.Input {
 		return &NeptuneApex{
 			httpClient: &http.Client{
 				Timeout: 5 * time.Second,

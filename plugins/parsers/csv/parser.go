@@ -47,7 +47,7 @@ func (p *Parser) compile(r *bytes.Reader) (*csv.Reader, error) {
 	return csvReader, nil
 }
 
-func (p *Parser) Parse(buf []byte) ([]telegraf.Metric, error) {
+func (p *Parser) Parse(buf []byte) ([]opsagent.Metric, error) {
 	r := bytes.NewReader(buf)
 	csvReader, err := p.compile(r)
 	if err != nil {
@@ -92,7 +92,7 @@ func (p *Parser) Parse(buf []byte) ([]telegraf.Metric, error) {
 		return nil, err
 	}
 
-	metrics := make([]telegraf.Metric, 0)
+	metrics := make([]opsagent.Metric, 0)
 	for _, record := range table {
 		m, err := p.parseRecord(record)
 		if err != nil {
@@ -105,7 +105,7 @@ func (p *Parser) Parse(buf []byte) ([]telegraf.Metric, error) {
 
 // ParseLine does not use any information in header and assumes DataColumns is set
 // it will also not skip any rows
-func (p *Parser) ParseLine(line string) (telegraf.Metric, error) {
+func (p *Parser) ParseLine(line string) (opsagent.Metric, error) {
 	r := bytes.NewReader([]byte(line))
 	csvReader, err := p.compile(r)
 	if err != nil {
@@ -128,7 +128,7 @@ func (p *Parser) ParseLine(line string) (telegraf.Metric, error) {
 	return m, nil
 }
 
-func (p *Parser) parseRecord(record []string) (telegraf.Metric, error) {
+func (p *Parser) parseRecord(record []string) (opsagent.Metric, error) {
 	recordFields := make(map[string]interface{})
 	tags := make(map[string]string)
 

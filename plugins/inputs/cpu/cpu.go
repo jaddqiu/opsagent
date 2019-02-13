@@ -47,7 +47,7 @@ func (_ *CPUStats) SampleConfig() string {
 	return sampleConfig
 }
 
-func (s *CPUStats) Gather(acc telegraf.Accumulator) error {
+func (s *CPUStats) Gather(acc opsagent.Accumulator) error {
 	times, err := s.ps.CPUTimes(s.PerCPU, s.TotalCPU)
 	if err != nil {
 		return fmt.Errorf("error getting CPU info: %s", err)
@@ -143,7 +143,7 @@ func activeCpuTime(t cpu.TimesStat) float64 {
 }
 
 func init() {
-	inputs.Add("cpu", func() telegraf.Input {
+	inputs.Add("cpu", func() opsagent.Input {
 		return &CPUStats{
 			PerCPU:   true,
 			TotalCPU: true,

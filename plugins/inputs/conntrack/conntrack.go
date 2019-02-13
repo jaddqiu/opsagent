@@ -69,7 +69,7 @@ func (c *Conntrack) SampleConfig() string {
 	return sampleConfig
 }
 
-func (c *Conntrack) Gather(acc telegraf.Accumulator) error {
+func (c *Conntrack) Gather(acc opsagent.Accumulator) error {
 	c.setDefaults()
 
 	var metricKey string
@@ -115,5 +115,5 @@ func (c *Conntrack) Gather(acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add(inputName, func() telegraf.Input { return &Conntrack{} })
+	inputs.Add(inputName, func() opsagent.Input { return &Conntrack{} })
 }

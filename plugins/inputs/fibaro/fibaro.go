@@ -117,7 +117,7 @@ func (f *Fibaro) getJSON(path string, dataStruct interface{}) error {
 }
 
 // Gather fetches all required information to output metrics
-func (f *Fibaro) Gather(acc telegraf.Accumulator) error {
+func (f *Fibaro) Gather(acc opsagent.Accumulator) error {
 
 	if f.client == nil {
 		f.client = &http.Client{
@@ -211,7 +211,7 @@ func (f *Fibaro) Gather(acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add("fibaro", func() telegraf.Input {
+	inputs.Add("fibaro", func() opsagent.Input {
 		return &Fibaro{}
 	})
 }

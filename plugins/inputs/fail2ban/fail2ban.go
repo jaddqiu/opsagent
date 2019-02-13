@@ -48,7 +48,7 @@ func (f *Fail2ban) SampleConfig() string {
 	return sampleConfig
 }
 
-func (f *Fail2ban) Gather(acc telegraf.Accumulator) error {
+func (f *Fail2ban) Gather(acc opsagent.Accumulator) error {
 	if len(f.path) == 0 {
 		return errors.New("fail2ban-client not found: verify that fail2ban is installed and that fail2ban-client is in your PATH")
 	}
@@ -124,7 +124,7 @@ func init() {
 	if len(path) > 0 {
 		f.path = path
 	}
-	inputs.Add("fail2ban", func() telegraf.Input {
+	inputs.Add("fail2ban", func() opsagent.Input {
 		f := f
 		return &f
 	})

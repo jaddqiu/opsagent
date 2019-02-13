@@ -39,7 +39,7 @@ type Kafka struct {
 	done chan struct{}
 
 	// keep the accumulator internally:
-	acc telegraf.Accumulator
+	acc opsagent.Accumulator
 
 	// doNotCommitMsgs tells the parser not to call CommitUpTo on the consumer
 	// this is mostly for test purposes, but there may be a use-case for it later.
@@ -48,13 +48,13 @@ type Kafka struct {
 
 var sampleConfig = `
   ## topic(s) to consume
-  topics = ["telegraf"]
+  topics = ["opsagent"]
   ## an array of Zookeeper connection strings
   zookeeper_peers = ["localhost:2181"]
   ## Zookeeper Chroot
   zookeeper_chroot = ""
   ## the name of the consumer group
-  consumer_group = "telegraf_metrics_consumers"
+  consumer_group = "opsagent_metrics_consumers"
   ## Offset (must be either "oldest" or "newest")
   offset = "oldest"
 
@@ -81,7 +81,7 @@ func (k *Kafka) SetParser(parser parsers.Parser) {
 	k.parser = parser
 }
 
-func (k *Kafka) Start(acc telegraf.Accumulator) error {
+func (k *Kafka) Start(acc opsagent.Accumulator) error {
 	k.Lock()
 	defer k.Unlock()
 	var consumerErr error
@@ -172,12 +172,12 @@ func (k *Kafka) Stop() {
 	}
 }
 
-func (k *Kafka) Gather(acc telegraf.Accumulator) error {
+func (k *Kafka) Gather(acc opsagent.Accumulator) error {
 	return nil
 }
 
 func init() {
-	inputs.Add("kafka_consumer_legacy", func() telegraf.Input {
+	inputs.Add("kafka_consumer_legacy", func() opsagent.Input {
 		return &Kafka{}
 	})
 }

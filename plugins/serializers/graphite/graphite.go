@@ -35,7 +35,7 @@ type GraphiteSerializer struct {
 	TagSupport bool
 }
 
-func (s *GraphiteSerializer) Serialize(metric telegraf.Metric) ([]byte, error) {
+func (s *GraphiteSerializer) Serialize(metric opsagent.Metric) ([]byte, error) {
 	out := []byte{}
 
 	// Convert UnixNano to Unix timestamps
@@ -81,7 +81,7 @@ func (s *GraphiteSerializer) Serialize(metric telegraf.Metric) ([]byte, error) {
 	return out, nil
 }
 
-func (s *GraphiteSerializer) SerializeBatch(metrics []telegraf.Metric) ([]byte, error) {
+func (s *GraphiteSerializer) SerializeBatch(metrics []opsagent.Metric) ([]byte, error) {
 	var batch bytes.Buffer
 	for _, m := range metrics {
 		buf, err := s.Serialize(m)

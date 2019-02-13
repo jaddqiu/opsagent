@@ -17,7 +17,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func getMetric() telegraf.Metric {
+func getMetric() opsagent.Metric {
 	m, err := metric.New(
 		"cpu",
 		map[string]string{},
@@ -105,7 +105,7 @@ func TestMethod(t *testing.T) {
 			}
 			require.NoError(t, err)
 
-			err = tt.plugin.Write([]telegraf.Metric{getMetric()})
+			err = tt.plugin.Write([]opsagent.Metric{getMetric()})
 			require.NoError(t, err)
 		})
 	}
@@ -177,7 +177,7 @@ func TestStatusCode(t *testing.T) {
 			err = tt.plugin.Connect()
 			require.NoError(t, err)
 
-			err = tt.plugin.Write([]telegraf.Metric{getMetric()})
+			err = tt.plugin.Write([]opsagent.Metric{getMetric()})
 			tt.errFunc(t, err)
 		})
 	}
@@ -224,7 +224,7 @@ func TestContentType(t *testing.T) {
 			err = tt.plugin.Connect()
 			require.NoError(t, err)
 
-			err = tt.plugin.Write([]telegraf.Metric{getMetric()})
+			err = tt.plugin.Write([]opsagent.Metric{getMetric()})
 			require.NoError(t, err)
 		})
 	}
@@ -284,7 +284,7 @@ func TestContentEncodingGzip(t *testing.T) {
 			err = tt.plugin.Connect()
 			require.NoError(t, err)
 
-			err = tt.plugin.Write([]telegraf.Metric{getMetric()})
+			err = tt.plugin.Write([]opsagent.Metric{getMetric()})
 			require.NoError(t, err)
 		})
 	}
@@ -345,7 +345,7 @@ func TestBasicAuth(t *testing.T) {
 			err = tt.plugin.Connect()
 			require.NoError(t, err)
 
-			err = tt.plugin.Write([]telegraf.Metric{getMetric()})
+			err = tt.plugin.Write([]opsagent.Metric{getMetric()})
 			require.NoError(t, err)
 		})
 	}
@@ -418,7 +418,7 @@ func TestOAuthClientCredentialsGrant(t *testing.T) {
 			err = tt.plugin.Connect()
 			require.NoError(t, err)
 
-			err = tt.plugin.Write([]telegraf.Metric{getMetric()})
+			err = tt.plugin.Write([]opsagent.Metric{getMetric()})
 			require.NoError(t, err)
 		})
 	}
@@ -435,7 +435,7 @@ func TestDefaultUserAgent(t *testing.T) {
 
 	t.Run("default-user-agent", func(t *testing.T) {
 		ts.Config.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			require.Equal(t, "Telegraf/1.2.3", r.Header.Get("User-Agent"))
+			require.Equal(t, "Opsagent/1.2.3", r.Header.Get("User-Agent"))
 			w.WriteHeader(http.StatusOK)
 		})
 
@@ -449,7 +449,7 @@ func TestDefaultUserAgent(t *testing.T) {
 		err = client.Connect()
 		require.NoError(t, err)
 
-		err = client.Write([]telegraf.Metric{getMetric()})
+		err = client.Write([]opsagent.Metric{getMetric()})
 		require.NoError(t, err)
 	})
 }

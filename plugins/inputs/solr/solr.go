@@ -135,7 +135,7 @@ func (s *Solr) Description() string {
 
 // Gather reads the stats from Solr and writes it to the
 // Accumulator.
-func (s *Solr) Gather(acc telegraf.Accumulator) error {
+func (s *Solr) Gather(acc opsagent.Accumulator) error {
 	if s.client == nil {
 		client := s.createHTTPClient()
 		s.client = client
@@ -145,7 +145,7 @@ func (s *Solr) Gather(acc telegraf.Accumulator) error {
 	wg.Add(len(s.Servers))
 
 	for _, serv := range s.Servers {
-		go func(serv string, acc telegraf.Accumulator) {
+		go func(serv string, acc opsagent.Accumulator) {
 			defer wg.Done()
 			acc.AddError(s.gatherServerMetrics(serv, acc))
 		}(serv, acc)
@@ -155,7 +155,7 @@ func (s *Solr) Gather(acc telegraf.Accumulator) error {
 }
 
 // Gather all metrics from server
-func (s *Solr) gatherServerMetrics(server string, acc telegraf.Accumulator) error {
+func (s *Solr) gatherServerMetrics(server string, acc opsagent.Accumulator) error {
 	measurementTime := time.Now()
 	adminCoresStatus := &AdminCoresStatus{}
 	if err := s.gatherData(s.adminURL(server), adminCoresStatus); err != nil {
@@ -166,7 +166,7 @@ func (s *Solr) gatherServerMetrics(server string, acc telegraf.Accumulator) erro
 	var wg sync.WaitGroup
 	wg.Add(len(cores))
 	for _, core := range cores {
-		go func(server string, core string, acc telegraf.Accumulator) {
+		go func(server string, core string, acc opsagent.Accumulator) {
 			defer wg.Done()
 			mBeansData := &MBeansData{}
 			acc.AddError(s.gatherData(s.mbeansURL(server, core), mBeansData))
@@ -199,7 +199,7 @@ func getCoresFromStatus(adminCoresStatus *AdminCoresStatus) []string {
 
 // Add core metrics from admin to accumulator
 // This is the only point where size_in_bytes is available (as far as I checked)
-func addAdminCoresStatusToAcc(acc telegraf.Accumulator, adminCoreStatus *AdminCoresStatus, time time.Time) {
+func addAdminCoresStatusToAcc(acc opsagent.Accumulator, adminCoreStatus *AdminCoresStatus, time time.Time) {
 	for core, metrics := range adminCoreStatus.Status {
 		coreFields := map[string]interface{}{
 			"deleted_docs":  metrics.Index.DeletedDocs,
@@ -217,7 +217,7 @@ func addAdminCoresStatusToAcc(acc telegraf.Accumulator, adminCoreStatus *AdminCo
 }
 
 // Add core metrics section to accumulator
-func addCoreMetricsToAcc(acc telegraf.Accumulator, core string, mBeansData *MBeansData, time time.Time) error {
+func addCoreMetricsToAcc(acc opsagent.Accumulator, core string, mBeansData *MBeansData, time time.Time) error {
 	var coreMetrics map[string]Core
 	if len(mBeansData.SolrMbeans) < 2 {
 		return fmt.Errorf("no core metric data to unmarshall")
@@ -247,7 +247,7 @@ func addCoreMetricsToAcc(acc telegraf.Accumulator, core string, mBeansData *MBea
 }
 
 // Add query metrics section to accumulator
-func addQueryHandlerMetricsToAcc(acc telegraf.Accumulator, core string, mBeansData *MBeansData, time time.Time) error {
+func addQueryHandlerMetricsToAcc(acc opsagent.Accumulator, core string, mBeansData *MBeansData, time time.Time) error {
 	var queryMetrics map[string]QueryHandler
 
 	if len(mBeansData.SolrMbeans) < 4 {
@@ -322,7 +322,7 @@ func convertQueryHandlerMap(value map[string]interface{}) map[string]interface{}
 }
 
 // Add update metrics section to accumulator
-func addUpdateHandlerMetricsToAcc(acc telegraf.Accumulator, core string, mBeansData *MBeansData, time time.Time) error {
+func addUpdateHandlerMetricsToAcc(acc opsagent.Accumulator, core string, mBeansData *MBeansData, time time.Time) error {
 	var updateMetrics map[string]UpdateHandler
 
 	if len(mBeansData.SolrMbeans) < 6 {
@@ -402,7 +402,7 @@ func getInt(unk interface{}) int64 {
 }
 
 // Add cache metrics section to accumulator
-func addCacheMetricsToAcc(acc telegraf.Accumulator, core string, mBeansData *MBeansData, time time.Time) error {
+func addCacheMetricsToAcc(acc opsagent.Accumulator, core string, mBeansData *MBeansData, time time.Time) error {
 	if len(mBeansData.SolrMbeans) < 8 {
 		return fmt.Errorf("no cache metric data to unmarshall")
 	}
@@ -487,7 +487,7 @@ func (s *Solr) gatherData(url string, v interface{}) error {
 }
 
 func init() {
-	inputs.Add("solr", func() telegraf.Input {
+	inputs.Add("solr", func() opsagent.Input {
 		return NewSolr()
 	})
 }

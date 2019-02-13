@@ -33,7 +33,7 @@ func (b *Beanstalkd) SampleConfig() string {
 	return sampleConfig
 }
 
-func (b *Beanstalkd) Gather(acc telegraf.Accumulator) error {
+func (b *Beanstalkd) Gather(acc opsagent.Accumulator) error {
 	connection, err := textproto.Dial("tcp", b.Server)
 	if err != nil {
 		return err
@@ -72,7 +72,7 @@ func (b *Beanstalkd) Gather(acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (b *Beanstalkd) gatherServerStats(connection *textproto.Conn, acc telegraf.Accumulator) error {
+func (b *Beanstalkd) gatherServerStats(connection *textproto.Conn, acc opsagent.Accumulator) error {
 	stats := new(statsResponse)
 	if err := runQuery(connection, "stats", stats); err != nil {
 		return err
@@ -137,7 +137,7 @@ func (b *Beanstalkd) gatherServerStats(connection *textproto.Conn, acc telegraf.
 	return nil
 }
 
-func (b *Beanstalkd) gatherTubeStats(connection *textproto.Conn, tube string, acc telegraf.Accumulator) error {
+func (b *Beanstalkd) gatherTubeStats(connection *textproto.Conn, tube string, acc opsagent.Accumulator) error {
 	stats := new(statsTubeResponse)
 	if err := runQuery(connection, "stats-tube "+tube, stats); err != nil {
 		return err
@@ -196,7 +196,7 @@ func runQuery(connection *textproto.Conn, cmd string, result interface{}) error 
 }
 
 func init() {
-	inputs.Add("beanstalkd", func() telegraf.Input {
+	inputs.Add("beanstalkd", func() opsagent.Input {
 		return &Beanstalkd{}
 	})
 }

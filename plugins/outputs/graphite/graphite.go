@@ -44,9 +44,9 @@ var sampleConfig = `
   timeout = 2
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 `
@@ -131,7 +131,7 @@ func checkEOF(conn net.Conn) {
 
 // Choose a random server in the cluster to write to until a successful write
 // occurs, logging each unsuccessful. If all servers fail, return error.
-func (g *Graphite) Write(metrics []telegraf.Metric) error {
+func (g *Graphite) Write(metrics []opsagent.Metric) error {
 	// Prepare data
 	var batch []byte
 	s, err := serializers.NewGraphiteSerializer(g.Prefix, g.Template, g.GraphiteTagSupport)
@@ -187,7 +187,7 @@ func (g *Graphite) send(batch []byte) error {
 }
 
 func init() {
-	outputs.Add("graphite", func() telegraf.Output {
+	outputs.Add("graphite", func() opsagent.Output {
 		return &Graphite{}
 	})
 }

@@ -47,14 +47,14 @@ func (mapper *EnumMapper) Description() string {
 	return "Map enum values according to given table."
 }
 
-func (mapper *EnumMapper) Apply(in ...telegraf.Metric) []telegraf.Metric {
+func (mapper *EnumMapper) Apply(in ...opsagent.Metric) []opsagent.Metric {
 	for i := 0; i < len(in); i++ {
 		in[i] = mapper.applyMappings(in[i])
 	}
 	return in
 }
 
-func (mapper *EnumMapper) applyMappings(metric telegraf.Metric) telegraf.Metric {
+func (mapper *EnumMapper) applyMappings(metric opsagent.Metric) opsagent.Metric {
 	for _, mapping := range mapper.Mappings {
 		if originalValue, isPresent := metric.GetField(mapping.Field); isPresent == true {
 			if adjustedValue, isString := adjustBoolValue(originalValue).(string); isString == true {
@@ -91,13 +91,13 @@ func (mapping *Mapping) getDestination() string {
 	return mapping.Field
 }
 
-func writeField(metric telegraf.Metric, name string, value interface{}) {
+func writeField(metric opsagent.Metric, name string, value interface{}) {
 	metric.RemoveField(name)
 	metric.AddField(name, value)
 }
 
 func init() {
-	processors.Add("enum", func() telegraf.Processor {
+	processors.Add("enum", func() opsagent.Processor {
 		return &EnumMapper{}
 	})
 }

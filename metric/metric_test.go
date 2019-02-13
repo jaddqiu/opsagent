@@ -31,7 +31,7 @@ func TestNewMetric(t *testing.T) {
 }
 
 // cpu value=1
-func baseMetric() telegraf.Metric {
+func baseMetric() opsagent.Metric {
 	tags := map[string]string{}
 	fields := map[string]interface{}{
 		"value": float64(1),
@@ -328,10 +328,10 @@ func TestValueType(t *testing.T) {
 	fields := map[string]interface{}{
 		"value": float64(42),
 	}
-	m, err := New("cpu", tags, fields, now, telegraf.Gauge)
+	m, err := New("cpu", tags, fields, now, opsagent.Gauge)
 	assert.NoError(t, err)
 
-	assert.Equal(t, telegraf.Gauge, m.Type())
+	assert.Equal(t, opsagent.Gauge, m.Type())
 }
 
 func TestCopyAggreate(t *testing.T) {

@@ -17,7 +17,7 @@ func TestConnectAndWrite(t *testing.T) {
 	s, _ := serializers.NewInfluxSerializer()
 	n := &NSQ{
 		Server:     server[0],
-		Topic:      "telegraf",
+		Topic:      "opsagent",
 		serializer: s,
 	}
 

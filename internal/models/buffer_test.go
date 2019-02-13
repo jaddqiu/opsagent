@@ -11,7 +11,7 @@ import (
 )
 
 type MockMetric struct {
-	telegraf.Metric
+	opsagent.Metric
 	AcceptF func()
 	RejectF func()
 	DropF   func()
@@ -29,11 +29,11 @@ func (m *MockMetric) Drop() {
 	m.DropF()
 }
 
-func Metric() telegraf.Metric {
+func Metric() opsagent.Metric {
 	return MetricTime(0)
 }
 
-func MetricTime(sec int64) telegraf.Metric {
+func MetricTime(sec int64) opsagent.Metric {
 	m, err := metric.New(
 		"cpu",
 		map[string]string{},
@@ -160,7 +160,7 @@ func TestBuffer_BatchLatest(t *testing.T) {
 	batch := b.Batch(2)
 
 	testutil.RequireMetricsEqual(t,
-		[]telegraf.Metric{
+		[]opsagent.Metric{
 			MetricTime(3),
 			MetricTime(2),
 		}, batch)
@@ -176,7 +176,7 @@ func TestBuffer_BatchLatestWrap(t *testing.T) {
 	batch := b.Batch(2)
 
 	testutil.RequireMetricsEqual(t,
-		[]telegraf.Metric{
+		[]opsagent.Metric{
 			MetricTime(5),
 			MetricTime(4),
 		}, batch)
@@ -192,7 +192,7 @@ func TestBuffer_MultipleBatch(t *testing.T) {
 	b.Add(MetricTime(6))
 	batch := b.Batch(5)
 	testutil.RequireMetricsEqual(t,
-		[]telegraf.Metric{
+		[]opsagent.Metric{
 			MetricTime(6),
 			MetricTime(5),
 			MetricTime(4),
@@ -202,7 +202,7 @@ func TestBuffer_MultipleBatch(t *testing.T) {
 	b.Accept(batch)
 	batch = b.Batch(5)
 	testutil.RequireMetricsEqual(t,
-		[]telegraf.Metric{
+		[]opsagent.Metric{
 			MetricTime(1),
 		}, batch)
 	b.Accept(batch)
@@ -222,7 +222,7 @@ func TestBuffer_RejectWithRoom(t *testing.T) {
 
 	batch = b.Batch(5)
 	testutil.RequireMetricsEqual(t,
-		[]telegraf.Metric{
+		[]opsagent.Metric{
 			MetricTime(5),
 			MetricTime(4),
 			MetricTime(3),
@@ -245,7 +245,7 @@ func TestBuffer_RejectNothingNewFull(t *testing.T) {
 
 	batch = b.Batch(5)
 	testutil.RequireMetricsEqual(t,
-		[]telegraf.Metric{
+		[]opsagent.Metric{
 			MetricTime(5),
 			MetricTime(4),
 			MetricTime(3),
@@ -274,7 +274,7 @@ func TestBuffer_RejectNoRoom(t *testing.T) {
 
 	batch = b.Batch(5)
 	testutil.RequireMetricsEqual(t,
-		[]telegraf.Metric{
+		[]opsagent.Metric{
 			MetricTime(8),
 			MetricTime(7),
 			MetricTime(6),
@@ -298,7 +298,7 @@ func TestBuffer_RejectRoomExact(t *testing.T) {
 
 	batch = b.Batch(5)
 	testutil.RequireMetricsEqual(t,
-		[]telegraf.Metric{
+		[]opsagent.Metric{
 			MetricTime(5),
 			MetricTime(4),
 			MetricTime(3),
@@ -323,7 +323,7 @@ func TestBuffer_RejectRoomOverwriteOld(t *testing.T) {
 
 	batch = b.Batch(5)
 	testutil.RequireMetricsEqual(t,
-		[]telegraf.Metric{
+		[]opsagent.Metric{
 			MetricTime(6),
 			MetricTime(5),
 			MetricTime(4),
@@ -350,7 +350,7 @@ func TestBuffer_RejectPartialRoom(t *testing.T) {
 
 	batch = b.Batch(5)
 	testutil.RequireMetricsEqual(t,
-		[]telegraf.Metric{
+		[]opsagent.Metric{
 			MetricTime(7),
 			MetricTime(6),
 			MetricTime(5),
@@ -393,7 +393,7 @@ func TestBuffer_RejectWrapped(t *testing.T) {
 
 	batch = b.Batch(5)
 	testutil.RequireMetricsEqual(t,
-		[]telegraf.Metric{
+		[]opsagent.Metric{
 			MetricTime(15),
 			MetricTime(14),
 			MetricTime(13),

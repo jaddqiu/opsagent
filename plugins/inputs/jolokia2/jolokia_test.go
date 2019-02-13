@@ -774,7 +774,7 @@ func setupServer(status int, resp string) *httptest.Server {
 	}))
 }
 
-func setupPlugin(t *testing.T, conf string) telegraf.Input {
+func setupPlugin(t *testing.T, conf string) opsagent.Input {
 	table, err := toml.Parse([]byte(conf))
 	if err != nil {
 		t.Fatalf("Unable to parse config! %v", err)

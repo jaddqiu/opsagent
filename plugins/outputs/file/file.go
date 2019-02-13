@@ -79,10 +79,10 @@ func (f *File) SampleConfig() string {
 }
 
 func (f *File) Description() string {
-	return "Send telegraf metrics to file(s)"
+	return "Send opsagent metrics to file(s)"
 }
 
-func (f *File) Write(metrics []telegraf.Metric) error {
+func (f *File) Write(metrics []opsagent.Metric) error {
 	var writeErr error = nil
 	for _, metric := range metrics {
 		b, err := f.serializer.Serialize(metric)
@@ -101,7 +101,7 @@ func (f *File) Write(metrics []telegraf.Metric) error {
 }
 
 func init() {
-	outputs.Add("file", func() telegraf.Output {
+	outputs.Add("file", func() opsagent.Output {
 		return &File{}
 	})
 }

@@ -58,8 +58,8 @@ func (smi *NvidiaSMI) SampleConfig() string {
 `
 }
 
-// Gather implements the telegraf interface
-func (smi *NvidiaSMI) Gather(acc telegraf.Accumulator) error {
+// Gather implements the opsagent interface
+func (smi *NvidiaSMI) Gather(acc opsagent.Accumulator) error {
 
 	if _, err := os.Stat(smi.BinPath); os.IsNotExist(err) {
 		return fmt.Errorf("nvidia-smi binary not at path %s, cannot gather GPU data", smi.BinPath)
@@ -79,7 +79,7 @@ func (smi *NvidiaSMI) Gather(acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add("nvidia_smi", func() telegraf.Input {
+	inputs.Add("nvidia_smi", func() opsagent.Input {
 		return &NvidiaSMI{
 			BinPath: "/usr/bin/nvidia-smi",
 			Timeout: internal.Duration{Duration: 5 * time.Second},
@@ -98,7 +98,7 @@ func (smi *NvidiaSMI) pollSMI() (string, error) {
 	return string(ret), nil
 }
 
-func gatherNvidiaSMI(ret string, acc telegraf.Accumulator) error {
+func gatherNvidiaSMI(ret string, acc opsagent.Accumulator) error {
 	// First split the lines up and handle each one
 	scanner := bufio.NewScanner(strings.NewReader(ret))
 	for scanner.Scan() {

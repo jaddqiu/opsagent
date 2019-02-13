@@ -91,18 +91,18 @@ const (
 	measurementJob  = "jenkins_job"
 )
 
-// SampleConfig implements telegraf.Input interface
+// SampleConfig implements opsagent.Input interface
 func (j *Jenkins) SampleConfig() string {
 	return sampleConfig
 }
 
-// Description implements telegraf.Input interface
+// Description implements opsagent.Input interface
 func (j *Jenkins) Description() string {
 	return "Read jobs and cluster metrics from Jenkins instances"
 }
 
-// Gather implements telegraf.Input interface
-func (j *Jenkins) Gather(acc telegraf.Accumulator) error {
+// Gather implements opsagent.Input interface
+func (j *Jenkins) Gather(acc opsagent.Accumulator) error {
 	if j.client == nil {
 		client, err := j.newHTTPClient()
 		if err != nil {
@@ -166,7 +166,7 @@ func (j *Jenkins) initialize(client *http.Client) error {
 	return j.client.init()
 }
 
-func (j *Jenkins) gatherNodeData(n node, acc telegraf.Accumulator) error {
+func (j *Jenkins) gatherNodeData(n node, acc opsagent.Accumulator) error {
 
 	tags := map[string]string{}
 	if n.DisplayName == "" {
@@ -206,7 +206,7 @@ func (j *Jenkins) gatherNodeData(n node, acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (j *Jenkins) gatherNodesData(acc telegraf.Accumulator) {
+func (j *Jenkins) gatherNodesData(acc opsagent.Accumulator) {
 
 	nodeResp, err := j.client.getAllNodes(context.Background())
 	if err != nil {
@@ -223,7 +223,7 @@ func (j *Jenkins) gatherNodesData(acc telegraf.Accumulator) {
 	}
 }
 
-func (j *Jenkins) gatherJobs(acc telegraf.Accumulator) {
+func (j *Jenkins) gatherJobs(acc opsagent.Accumulator) {
 	js, err := j.client.getJobs(context.Background(), nil)
 	if err != nil {
 		acc.AddError(err)
@@ -232,7 +232,7 @@ func (j *Jenkins) gatherJobs(acc telegraf.Accumulator) {
 	var wg sync.WaitGroup
 	for _, job := range js.Jobs {
 		wg.Add(1)
-		go func(name string, wg *sync.WaitGroup, acc telegraf.Accumulator) {
+		go func(name string, wg *sync.WaitGroup, acc opsagent.Accumulator) {
 			defer wg.Done()
 			if err := j.getJobDetail(jobRequest{
 				name:    name,
@@ -258,7 +258,7 @@ func (j *Jenkins) doGet(tcp func() error) error {
 	return nil
 }
 
-func (j *Jenkins) getJobDetail(jr jobRequest, acc telegraf.Accumulator) error {
+func (j *Jenkins) getJobDetail(jr jobRequest, acc opsagent.Accumulator) error {
 	if j.MaxSubJobDepth > 0 && jr.layer == j.MaxSubJobDepth {
 		return nil
 	}
@@ -279,7 +279,7 @@ func (j *Jenkins) getJobDetail(jr jobRequest, acc telegraf.Accumulator) error {
 		}
 		wg.Add(1)
 		// schedule tcp fetch for inner jobs
-		go func(ij innerJob, jr jobRequest, acc telegraf.Accumulator) {
+		go func(ij innerJob, jr jobRequest, acc opsagent.Accumulator) {
 			defer wg.Done()
 			if err := j.getJobDetail(jobRequest{
 				name:    ij.Name,
@@ -410,7 +410,7 @@ func (jr jobRequest) parentsString() string {
 	return strings.Join(jr.parents, "/")
 }
 
-func gatherJobBuild(jr jobRequest, b *buildResponse, acc telegraf.Accumulator) {
+func gatherJobBuild(jr jobRequest, b *buildResponse, acc opsagent.Accumulator) {
 	tags := map[string]string{"name": jr.name, "parents": jr.parentsString(), "result": b.Result}
 	fields := make(map[string]interface{})
 	fields["duration"] = b.Duration
@@ -437,7 +437,7 @@ func mapResultCode(s string) int {
 }
 
 func init() {
-	inputs.Add("jenkins", func() telegraf.Input {
+	inputs.Add("jenkins", func() opsagent.Input {
 		return &Jenkins{
 			MaxBuildAge:       internal.Duration{Duration: time.Duration(time.Hour)},
 			MaxConnections:    5,

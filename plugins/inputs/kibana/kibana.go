@@ -78,9 +78,9 @@ const sampleConfig = `
   # password = "pa$$word"
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 `
@@ -125,7 +125,7 @@ func (k *Kibana) Description() string {
 	return "Read status information from one or more Kibana servers"
 }
 
-func (k *Kibana) Gather(acc telegraf.Accumulator) error {
+func (k *Kibana) Gather(acc opsagent.Accumulator) error {
 	if k.client == nil {
 		client, err := k.createHttpClient()
 
@@ -139,7 +139,7 @@ func (k *Kibana) Gather(acc telegraf.Accumulator) error {
 	wg.Add(len(k.Servers))
 
 	for _, serv := range k.Servers {
-		go func(baseUrl string, acc telegraf.Accumulator) {
+		go func(baseUrl string, acc opsagent.Accumulator) {
 			defer wg.Done()
 			if err := k.gatherKibanaStatus(baseUrl, acc); err != nil {
 				acc.AddError(fmt.Errorf("[url=%s]: %s", baseUrl, err))
@@ -168,7 +168,7 @@ func (k *Kibana) createHttpClient() (*http.Client, error) {
 	return client, nil
 }
 
-func (k *Kibana) gatherKibanaStatus(baseUrl string, acc telegraf.Accumulator) error {
+func (k *Kibana) gatherKibanaStatus(baseUrl string, acc opsagent.Accumulator) error {
 
 	kibanaStatus := &kibanaStatus{}
 	url := baseUrl + statusPath
@@ -224,7 +224,7 @@ func (k *Kibana) gatherJsonData(url string, v interface{}) (host string, err err
 }
 
 func init() {
-	inputs.Add("kibana", func() telegraf.Input {
+	inputs.Add("kibana", func() opsagent.Input {
 		return NewKibana()
 	})
 }

@@ -40,7 +40,7 @@ type NSQConsumer struct {
 	consumer *nsq.Consumer
 
 	mu       sync.Mutex
-	messages map[telegraf.TrackingID]*nsq.Message
+	messages map[opsagent.TrackingID]*nsq.Message
 	wg       sync.WaitGroup
 	cancel   context.CancelFunc
 }
@@ -52,7 +52,7 @@ var sampleConfig = `
   nsqd = ["localhost:4150"]
   ## An array representing the NSQLookupd HTTP Endpoints
   nsqlookupd = ["localhost:4161"]
-  topic = "telegraf"
+  topic = "opsagent"
   channel = "consumer"
   max_in_flight = 100
 
@@ -89,10 +89,10 @@ func (n *NSQConsumer) Description() string {
 }
 
 // Start pulls data from nsq
-func (n *NSQConsumer) Start(ac telegraf.Accumulator) error {
+func (n *NSQConsumer) Start(ac opsagent.Accumulator) error {
 	acc := ac.WithTracking(n.MaxUndeliveredMessages)
 	sem := make(semaphore, n.MaxUndeliveredMessages)
-	n.messages = make(map[telegraf.TrackingID]*nsq.Message, n.MaxUndeliveredMessages)
+	n.messages = make(map[opsagent.TrackingID]*nsq.Message, n.MaxUndeliveredMessages)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	n.cancel = cancel
@@ -140,7 +140,7 @@ func (n *NSQConsumer) Start(ac telegraf.Accumulator) error {
 	return nil
 }
 
-func (n *NSQConsumer) onDelivery(ctx context.Context, acc telegraf.TrackingAccumulator, sem semaphore) {
+func (n *NSQConsumer) onDelivery(ctx context.Context, acc opsagent.TrackingAccumulator, sem semaphore) {
 	for {
 		select {
 		case <-ctx.Done():
@@ -174,7 +174,7 @@ func (n *NSQConsumer) Stop() {
 }
 
 // Gather is a noop
-func (n *NSQConsumer) Gather(acc telegraf.Accumulator) error {
+func (n *NSQConsumer) Gather(acc opsagent.Accumulator) error {
 	return nil
 }
 
@@ -192,7 +192,7 @@ func (n *NSQConsumer) connect() error {
 }
 
 func init() {
-	inputs.Add("nsq_consumer", func() telegraf.Input {
+	inputs.Add("nsq_consumer", func() opsagent.Input {
 		return &NSQConsumer{
 			MaxUndeliveredMessages: defaultMaxUndeliveredMessages,
 		}

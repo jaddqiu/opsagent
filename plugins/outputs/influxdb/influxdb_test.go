@@ -17,7 +17,7 @@ import (
 type MockClient struct {
 	URLF            func() string
 	DatabaseF       func() string
-	WriteF          func(context.Context, []telegraf.Metric) error
+	WriteF          func(context.Context, []opsagent.Metric) error
 	CreateDatabaseF func(ctx context.Context) error
 }
 
@@ -29,7 +29,7 @@ func (c *MockClient) Database() string {
 	return c.DatabaseF()
 }
 
-func (c *MockClient) Write(ctx context.Context, metrics []telegraf.Metric) error {
+func (c *MockClient) Write(ctx context.Context, metrics []opsagent.Metric) error {
 	return c.WriteF(ctx, metrics)
 }
 
@@ -94,13 +94,13 @@ func TestConnectHTTPConfig(t *testing.T) {
 
 	output := influxdb.InfluxDB{
 		URLs:             []string{"http://localhost:8086"},
-		Database:         "telegraf",
+		Database:         "opsagent",
 		RetentionPolicy:  "default",
 		WriteConsistency: "any",
 		Timeout:          internal.Duration{Duration: 5 * time.Second},
 		Username:         "guy",
 		Password:         "smiley",
-		UserAgent:        "telegraf",
+		UserAgent:        "opsagent",
 		HTTPProxy:        "http://localhost:8086",
 		HTTPHeaders: map[string]string{
 			"x": "y",
@@ -148,11 +148,11 @@ func TestWriteRecreateDatabaseIfDatabaseNotFound(t *testing.T) {
 				CreateDatabaseF: func(ctx context.Context) error {
 					return nil
 				},
-				WriteF: func(ctx context.Context, metrics []telegraf.Metric) error {
+				WriteF: func(ctx context.Context, metrics []opsagent.Metric) error {
 					return &influxdb.APIError{
 						StatusCode:  http.StatusNotFound,
 						Title:       "404 Not Found",
-						Description: `database not found "telegraf"`,
+						Description: `database not found "opsagent"`,
 						Type:        influxdb.DatabaseNotFound,
 					}
 				},
@@ -176,7 +176,7 @@ func TestWriteRecreateDatabaseIfDatabaseNotFound(t *testing.T) {
 		time.Unix(0, 0),
 	)
 	require.NoError(t, err)
-	metrics := []telegraf.Metric{m}
+	metrics := []opsagent.Metric{m}
 
 	err = output.Write(metrics)
 	// We only have one URL, so we expect an error

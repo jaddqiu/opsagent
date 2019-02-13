@@ -1,5 +1,5 @@
 /*
-This is a development testing cli tool meant to stress the zipkin telegraf plugin.
+This is a development testing cli tool meant to stress the zipkin opsagent plugin.
 It writes a specified number of zipkin spans to the plugin endpoint, with other
 parameters which dictate batch size and flush timeout.
 

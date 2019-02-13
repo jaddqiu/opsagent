@@ -23,7 +23,7 @@ func (_ *HDDTemp) Description() string {
 }
 
 var hddtempSampleConfig = `
-  ## By default, telegraf gathers temps data from all disks detected by the
+  ## By default, opsagent gathers temps data from all disks detected by the
   ## hddtemp.
   ##
   ## Only collect temps from the selected disks.
@@ -38,7 +38,7 @@ func (_ *HDDTemp) SampleConfig() string {
 	return hddtempSampleConfig
 }
 
-func (h *HDDTemp) Gather(acc telegraf.Accumulator) error {
+func (h *HDDTemp) Gather(acc opsagent.Accumulator) error {
 	if h.fetcher == nil {
 		h.fetcher = gohddtemp.New()
 	}
@@ -71,7 +71,7 @@ func (h *HDDTemp) Gather(acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add("hddtemp", func() telegraf.Input {
+	inputs.Add("hddtemp", func() opsagent.Input {
 		return &HDDTemp{
 			Address: defaultAddress,
 			Devices: []string{"*"},

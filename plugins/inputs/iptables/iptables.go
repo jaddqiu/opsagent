@@ -13,7 +13,7 @@ import (
 	"github.com/jaddqiu/opsagent/plugins/inputs"
 )
 
-// Iptables is a telegraf plugin to gather packets and bytes throughput from Linux's iptables packet filter.
+// Iptables is a opsagent plugin to gather packets and bytes throughput from Linux's iptables packet filter.
 type Iptables struct {
 	UseSudo bool
 	UseLock bool
@@ -33,7 +33,7 @@ func (ipt *Iptables) SampleConfig() string {
 	return `
   ## iptables require root access on most systems.
   ## Setting 'use_sudo' to true will make use of sudo to run iptables.
-  ## Users must configure sudo to allow telegraf user to run iptables with no password.
+  ## Users must configure sudo to allow opsagent user to run iptables with no password.
   ## iptables can be restricted to only list command "iptables -nvL".
   use_sudo = false
   ## Setting 'use_lock' to true runs iptables with the "-w" option.
@@ -51,7 +51,7 @@ func (ipt *Iptables) SampleConfig() string {
 }
 
 // Gather gathers iptables packets and bytes throughput from the configured tables and chains.
-func (ipt *Iptables) Gather(acc telegraf.Accumulator) error {
+func (ipt *Iptables) Gather(acc opsagent.Accumulator) error {
 	if ipt.Table == "" || len(ipt.Chains) == 0 {
 		return nil
 	}
@@ -106,7 +106,7 @@ var chainNameRe = regexp.MustCompile(`^Chain\s+(\S+)`)
 var fieldsHeaderRe = regexp.MustCompile(`^\s*pkts\s+bytes\s+`)
 var valuesRe = regexp.MustCompile(`^\s*(\d+)\s+(\d+)\s+.*?/\*\s*(.+?)\s*\*/\s*`)
 
-func (ipt *Iptables) parseAndGather(data string, acc telegraf.Accumulator) error {
+func (ipt *Iptables) parseAndGather(data string, acc opsagent.Accumulator) error {
 	lines := strings.Split(data, "\n")
 	if len(lines) < 3 {
 		return nil
@@ -148,7 +148,7 @@ func (ipt *Iptables) parseAndGather(data string, acc telegraf.Accumulator) error
 type chainLister func(table, chain string) (string, error)
 
 func init() {
-	inputs.Add("iptables", func() telegraf.Input {
+	inputs.Add("iptables", func() opsagent.Input {
 		ipt := new(Iptables)
 		ipt.lister = ipt.chainList
 		return ipt

@@ -15,7 +15,7 @@ const (
 
 func newTestMQTTConsumer() *MQTTConsumer {
 	n := &MQTTConsumer{
-		Topics:  []string{"telegraf"},
+		Topics:  []string{"opsagent"},
 		Servers: []string{"localhost:1883"},
 	}
 
@@ -41,20 +41,20 @@ func TestRandomClientID(t *testing.T) {
 func TestClientID(t *testing.T) {
 	m1 := &MQTTConsumer{
 		Servers:  []string{"localhost:1883"},
-		ClientID: "telegraf-test",
+		ClientID: "opsagent-test",
 	}
 	opts, err := m1.createOpts()
 	assert.NoError(t, err)
 
 	m2 := &MQTTConsumer{
 		Servers:  []string{"localhost:1883"},
-		ClientID: "telegraf-test",
+		ClientID: "opsagent-test",
 	}
 	opts2, err2 := m2.createOpts()
 	assert.NoError(t, err2)
 
-	assert.Equal(t, "telegraf-test", opts2.ClientID)
-	assert.Equal(t, "telegraf-test", opts.ClientID)
+	assert.Equal(t, "opsagent-test", opts2.ClientID)
+	assert.Equal(t, "opsagent-test", opts.ClientID)
 }
 
 // Test that Start() fails if client ID is not set but persistent is
@@ -70,7 +70,7 @@ func TestPersistentClientIDFail(t *testing.T) {
 
 func mqttMsg(val string) mqtt.Message {
 	return &message{
-		topic:   "telegraf/unit_test",
+		topic:   "opsagent/unit_test",
 		payload: []byte(val),
 	}
 }

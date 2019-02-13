@@ -60,9 +60,9 @@ const configSample = `
   # password = ""
 
   ## Optional SSL config
-  # ssl_ca = "/etc/telegraf/ca.pem"
-  # ssl_cert = "/etc/telegraf/cert.pem"
-  # ssl_key = "/etc/telegraf/key.pem"
+  # ssl_ca = "/etc/opsagent/ca.pem"
+  # ssl_cert = "/etc/opsagent/cert.pem"
+  # ssl_key = "/etc/opsagent/key.pem"
   # insecure_skip_verify = false
 `
 
@@ -128,7 +128,7 @@ type (
 )
 
 func init() {
-	inputs.Add("burrow", func() telegraf.Input {
+	inputs.Add("burrow", func() opsagent.Input {
 		return &burrow{}
 	})
 }
@@ -141,7 +141,7 @@ func (b *burrow) Description() string {
 	return "Collect Kafka topics and consumers status from Burrow HTTP API."
 }
 
-func (b *burrow) Gather(acc telegraf.Accumulator) error {
+func (b *burrow) Gather(acc opsagent.Accumulator) error {
 	var wg sync.WaitGroup
 
 	if len(b.Servers) == 0 {
@@ -255,7 +255,7 @@ func (b *burrow) getResponse(u *url.URL) (*apiResponse, error) {
 	return ares, dec.Decode(ares)
 }
 
-func (b *burrow) gatherServer(src *url.URL, acc telegraf.Accumulator) error {
+func (b *burrow) gatherServer(src *url.URL, acc opsagent.Accumulator) error {
 	var wg sync.WaitGroup
 
 	r, err := b.getResponse(src)
@@ -294,7 +294,7 @@ func (b *burrow) gatherServer(src *url.URL, acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (b *burrow) gatherTopics(guard chan struct{}, src *url.URL, cluster string, acc telegraf.Accumulator) {
+func (b *burrow) gatherTopics(guard chan struct{}, src *url.URL, cluster string, acc opsagent.Accumulator) {
 	var wg sync.WaitGroup
 
 	r, err := b.getResponse(src)
@@ -333,7 +333,7 @@ func (b *burrow) gatherTopics(guard chan struct{}, src *url.URL, cluster string,
 	wg.Wait()
 }
 
-func (b *burrow) genTopicMetrics(r *apiResponse, cluster, topic string, acc telegraf.Accumulator) {
+func (b *burrow) genTopicMetrics(r *apiResponse, cluster, topic string, acc opsagent.Accumulator) {
 	for i, offset := range r.Offsets {
 		tags := map[string]string{
 			"cluster":   cluster,
@@ -351,7 +351,7 @@ func (b *burrow) genTopicMetrics(r *apiResponse, cluster, topic string, acc tele
 	}
 }
 
-func (b *burrow) gatherGroups(guard chan struct{}, src *url.URL, cluster string, acc telegraf.Accumulator) {
+func (b *burrow) gatherGroups(guard chan struct{}, src *url.URL, cluster string, acc opsagent.Accumulator) {
 	var wg sync.WaitGroup
 
 	r, err := b.getResponse(src)
@@ -391,7 +391,7 @@ func (b *burrow) gatherGroups(guard chan struct{}, src *url.URL, cluster string,
 	wg.Wait()
 }
 
-func (b *burrow) genGroupStatusMetrics(r *apiResponse, cluster, group string, acc telegraf.Accumulator) {
+func (b *burrow) genGroupStatusMetrics(r *apiResponse, cluster, group string, acc opsagent.Accumulator) {
 	partitionCount := r.Status.PartitionCount
 	if partitionCount == 0 {
 		partitionCount = len(r.Status.Partitions)
@@ -430,7 +430,7 @@ func (b *burrow) genGroupStatusMetrics(r *apiResponse, cluster, group string, ac
 	)
 }
 
-func (b *burrow) genGroupLagMetrics(r *apiResponse, cluster, group string, acc telegraf.Accumulator) {
+func (b *burrow) genGroupLagMetrics(r *apiResponse, cluster, group string, acc opsagent.Accumulator) {
 	for _, partition := range r.Status.Partitions {
 		acc.AddFields(
 			"burrow_partition",

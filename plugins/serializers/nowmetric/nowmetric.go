@@ -22,7 +22,7 @@ Example for the JSON generated and pushed to the MID
 	"value": 0.89,
 	"timestamp":1487365430,
 	"ci2metric_id":{"node":"ASGARD"},
-	"source":"Telegraf"
+	"source":"Opsagent"
 }
 */
 
@@ -43,7 +43,7 @@ func NewSerializer() (*serializer, error) {
 	return s, nil
 }
 
-func (s *serializer) Serialize(metric telegraf.Metric) (out []byte, err error) {
+func (s *serializer) Serialize(metric opsagent.Metric) (out []byte, err error) {
 	serialized, err := s.createObject(metric)
 	if err != nil {
 		return []byte{}, nil
@@ -51,7 +51,7 @@ func (s *serializer) Serialize(metric telegraf.Metric) (out []byte, err error) {
 	return serialized, err
 }
 
-func (s *serializer) SerializeBatch(metrics []telegraf.Metric) (out []byte, err error) {
+func (s *serializer) SerializeBatch(metrics []opsagent.Metric) (out []byte, err error) {
 	objects := make([]byte, 0)
 	for _, metric := range metrics {
 		m, err := s.createObject(metric)
@@ -65,7 +65,7 @@ func (s *serializer) SerializeBatch(metrics []telegraf.Metric) (out []byte, err 
 	return replaced, nil
 }
 
-func (s *serializer) createObject(metric telegraf.Metric) ([]byte, error) {
+func (s *serializer) createObject(metric opsagent.Metric) ([]byte, error) {
 	/*  ServiceNow Operational Intelligence supports an array of JSON objects.
 	** Following elements accepted in the request body:
 		 ** metric_type: 	The name of the metric
@@ -79,7 +79,7 @@ func (s *serializer) createObject(metric telegraf.Metric) ([]byte, error) {
 	var allmetrics OIMetrics
 	var oimetric OIMetric
 
-	oimetric.Source = "Telegraf"
+	oimetric.Source = "Opsagent"
 
 	// Process Tags to extract node & resource name info
 	for _, tag := range metric.TagList() {

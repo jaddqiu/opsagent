@@ -24,15 +24,15 @@ import (
 )
 
 var configHeader = `
-# Telegraf Configuration
+# Opsagent Configuration
 #
-# Telegraf is entirely plugin driven. All metrics are gathered from the
+# Opsagent is entirely plugin driven. All metrics are gathered from the
 # declared inputs, and sent to the declared outputs.
 #
 # Plugins must be declared in here to be active.
 # To deactivate a plugin, comment out the name and any variables.
 #
-# Use 'telegraf -config telegraf.conf -test' to see what metrics a config
+# Use 'opsagent -config opsagent.conf -test' to see what metrics a config
 # file would generate.
 #
 # Environment variables can be used anywhere in this config file, simply prepend
@@ -48,7 +48,7 @@ var configHeader = `
   # user = "$USER"
 
 
-# Configuration for telegraf agent
+# Configuration for opsagent agent
 [agent]
   ## Default data collection interval for all inputs
   interval = "10s"
@@ -56,12 +56,12 @@ var configHeader = `
   ## ie, if interval="10s" then always collect on :00, :10, :20, etc.
   round_interval = true
 
-  ## Telegraf will send metrics to outputs in batches of at most
+  ## Opsagent will send metrics to outputs in batches of at most
   ## metric_batch_size metrics.
-  ## This controls the size of writes that Telegraf sends to output plugins.
+  ## This controls the size of writes that Opsagent sends to output plugins.
   metric_batch_size = 1000
 
-  ## For failed writes, telegraf will cache metric_buffer_limit metrics for each
+  ## For failed writes, opsagent will cache metric_buffer_limit metrics for each
   ## output, and will flush this buffer on a successful write. Oldest metrics
   ## are dropped first when this buffer fills.
   ## This buffer only fills when writes fail to output plugin(s).
@@ -77,7 +77,7 @@ var configHeader = `
   ## interval. Maximum flush_interval will be flush_interval + flush_jitter
   flush_interval = "10s"
   ## Jitter the flush interval by a random amount. This is primarily to avoid
-  ## large write spikes for users running a large number of telegraf instances.
+  ## large write spikes for users running a large number of opsagent instances.
   ## ie, a jitter of 5s and interval 10s means flushes will happen every 10-15s
   flush_jitter = "0s"
 
@@ -91,16 +91,16 @@ var configHeader = `
   precision = ""
 
   ## Logging configuration:
-  ## Run telegraf with debug log messages.
+  ## Run opsagent with debug log messages.
   debug = false
-  ## Run telegraf in quiet mode (error log messages only).
+  ## Run opsagent in quiet mode (error log messages only).
   quiet = false
   ## Specify the log file name. The empty string means to log to stderr.
   logfile = ""
 
   ## Override default hostname, if empty use os.Hostname()
   hostname = ""
-  ## If set to true, do no set the "host" tag in the telegraf agent.
+  ## If set to true, do no set the "host" tag in the opsagent agent.
   omit_hostname = false
 `
 

@@ -97,7 +97,7 @@ func TestWrite(t *testing.T) {
 }
 
 func TestGetStackdriverLabels(t *testing.T) {
-	tags := []*telegraf.Tag{
+	tags := []*opsagent.Tag{
 		{Key: "project", Value: "bar"},
 		{Key: "discuss", Value: "revolutionary"},
 		{Key: "marble", Value: "discount"},

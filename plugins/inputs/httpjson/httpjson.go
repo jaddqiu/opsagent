@@ -94,9 +94,9 @@ var sampleConfig = `
   # ]
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 
@@ -122,7 +122,7 @@ func (h *HttpJson) Description() string {
 }
 
 // Gathers data for all servers.
-func (h *HttpJson) Gather(acc telegraf.Accumulator) error {
+func (h *HttpJson) Gather(acc opsagent.Accumulator) error {
 	var wg sync.WaitGroup
 
 	if h.client.HTTPClient() == nil {
@@ -156,14 +156,14 @@ func (h *HttpJson) Gather(acc telegraf.Accumulator) error {
 
 // Gathers data from a particular server
 // Parameters:
-//     acc      : The telegraf Accumulator to use
+//     acc      : The opsagent Accumulator to use
 //     serverURL: endpoint to send request to
 //     service  : the service being queried
 //
 // Returns:
 //     error: Any error that may have occurred
 func (h *HttpJson) gatherServer(
-	acc telegraf.Accumulator,
+	acc opsagent.Accumulator,
 	serverURL string,
 ) error {
 	resp, responseTime, err := h.sendRequest(serverURL)
@@ -284,7 +284,7 @@ func (h *HttpJson) sendRequest(serverURL string) (string, float64, error) {
 }
 
 func init() {
-	inputs.Add("httpjson", func() telegraf.Input {
+	inputs.Add("httpjson", func() opsagent.Input {
 		return &HttpJson{
 			client: &RealHTTPClient{},
 			ResponseTimeout: internal.Duration{

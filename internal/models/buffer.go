@@ -15,7 +15,7 @@ var (
 // Buffer stores metrics in a circular buffer.
 type Buffer struct {
 	sync.Mutex
-	buf   []telegraf.Metric
+	buf   []opsagent.Metric
 	first int // index of the first/oldest metric
 	last  int // one after the index of the last/newest metric
 	size  int // number of metrics currently in the buffer
@@ -32,7 +32,7 @@ type Buffer struct {
 // NewBuffer returns a new empty Buffer with the given capacity.
 func NewBuffer(name string, capacity int) *Buffer {
 	b := &Buffer{
-		buf:   make([]telegraf.Metric, capacity),
+		buf:   make([]opsagent.Metric, capacity),
 		first: 0,
 		last:  0,
 		size:  0,
@@ -69,19 +69,19 @@ func (b *Buffer) metricAdded() {
 	b.MetricsAdded.Incr(1)
 }
 
-func (b *Buffer) metricWritten(metric telegraf.Metric) {
+func (b *Buffer) metricWritten(metric opsagent.Metric) {
 	AgentMetricsWritten.Incr(1)
 	b.MetricsWritten.Incr(1)
 	metric.Accept()
 }
 
-func (b *Buffer) metricDropped(metric telegraf.Metric) {
+func (b *Buffer) metricDropped(metric opsagent.Metric) {
 	AgentMetricsDropped.Incr(1)
 	b.MetricsDropped.Incr(1)
 	metric.Reject()
 }
 
-func (b *Buffer) add(m telegraf.Metric) {
+func (b *Buffer) add(m opsagent.Metric) {
 	// Check if Buffer is full
 	if b.size == b.cap {
 		b.metricDropped(b.buf[b.last])
@@ -105,7 +105,7 @@ func (b *Buffer) add(m telegraf.Metric) {
 }
 
 // Add adds metrics to the buffer
-func (b *Buffer) Add(metrics ...telegraf.Metric) {
+func (b *Buffer) Add(metrics ...opsagent.Metric) {
 	b.Lock()
 	defer b.Unlock()
 
@@ -117,12 +117,12 @@ func (b *Buffer) Add(metrics ...telegraf.Metric) {
 // Batch returns a slice containing up to batchSize of the most recently added
 // metrics.  Metrics are ordered from newest to oldest in the batch.  The
 // batch must not be modified by the client.
-func (b *Buffer) Batch(batchSize int) []telegraf.Metric {
+func (b *Buffer) Batch(batchSize int) []opsagent.Metric {
 	b.Lock()
 	defer b.Unlock()
 
 	outLen := min(b.size, batchSize)
-	out := make([]telegraf.Metric, outLen)
+	out := make([]opsagent.Metric, outLen)
 	if outLen == 0 {
 		return out
 	}
@@ -144,7 +144,7 @@ func (b *Buffer) Batch(batchSize int) []telegraf.Metric {
 }
 
 // Accept marks the batch, acquired from Batch(), as successfully written.
-func (b *Buffer) Accept(batch []telegraf.Metric) {
+func (b *Buffer) Accept(batch []opsagent.Metric) {
 	b.Lock()
 	defer b.Unlock()
 
@@ -157,7 +157,7 @@ func (b *Buffer) Accept(batch []telegraf.Metric) {
 
 // Reject returns the batch, acquired from Batch(), to the buffer and marks it
 // as unsent.
-func (b *Buffer) Reject(batch []telegraf.Metric) {
+func (b *Buffer) Reject(batch []opsagent.Metric) {
 	b.Lock()
 	defer b.Unlock()
 

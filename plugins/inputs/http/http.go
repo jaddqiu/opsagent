@@ -34,7 +34,7 @@ type HTTP struct {
 
 	client *http.Client
 
-	// The parser will automatically be set by Telegraf core code because
+	// The parser will automatically be set by Opsagent core code because
 	// this plugin implements the ParserInput interface (i.e. the SetParser method)
 	parser parsers.Parser
 }
@@ -63,9 +63,9 @@ var sampleConfig = `
   # content_encoding = "identity"
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 
@@ -91,7 +91,7 @@ func (*HTTP) Description() string {
 
 // Gather takes in an accumulator and adds the metrics that the Input
 // gathers. This is called every "interval"
-func (h *HTTP) Gather(acc telegraf.Accumulator) error {
+func (h *HTTP) Gather(acc opsagent.Accumulator) error {
 	if h.parser == nil {
 		return errors.New("Parser is not set")
 	}
@@ -133,13 +133,13 @@ func (h *HTTP) SetParser(parser parsers.Parser) {
 
 // Gathers data from a particular URL
 // Parameters:
-//     acc    : The telegraf Accumulator to use
+//     acc    : The opsagent Accumulator to use
 //     url    : endpoint to send request to
 //
 // Returns:
 //     error: Any error that may have occurred
 func (h *HTTP) gatherURL(
-	acc telegraf.Accumulator,
+	acc opsagent.Accumulator,
 	url string,
 ) error {
 	body, err := makeRequestBodyReader(h.ContentEncoding, h.Body)
@@ -215,7 +215,7 @@ func makeRequestBodyReader(contentEncoding, body string) (io.Reader, error) {
 }
 
 func init() {
-	inputs.Add("http", func() telegraf.Input {
+	inputs.Add("http", func() opsagent.Input {
 		return &HTTP{
 			Timeout: internal.Duration{Duration: time.Second * 5},
 			Method:  "GET",

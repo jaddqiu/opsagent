@@ -184,7 +184,7 @@ func (p *Parser) Compile() error {
 }
 
 // ParseLine is the primary function to process individual lines, returning the metrics
-func (p *Parser) ParseLine(line string) (telegraf.Metric, error) {
+func (p *Parser) ParseLine(line string) (opsagent.Metric, error) {
 	var err error
 	// values are the parsed fields from the log line
 	var values map[string]string
@@ -361,9 +361,9 @@ func (p *Parser) ParseLine(line string) (telegraf.Metric, error) {
 	return metric.New(p.Measurement, tags, fields, p.tsModder.tsMod(timestamp))
 }
 
-func (p *Parser) Parse(buf []byte) ([]telegraf.Metric, error) {
+func (p *Parser) Parse(buf []byte) ([]opsagent.Metric, error) {
 
-	metrics := make([]telegraf.Metric, 0)
+	metrics := make([]opsagent.Metric, 0)
 
 	scanner := bufio.NewScanner(bytes.NewReader(buf))
 	for scanner.Scan() {

@@ -60,7 +60,7 @@ func (n *NTPQ) SampleConfig() string {
 `
 }
 
-func (n *NTPQ) Gather(acc telegraf.Accumulator) error {
+func (n *NTPQ) Gather(acc opsagent.Accumulator) error {
 	out, err := n.runQ()
 	if err != nil {
 		return err
@@ -218,7 +218,7 @@ func (n *NTPQ) runq() ([]byte, error) {
 }
 
 func init() {
-	inputs.Add("ntpq", func() telegraf.Input {
+	inputs.Add("ntpq", func() opsagent.Input {
 		n := &NTPQ{}
 		n.runQ = n.runq
 		return n

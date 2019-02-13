@@ -93,7 +93,7 @@ func (_ *Ping) SampleConfig() string {
 	return sampleConfig
 }
 
-func (p *Ping) Gather(acc telegraf.Accumulator) error {
+func (p *Ping) Gather(acc opsagent.Accumulator) error {
 	// Spin off a go routine for each url to ping
 	for _, url := range p.Urls {
 		p.wg.Add(1)
@@ -105,7 +105,7 @@ func (p *Ping) Gather(acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (p *Ping) pingToURL(u string, acc telegraf.Accumulator) {
+func (p *Ping) pingToURL(u string, acc opsagent.Accumulator) {
 	defer p.wg.Done()
 	tags := map[string]string{"url": u}
 	fields := map[string]interface{}{"result_code": 0}
@@ -300,7 +300,7 @@ func processPingOutput(out string) (int, int, float64, float64, float64, float64
 }
 
 func init() {
-	inputs.Add("ping", func() telegraf.Input {
+	inputs.Add("ping", func() opsagent.Input {
 		return &Ping{
 			pingHost:     hostPinger,
 			PingInterval: 1.0,

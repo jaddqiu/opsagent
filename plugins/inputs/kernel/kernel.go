@@ -34,7 +34,7 @@ func (k *Kernel) Description() string {
 
 func (k *Kernel) SampleConfig() string { return "" }
 
-func (k *Kernel) Gather(acc telegraf.Accumulator) error {
+func (k *Kernel) Gather(acc opsagent.Accumulator) error {
 
 	data, err := k.getProcStat()
 	if err != nil {
@@ -118,7 +118,7 @@ func (k *Kernel) getProcStat() ([]byte, error) {
 }
 
 func init() {
-	inputs.Add("kernel", func() telegraf.Input {
+	inputs.Add("kernel", func() opsagent.Input {
 		return &Kernel{
 			statFile:        "/proc/stat",
 			entropyStatFile: "/proc/sys/kernel/random/entropy_avail",

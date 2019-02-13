@@ -40,13 +40,13 @@ func (sw *SocketWriter) SampleConfig() string {
   # address = "udp://127.0.0.1:8094"
   # address = "udp4://127.0.0.1:8094"
   # address = "udp6://127.0.0.1:8094"
-  # address = "unix:///tmp/telegraf.sock"
-  # address = "unixgram:///tmp/telegraf.sock"
+  # address = "unix:///tmp/opsagent.sock"
+  # address = "unixgram:///tmp/opsagent.sock"
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 
@@ -117,7 +117,7 @@ func (sw *SocketWriter) setKeepAlive(c net.Conn) error {
 // Write writes the given metrics to the destination.
 // If an error is encountered, it is up to the caller to retry the same write again later.
 // Not parallel safe.
-func (sw *SocketWriter) Write(metrics []telegraf.Metric) error {
+func (sw *SocketWriter) Write(metrics []opsagent.Metric) error {
 	if sw.Conn == nil {
 		// previous write failed with permanent error and socket was closed.
 		if err := sw.Connect(); err != nil {
@@ -164,5 +164,5 @@ func newSocketWriter() *SocketWriter {
 }
 
 func init() {
-	outputs.Add("socket_writer", func() telegraf.Output { return newSocketWriter() })
+	outputs.Add("socket_writer", func() opsagent.Output { return newSocketWriter() })
 }

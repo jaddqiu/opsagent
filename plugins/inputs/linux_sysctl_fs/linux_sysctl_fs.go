@@ -67,7 +67,7 @@ func (sfs *SysctlFS) gatherOne(name string, fields map[string]interface{}) error
 	return nil
 }
 
-func (sfs *SysctlFS) Gather(acc telegraf.Accumulator) error {
+func (sfs *SysctlFS) Gather(acc opsagent.Accumulator) error {
 	fields := map[string]interface{}{}
 
 	for _, n := range []string{"aio-nr", "aio-max-nr", "dquot-nr", "dquot-max", "super-nr", "super-max"} {
@@ -92,7 +92,7 @@ func GetHostProc() string {
 
 func init() {
 
-	inputs.Add("linux_sysctl_fs", func() telegraf.Input {
+	inputs.Add("linux_sysctl_fs", func() opsagent.Input {
 		return &SysctlFS{
 			path: path.Join(GetHostProc(), "/sys/fs"),
 		}

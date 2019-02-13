@@ -21,7 +21,7 @@ const (
 	DefaultAuthMethod      = "PLAIN"
 	DefaultExchangeType    = "topic"
 	DefaultRetentionPolicy = "default"
-	DefaultDatabase        = "telegraf"
+	DefaultDatabase        = "opsagent"
 )
 
 type externalAuth struct{}
@@ -85,7 +85,7 @@ var sampleConfig = `
   # max_messages = 0
 
   ## Exchange to declare and publish to.
-  exchange = "telegraf"
+  exchange = "opsagent"
 
   ## Exchange type; common types are "direct", "fanout", "topic", "header", "x-consistent-hash".
   # exchange_type = "topic"
@@ -116,7 +116,7 @@ var sampleConfig = `
   ## Static routing key.  Used when no routing_tag is set or as a fallback
   ## when the tag specified in routing tag is not found.
   # routing_key = ""
-  # routing_key = "telegraf"
+  # routing_key = "opsagent"
 
   ## Delivery Mode controls if a published message is persistent.
   ##   One of "transient" or "persistent".
@@ -124,7 +124,7 @@ var sampleConfig = `
 
   ## InfluxDB database added as a message header.
   ##   deprecated in 1.7; use the headers option
-  # database = "telegraf"
+  # database = "opsagent"
 
   ## InfluxDB retention policy added as a message header
   ##   deprecated in 1.7; use the headers option
@@ -132,16 +132,16 @@ var sampleConfig = `
 
   ## Static headers added to each published message.
   # headers = { }
-  # headers = {"database" = "telegraf", "retention_policy" = "default"}
+  # headers = {"database" = "opsagent", "retention_policy" = "default"}
 
   ## Connection timeout.  If not provided, will default to 5s.  0s means no
   ## timeout (not recommended).
   # timeout = "5s"
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 
@@ -194,7 +194,7 @@ func (q *AMQP) Close() error {
 	return nil
 }
 
-func (q *AMQP) routingKey(metric telegraf.Metric) string {
+func (q *AMQP) routingKey(metric opsagent.Metric) string {
 	if q.RoutingTag != "" {
 		key, ok := metric.GetTag(q.RoutingTag)
 		if ok {
@@ -204,8 +204,8 @@ func (q *AMQP) routingKey(metric telegraf.Metric) string {
 	return q.RoutingKey
 }
 
-func (q *AMQP) Write(metrics []telegraf.Metric) error {
-	batches := make(map[string][]telegraf.Metric)
+func (q *AMQP) Write(metrics []opsagent.Metric) error {
+	batches := make(map[string][]opsagent.Metric)
 	if q.ExchangeType == "direct" || q.ExchangeType == "header" {
 		// Since the routing_key is ignored for these exchange types send as a
 		// single batch.
@@ -214,7 +214,7 @@ func (q *AMQP) Write(metrics []telegraf.Metric) error {
 		for _, metric := range metrics {
 			routingKey := q.routingKey(metric)
 			if _, ok := batches[routingKey]; !ok {
-				batches[routingKey] = make([]telegraf.Metric, 0)
+				batches[routingKey] = make([]opsagent.Metric, 0)
 			}
 
 			batches[routingKey] = append(batches[routingKey], metric)
@@ -274,7 +274,7 @@ func (q *AMQP) publish(key string, body []byte) error {
 	return nil
 }
 
-func (q *AMQP) serialize(metrics []telegraf.Metric) ([]byte, error) {
+func (q *AMQP) serialize(metrics []opsagent.Metric) ([]byte, error) {
 	if q.UseBatchFormat {
 		return q.serializer.SerializeBatch(metrics)
 	} else {
@@ -370,7 +370,7 @@ func connect(config *ClientConfig) (Client, error) {
 }
 
 func init() {
-	outputs.Add("amqp", func() telegraf.Output {
+	outputs.Add("amqp", func() opsagent.Output {
 		return &AMQP{
 			URL:             DefaultURL,
 			ExchangeType:    DefaultExchangeType,

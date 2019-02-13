@@ -23,7 +23,7 @@ func (t *Temperature) SampleConfig() string {
 	return sampleConfig
 }
 
-func (t *Temperature) Gather(acc telegraf.Accumulator) error {
+func (t *Temperature) Gather(acc opsagent.Accumulator) error {
 	temps, err := t.ps.Temperature()
 	if err != nil {
 		if strings.Contains(err.Error(), "not implemented yet") {
@@ -44,7 +44,7 @@ func (t *Temperature) Gather(acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add("temp", func() telegraf.Input {
+	inputs.Add("temp", func() opsagent.Input {
 		return &Temperature{ps: system.NewSystemPS()}
 	})
 }

@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS ` + c.Table + ` (
 	return nil
 }
 
-func (c *CrateDB) Write(metrics []telegraf.Metric) error {
+func (c *CrateDB) Write(metrics []opsagent.Metric) error {
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout.Duration)
 	defer cancel()
 	if sql, err := insertSQL(c.Table, metrics); err != nil {
@@ -76,7 +76,7 @@ func (c *CrateDB) Write(metrics []telegraf.Metric) error {
 	return nil
 }
 
-func insertSQL(table string, metrics []telegraf.Metric) (string, error) {
+func insertSQL(table string, metrics []opsagent.Metric) (string, error) {
 	rows := make([]string, len(metrics))
 	for i, m := range metrics {
 
@@ -140,7 +140,7 @@ func escapeValue(val interface{}) (string, error) {
 		return escapeObject(t)
 	default:
 		// This might be panic worthy under normal circumstances, but it's probably
-		// better to not shut down the entire telegraf process because of one
+		// better to not shut down the entire opsagent process because of one
 		// misbehaving plugin.
 		return "", fmt.Errorf("unexpected type: %T: %#v", t, t)
 	}
@@ -194,7 +194,7 @@ func escapeString(s string, quote string) string {
 // and because a cryptographic hash makes more sense for the use case of
 // deduplication.
 // [1] https://github.com/jaddqiu/opsagent/pull/3210#discussion_r148411201
-func hashID(m telegraf.Metric) int64 {
+func hashID(m opsagent.Metric) int64 {
 	h := sha512.New()
 	h.Write([]byte(m.Name()))
 	tags := m.Tags()
@@ -233,7 +233,7 @@ func (c *CrateDB) Close() error {
 }
 
 func init() {
-	outputs.Add("cratedb", func() telegraf.Output {
+	outputs.Add("cratedb", func() opsagent.Output {
 		return &CrateDB{
 			Timeout: internal.Duration{Duration: time.Second * 5},
 		}

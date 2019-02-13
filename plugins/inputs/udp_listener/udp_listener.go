@@ -17,10 +17,10 @@ import (
 type UdpListener struct {
 	ServiceAddress string
 
-	// UDPBufferSize should only be set if you want/need the telegraf UDP socket to
+	// UDPBufferSize should only be set if you want/need the opsagent UDP socket to
 	// differ from the system setting. In cases where you set the rmem_default to a lower
 	// value at the host level, but need a larger buffer for UDP bursty traffic, this
-	// setting enables you to configure that value ONLY for telegraf UDP sockets on this listener
+	// setting enables you to configure that value ONLY for opsagent UDP sockets on this listener
 	// Set this to 0 (or comment out) to take system default
 	//
 	// NOTE: You should ensure that your rmem_max is >= to this setting to work properly!
@@ -47,7 +47,7 @@ type UdpListener struct {
 	parser parsers.Parser
 
 	// Keep the accumulator in this struct
-	acc telegraf.Accumulator
+	acc opsagent.Accumulator
 
 	listener *net.UDPConn
 
@@ -82,7 +82,7 @@ func (u *UdpListener) Description() string {
 
 // All the work is done in the Start() function, so this is just a dummy
 // function.
-func (u *UdpListener) Gather(_ telegraf.Accumulator) error {
+func (u *UdpListener) Gather(_ opsagent.Accumulator) error {
 	return nil
 }
 
@@ -90,7 +90,7 @@ func (u *UdpListener) SetParser(parser parsers.Parser) {
 	u.parser = parser
 }
 
-func (u *UdpListener) Start(acc telegraf.Accumulator) error {
+func (u *UdpListener) Start(acc opsagent.Accumulator) error {
 	u.Lock()
 	defer u.Unlock()
 
@@ -191,7 +191,7 @@ func (u *UdpListener) udpParser() error {
 	defer u.wg.Done()
 
 	var packet []byte
-	var metrics []telegraf.Metric
+	var metrics []opsagent.Metric
 	var err error
 	for {
 		select {
@@ -216,7 +216,7 @@ func (u *UdpListener) udpParser() error {
 }
 
 func init() {
-	inputs.Add("udp_listener", func() telegraf.Input {
+	inputs.Add("udp_listener", func() opsagent.Input {
 		return &UdpListener{
 			ServiceAddress:         ":8092",
 			AllowedPendingMessages: 10000,

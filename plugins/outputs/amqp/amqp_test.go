@@ -120,7 +120,7 @@ func TestConnect(t *testing.T) {
 			name: "username password",
 			output: &AMQP{
 				URL:      "amqp://foo:bar@localhost",
-				Username: "telegraf",
+				Username: "opsagent",
 				Password: "pa$$word",
 				connect: func(config *ClientConfig) (Client, error) {
 					return NewMockClient(), nil
@@ -130,7 +130,7 @@ func TestConnect(t *testing.T) {
 				config := output.config
 				require.Equal(t, []amqp.Authentication{
 					&amqp.PlainAuth{
-						Username: "telegraf",
+						Username: "opsagent",
 						Password: "pa$$word",
 					},
 				}, config.auth)

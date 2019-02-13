@@ -48,7 +48,7 @@ var sampleConfig = `
   ## Setting to "0s" will disable the health check (not recommended in production)
   health_check_interval = "10s"
   ## HTTP basic authentication details (eg. when using Shield)
-  # username = "telegraf"
+  # username = "opsagent"
   # password = "mypassword"
 
   ## Index Config
@@ -64,24 +64,24 @@ var sampleConfig = `
   ## Additionally, you can specify a tag name using the notation {{tag_name}}
   ## which will be used as part of the index name. If the tag does not exist,
   ## the default tag value will be used.
-  # index_name = "telegraf-{{host}}-%Y.%m.%d"
+  # index_name = "opsagent-{{host}}-%Y.%m.%d"
   # default_tag_value = "none"
-  index_name = "telegraf-%Y.%m.%d" # required.
+  index_name = "opsagent-%Y.%m.%d" # required.
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 
   ## Template Config
-  ## Set to true if you want telegraf to manage its index template.
-  ## If enabled it will create a recommended index template for telegraf indexes
+  ## Set to true if you want opsagent to manage its index template.
+  ## If enabled it will create a recommended index template for opsagent indexes
   manage_template = true
-  ## The template name used for telegraf indexes
-  template_name = "telegraf"
-  ## Set to true if you want telegraf to overwrite an existing template
+  ## The template name used for opsagent indexes
+  template_name = "opsagent"
+  ## Set to true if you want opsagent to overwrite an existing template
   overwrite_template = false
 `
 
@@ -163,7 +163,7 @@ func (a *Elasticsearch) Connect() error {
 	return nil
 }
 
-func (a *Elasticsearch) Write(metrics []telegraf.Metric) error {
+func (a *Elasticsearch) Write(metrics []opsagent.Metric) error {
 	if len(metrics) == 0 {
 		return nil
 	}
@@ -173,7 +173,7 @@ func (a *Elasticsearch) Write(metrics []telegraf.Metric) error {
 	for _, metric := range metrics {
 		var name = metric.Name()
 
-		// index name has to be re-evaluated each time for telegraf
+		// index name has to be re-evaluated each time for opsagent
 		// to send the metric to the correct time-based index
 		indexName := a.GetIndexName(a.IndexName, metric.Time(), a.TagKeys, metric.Tags())
 
@@ -387,7 +387,7 @@ func (a *Elasticsearch) Close() error {
 }
 
 func init() {
-	outputs.Add("elasticsearch", func() telegraf.Output {
+	outputs.Add("elasticsearch", func() opsagent.Output {
 		return &Elasticsearch{
 			Timeout:             internal.Duration{Duration: time.Second * 5},
 			HealthCheckInterval: internal.Duration{Duration: time.Second * 10},

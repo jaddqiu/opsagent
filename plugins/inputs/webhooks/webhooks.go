@@ -20,11 +20,11 @@ import (
 )
 
 type Webhook interface {
-	Register(router *mux.Router, acc telegraf.Accumulator)
+	Register(router *mux.Router, acc opsagent.Accumulator)
 }
 
 func init() {
-	inputs.Add("webhooks", func() telegraf.Input { return NewWebhooks() })
+	inputs.Add("webhooks", func() opsagent.Input { return NewWebhooks() })
 }
 
 type Webhooks struct {
@@ -74,7 +74,7 @@ func (wb *Webhooks) Description() string {
 	return "A Webhooks Event collector"
 }
 
-func (wb *Webhooks) Gather(_ telegraf.Accumulator) error {
+func (wb *Webhooks) Gather(_ opsagent.Accumulator) error {
 	return nil
 }
 
@@ -99,7 +99,7 @@ func (wb *Webhooks) AvailableWebhooks() []Webhook {
 	return webhooks
 }
 
-func (wb *Webhooks) Start(acc telegraf.Accumulator) error {
+func (wb *Webhooks) Start(acc opsagent.Accumulator) error {
 	r := mux.NewRouter()
 
 	for _, webhook := range wb.AvailableWebhooks() {

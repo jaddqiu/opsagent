@@ -33,7 +33,7 @@ func (*Chrony) SampleConfig() string {
   `
 }
 
-func (c *Chrony) Gather(acc telegraf.Accumulator) error {
+func (c *Chrony) Gather(acc opsagent.Accumulator) error {
 	if len(c.path) == 0 {
 		return errors.New("chronyc not found: verify that chrony is installed and that chronyc is in your PATH")
 	}
@@ -125,7 +125,7 @@ func init() {
 	if len(path) > 0 {
 		c.path = path
 	}
-	inputs.Add("chrony", func() telegraf.Input {
+	inputs.Add("chrony", func() opsagent.Input {
 		return &c
 	})
 }

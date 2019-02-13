@@ -184,10 +184,10 @@ func (g *Graylog) SampleConfig() string {
 }
 
 func (g *Graylog) Description() string {
-	return "Send telegraf metrics to graylog(s)"
+	return "Send opsagent metrics to graylog(s)"
 }
 
-func (g *Graylog) Write(metrics []telegraf.Metric) error {
+func (g *Graylog) Write(metrics []opsagent.Metric) error {
 	if len(metrics) == 0 {
 		return nil
 	}
@@ -208,13 +208,13 @@ func (g *Graylog) Write(metrics []telegraf.Metric) error {
 	return nil
 }
 
-func serialize(metric telegraf.Metric) ([]string, error) {
+func serialize(metric opsagent.Metric) ([]string, error) {
 	out := []string{}
 
 	m := make(map[string]interface{})
 	m["version"] = "1.1"
 	m["timestamp"] = metric.Time().UnixNano() / 1000000000
-	m["short_message"] = "telegraf"
+	m["short_message"] = "opsagent"
 	m["name"] = metric.Name()
 
 	if host, ok := metric.Tags()["host"]; ok {
@@ -247,7 +247,7 @@ func serialize(metric telegraf.Metric) ([]string, error) {
 }
 
 func init() {
-	outputs.Add("graylog", func() telegraf.Output {
+	outputs.Add("graylog", func() opsagent.Output {
 		return &Graylog{}
 	})
 }

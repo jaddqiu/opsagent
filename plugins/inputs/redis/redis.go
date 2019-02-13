@@ -64,9 +64,9 @@ var sampleConfig = `
   # password = "s#cr@t%"
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = true
 `
@@ -85,7 +85,7 @@ var Tracking = map[string]string{
 	"role":              "replication_role",
 }
 
-func (r *Redis) init(acc telegraf.Accumulator) error {
+func (r *Redis) init(acc opsagent.Accumulator) error {
 	if r.initialized {
 		return nil
 	}
@@ -160,7 +160,7 @@ func (r *Redis) init(acc telegraf.Accumulator) error {
 
 // Reads stats from all configured servers accumulates stats.
 // Returns one of the errors encountered while gather stats (if any).
-func (r *Redis) Gather(acc telegraf.Accumulator) error {
+func (r *Redis) Gather(acc opsagent.Accumulator) error {
 	if !r.initialized {
 		err := r.init(acc)
 		if err != nil {
@@ -182,7 +182,7 @@ func (r *Redis) Gather(acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (r *Redis) gatherServer(client Client, acc telegraf.Accumulator) error {
+func (r *Redis) gatherServer(client Client, acc opsagent.Accumulator) error {
 	info, err := client.Info().Result()
 	if err != nil {
 		return err
@@ -195,7 +195,7 @@ func (r *Redis) gatherServer(client Client, acc telegraf.Accumulator) error {
 // gatherInfoOutput gathers
 func gatherInfoOutput(
 	rdr io.Reader,
-	acc telegraf.Accumulator,
+	acc opsagent.Accumulator,
 	tags map[string]string,
 ) error {
 	var section string
@@ -299,7 +299,7 @@ func gatherInfoOutput(
 func gatherKeyspaceLine(
 	name string,
 	line string,
-	acc telegraf.Accumulator,
+	acc opsagent.Accumulator,
 	global_tags map[string]string,
 ) {
 	if strings.Contains(line, "keys=") {
@@ -322,7 +322,7 @@ func gatherKeyspaceLine(
 }
 
 func init() {
-	inputs.Add("redis", func() telegraf.Input {
+	inputs.Add("redis", func() opsagent.Input {
 		return &Redis{}
 	})
 }

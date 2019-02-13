@@ -295,7 +295,7 @@ func TestStrict_udp(t *testing.T) {
 }
 
 func TestBestEffort_unixgram(t *testing.T) {
-	tmpdir, err := ioutil.TempDir("", "telegraf")
+	tmpdir, err := ioutil.TempDir("", "opsagent")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpdir)
 	sock := filepath.Join(tmpdir, "syslog.TestBestEffort_unixgram.sock")
@@ -304,7 +304,7 @@ func TestBestEffort_unixgram(t *testing.T) {
 }
 
 func TestStrict_unixgram(t *testing.T) {
-	tmpdir, err := ioutil.TempDir("", "telegraf")
+	tmpdir, err := ioutil.TempDir("", "opsagent")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpdir)
 	sock := filepath.Join(tmpdir, "syslog.TestStrict_unixgram.sock")

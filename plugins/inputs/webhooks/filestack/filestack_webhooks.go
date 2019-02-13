@@ -13,10 +13,10 @@ import (
 
 type FilestackWebhook struct {
 	Path string
-	acc  telegraf.Accumulator
+	acc  opsagent.Accumulator
 }
 
-func (fs *FilestackWebhook) Register(router *mux.Router, acc telegraf.Accumulator) {
+func (fs *FilestackWebhook) Register(router *mux.Router, acc opsagent.Accumulator) {
 	router.HandleFunc(fs.Path, fs.eventHandler).Methods("POST")
 
 	log.Printf("I! Started the webhooks_filestack on %s\n", fs.Path)

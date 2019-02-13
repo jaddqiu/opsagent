@@ -177,7 +177,7 @@ var sampleConfig = `
   # endpoint_url = ""
 
   ## Namespace for the CloudWatch MetricDatums
-  namespace = "InfluxData/Telegraf"
+  namespace = "InfluxData/Opsagent"
 
   ## If you have a large amount of metrics, you should consider to send statistic 
   ## values instead of raw metrics which could not only improve performance but 
@@ -216,7 +216,7 @@ func (c *CloudWatch) Close() error {
 	return nil
 }
 
-func (c *CloudWatch) Write(metrics []telegraf.Metric) error {
+func (c *CloudWatch) Write(metrics []opsagent.Metric) error {
 
 	var datums []*cloudwatch.MetricDatum
 	for _, m := range metrics {
@@ -275,10 +275,10 @@ func PartitionDatums(size int, datums []*cloudwatch.MetricDatum) [][]*cloudwatch
 	return partitions
 }
 
-// Make a MetricDatum from telegraf.Metric. It would check if all required fields of
+// Make a MetricDatum from opsagent.Metric. It would check if all required fields of
 // cloudwatch.StatisticSet are available. If so, it would build MetricDatum from statistic values.
 // Otherwise, fields would still been built independently.
-func BuildMetricDatum(buildStatistic bool, point telegraf.Metric) []*cloudwatch.MetricDatum {
+func BuildMetricDatum(buildStatistic bool, point opsagent.Metric) []*cloudwatch.MetricDatum {
 
 	fields := make(map[string]cloudwatchField)
 	tags := point.Tags()
@@ -442,7 +442,7 @@ func convert(v interface{}) (value float64, ok bool) {
 }
 
 func init() {
-	outputs.Add("cloudwatch", func() telegraf.Output {
+	outputs.Add("cloudwatch", func() opsagent.Output {
 		return &CloudWatch{}
 	})
 }

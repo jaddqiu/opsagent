@@ -44,7 +44,7 @@ func TestPartitionKey(t *testing.T) {
 			Key:    "doesnotexist",
 		},
 	}
-	assert.Equal("telegraf", k.getPartitionKey(testPoint), "PartitionKey should be telegraf")
+	assert.Equal("opsagent", k.getPartitionKey(testPoint), "PartitionKey should be opsagent")
 
 	k = KinesisOutput{
 		Partition: &Partition{

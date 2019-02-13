@@ -51,12 +51,12 @@ func newTestKafka() (*Kafka, *TestConsumer) {
 	k := Kafka{
 		cluster:                consumer,
 		ConsumerGroup:          "test",
-		Topics:                 []string{"telegraf"},
+		Topics:                 []string{"opsagent"},
 		Brokers:                []string{"localhost:9092"},
 		Offset:                 "oldest",
 		MaxUndeliveredMessages: defaultMaxUndeliveredMessages,
 		doNotCommitMsgs:        true,
-		messages:               make(map[telegraf.TrackingID]*sarama.ConsumerMessage),
+		messages:               make(map[opsagent.TrackingID]*sarama.ConsumerMessage),
 	}
 	return &k, consumer
 }
@@ -69,12 +69,12 @@ func newTestKafkaWithTopicTag() (*Kafka, *TestConsumer) {
 	k := Kafka{
 		cluster:                consumer,
 		ConsumerGroup:          "test",
-		Topics:                 []string{"telegraf"},
+		Topics:                 []string{"opsagent"},
 		Brokers:                []string{"localhost:9092"},
 		Offset:                 "oldest",
 		MaxUndeliveredMessages: defaultMaxUndeliveredMessages,
 		doNotCommitMsgs:        true,
-		messages:               make(map[telegraf.TrackingID]*sarama.ConsumerMessage),
+		messages:               make(map[opsagent.TrackingID]*sarama.ConsumerMessage),
 		TopicTag:               "topic",
 	}
 	return &k, consumer

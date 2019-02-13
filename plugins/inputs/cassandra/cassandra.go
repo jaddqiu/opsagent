@@ -36,13 +36,13 @@ type Cassandra struct {
 type javaMetric struct {
 	host   string
 	metric string
-	acc    telegraf.Accumulator
+	acc    opsagent.Accumulator
 }
 
 type cassandraMetric struct {
 	host   string
 	metric string
-	acc    telegraf.Accumulator
+	acc    opsagent.Accumulator
 }
 
 type jmxMetric interface {
@@ -50,12 +50,12 @@ type jmxMetric interface {
 }
 
 func newJavaMetric(host string, metric string,
-	acc telegraf.Accumulator) *javaMetric {
+	acc opsagent.Accumulator) *javaMetric {
 	return &javaMetric{host: host, metric: metric, acc: acc}
 }
 
 func newCassandraMetric(host string, metric string,
-	acc telegraf.Accumulator) *cassandraMetric {
+	acc opsagent.Accumulator) *cassandraMetric {
 	return &cassandraMetric{host: host, metric: metric, acc: acc}
 }
 
@@ -263,7 +263,7 @@ func parseServerTokens(server string) map[string]string {
 	return serverTokens
 }
 
-func (c *Cassandra) Start(acc telegraf.Accumulator) error {
+func (c *Cassandra) Start(acc opsagent.Accumulator) error {
 	log.Println("W! DEPRECATED: The cassandra plugin has been deprecated. " +
 		"Please use the jolokia2 plugin instead. " +
 		"https://github.com/jaddqiu/opsagent/tree/master/plugins/inputs/jolokia2")
@@ -273,7 +273,7 @@ func (c *Cassandra) Start(acc telegraf.Accumulator) error {
 func (c *Cassandra) Stop() {
 }
 
-func (c *Cassandra) Gather(acc telegraf.Accumulator) error {
+func (c *Cassandra) Gather(acc opsagent.Accumulator) error {
 	context := c.Context
 	servers := c.Servers
 	metrics := c.Metrics
@@ -323,7 +323,7 @@ func (c *Cassandra) Gather(acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add("cassandra", func() telegraf.Input {
+	inputs.Add("cassandra", func() opsagent.Input {
 		return &Cassandra{jClient: &JolokiaClientImpl{client: &http.Client{}}}
 	})
 }

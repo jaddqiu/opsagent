@@ -23,7 +23,7 @@ func TestConnectAndWrite(t *testing.T) {
 		IndexName:           "test-%Y.%m.%d",
 		Timeout:             internal.Duration{Duration: time.Second * 5},
 		ManageTemplate:      true,
-		TemplateName:        "telegraf",
+		TemplateName:        "opsagent",
 		OverwriteTemplate:   false,
 		HealthCheckInterval: internal.Duration{Duration: time.Second * 10},
 	}
@@ -73,7 +73,7 @@ func TestTemplateManagement(t *testing.T) {
 		IndexName:         "test-%Y.%m.%d",
 		Timeout:           internal.Duration{Duration: time.Second * 5},
 		ManageTemplate:    true,
-		TemplateName:      "telegraf",
+		TemplateName:      "opsagent",
 		OverwriteTemplate: true,
 	}
 
@@ -99,7 +99,7 @@ func TestTemplateInvalidIndexPattern(t *testing.T) {
 		IndexName:         "{{host}}-%Y.%m.%d",
 		Timeout:           internal.Duration{Duration: time.Second * 5},
 		ManageTemplate:    true,
-		TemplateName:      "telegraf",
+		TemplateName:      "opsagent",
 		OverwriteTemplate: true,
 	}
 

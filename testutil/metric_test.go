@@ -11,12 +11,12 @@ import (
 func TestRequireMetricsEqual(t *testing.T) {
 	tests := []struct {
 		name string
-		got  telegraf.Metric
-		want telegraf.Metric
+		got  opsagent.Metric
+		want opsagent.Metric
 	}{
 		{
-			name: "telegraf and testutil metrics should be equal",
-			got: func() telegraf.Metric {
+			name: "opsagent and testutil metrics should be equal",
+			got: func() opsagent.Metric {
 				m, _ := metric.New(
 					"test",
 					map[string]string{
@@ -32,7 +32,7 @@ func TestRequireMetricsEqual(t *testing.T) {
 				)
 				return m
 			}(),
-			want: func() telegraf.Metric {
+			want: func() opsagent.Metric {
 				m, _ := metric.New(
 					"test",
 					map[string]string{

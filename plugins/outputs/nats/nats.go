@@ -32,12 +32,12 @@ var sampleConfig = `
   # username = ""
   # password = ""
   ## NATS subject for producer messages
-  subject = "telegraf"
+  subject = "opsagent"
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 
@@ -97,10 +97,10 @@ func (n *NATS) SampleConfig() string {
 }
 
 func (n *NATS) Description() string {
-	return "Send telegraf measurements to NATS"
+	return "Send opsagent measurements to NATS"
 }
 
-func (n *NATS) Write(metrics []telegraf.Metric) error {
+func (n *NATS) Write(metrics []opsagent.Metric) error {
 	if len(metrics) == 0 {
 		return nil
 	}
@@ -120,7 +120,7 @@ func (n *NATS) Write(metrics []telegraf.Metric) error {
 }
 
 func init() {
-	outputs.Add("nats", func() telegraf.Output {
+	outputs.Add("nats", func() opsagent.Output {
 		return &NATS{}
 	})
 }

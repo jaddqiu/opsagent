@@ -163,9 +163,9 @@ func TestConcurrentConns(t *testing.T) {
 	n, err := conn.Read(buf)
 	assert.NoError(t, err)
 	assert.Equal(t,
-		"Telegraf maximum concurrent TCP connections (2) reached, closing.\n"+
+		"Opsagent maximum concurrent TCP connections (2) reached, closing.\n"+
 			"You may want to increase max_tcp_connections in"+
-			" the Telegraf tcp listener configuration.\n",
+			" the Opsagent tcp listener configuration.\n",
 		string(buf[:n]))
 
 	_, err = conn.Read(buf)
@@ -196,9 +196,9 @@ func TestConcurrentConns1(t *testing.T) {
 	n, err := conn.Read(buf)
 	assert.NoError(t, err)
 	assert.Equal(t,
-		"Telegraf maximum concurrent TCP connections (1) reached, closing.\n"+
+		"Opsagent maximum concurrent TCP connections (1) reached, closing.\n"+
 			"You may want to increase max_tcp_connections in"+
-			" the Telegraf tcp listener configuration.\n",
+			" the Opsagent tcp listener configuration.\n",
 		string(buf[:n]))
 
 	_, err = conn.Read(buf)

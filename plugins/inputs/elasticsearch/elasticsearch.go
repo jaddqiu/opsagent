@@ -116,9 +116,9 @@ const sampleConfig = `
   # node_stats = ["jvm", "http"]
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 `
@@ -175,7 +175,7 @@ func (e *Elasticsearch) Description() string {
 
 // Gather reads the stats from Elasticsearch and writes it to the
 // Accumulator.
-func (e *Elasticsearch) Gather(acc telegraf.Accumulator) error {
+func (e *Elasticsearch) Gather(acc opsagent.Accumulator) error {
 	if e.client == nil {
 		client, err := e.createHttpClient()
 
@@ -189,7 +189,7 @@ func (e *Elasticsearch) Gather(acc telegraf.Accumulator) error {
 	wg.Add(len(e.Servers))
 
 	for _, serv := range e.Servers {
-		go func(s string, acc telegraf.Accumulator) {
+		go func(s string, acc opsagent.Accumulator) {
 			defer wg.Done()
 			url := e.nodeStatsUrl(s)
 			e.isMaster = false
@@ -266,7 +266,7 @@ func (e *Elasticsearch) nodeStatsUrl(baseUrl string) string {
 	return fmt.Sprintf("%s/%s", url, strings.Join(e.NodeStats, ","))
 }
 
-func (e *Elasticsearch) gatherNodeStats(url string, acc telegraf.Accumulator) error {
+func (e *Elasticsearch) gatherNodeStats(url string, acc opsagent.Accumulator) error {
 	nodeStats := &struct {
 		ClusterName string               `json:"cluster_name"`
 		Nodes       map[string]*nodeStat `json:"nodes"`
@@ -323,7 +323,7 @@ func (e *Elasticsearch) gatherNodeStats(url string, acc telegraf.Accumulator) er
 	return nil
 }
 
-func (e *Elasticsearch) gatherClusterHealth(url string, acc telegraf.Accumulator) error {
+func (e *Elasticsearch) gatherClusterHealth(url string, acc opsagent.Accumulator) error {
 	healthStats := &clusterHealth{}
 	if err := e.gatherJsonData(url, healthStats); err != nil {
 		return err
@@ -373,7 +373,7 @@ func (e *Elasticsearch) gatherClusterHealth(url string, acc telegraf.Accumulator
 	return nil
 }
 
-func (e *Elasticsearch) gatherClusterStats(url string, acc telegraf.Accumulator) error {
+func (e *Elasticsearch) gatherClusterStats(url string, acc opsagent.Accumulator) error {
 	clusterStats := &clusterStats{}
 	if err := e.gatherJsonData(url, clusterStats); err != nil {
 		return err
@@ -448,7 +448,7 @@ func (e *Elasticsearch) gatherJsonData(url string, v interface{}) error {
 }
 
 func init() {
-	inputs.Add("elasticsearch", func() telegraf.Input {
+	inputs.Add("elasticsearch", func() opsagent.Input {
 		return NewElasticsearch()
 	})
 }

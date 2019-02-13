@@ -90,7 +90,7 @@ func TestPrometheusGeneratesMetricsAlthoughFirstDNSFails(t *testing.T) {
 
 	p := &Prometheus{
 		URLs:               []string{ts.URL},
-		KubernetesServices: []string{"http://random.telegraf.local:88/metrics"},
+		KubernetesServices: []string{"http://random.opsagent.local:88/metrics"},
 	}
 
 	var acc testutil.Accumulator

@@ -46,7 +46,7 @@ type Size struct {
 	Size int64
 }
 
-// SetVersion sets the telegraf agent version
+// SetVersion sets the opsagent agent version
 func SetVersion(v string) error {
 	if version != "" {
 		return VersionAlreadySetError
@@ -55,14 +55,14 @@ func SetVersion(v string) error {
 	return nil
 }
 
-// Version returns the telegraf agent version
+// Version returns the opsagent agent version
 func Version() string {
 	return version
 }
 
-// ProductToken returns a tag for Telegraf that can be used in user agents.
+// ProductToken returns a tag for Opsagent that can be used in user agents.
 func ProductToken() string {
-	return fmt.Sprintf("Telegraf/%s Go/%s", Version(), runtime.Version())
+	return fmt.Sprintf("Opsagent/%s Go/%s", Version(), runtime.Version())
 }
 
 // UnmarshalTOML parses the duration from the TOML config file

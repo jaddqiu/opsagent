@@ -41,9 +41,9 @@ var sampleConfig = `
   # response_timeout = "5s"
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 `
@@ -56,7 +56,7 @@ func (n *Apache) Description() string {
 	return "Read Apache status information (mod_status)"
 }
 
-func (n *Apache) Gather(acc telegraf.Accumulator) error {
+func (n *Apache) Gather(acc opsagent.Accumulator) error {
 	var wg sync.WaitGroup
 
 	if len(n.Urls) == 0 {
@@ -108,7 +108,7 @@ func (n *Apache) createHttpClient() (*http.Client, error) {
 	return client, nil
 }
 
-func (n *Apache) gatherUrl(addr *url.URL, acc telegraf.Accumulator) error {
+func (n *Apache) gatherUrl(addr *url.URL, acc opsagent.Accumulator) error {
 	req, err := http.NewRequest("GET", addr.String(), nil)
 	if err != nil {
 		return fmt.Errorf("error on new request to %s : %s\n", addr.String(), err)
@@ -223,7 +223,7 @@ func getTags(addr *url.URL) map[string]string {
 }
 
 func init() {
-	inputs.Add("apache", func() telegraf.Input {
+	inputs.Add("apache", func() opsagent.Input {
 		return &Apache{}
 	})
 }

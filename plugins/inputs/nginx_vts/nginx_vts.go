@@ -40,7 +40,7 @@ func (n *NginxVTS) Description() string {
 	return "Read Nginx virtual host traffic status module information (nginx-module-vts)"
 }
 
-func (n *NginxVTS) Gather(acc telegraf.Accumulator) error {
+func (n *NginxVTS) Gather(acc opsagent.Accumulator) error {
 	var wg sync.WaitGroup
 
 	// Create an HTTP client that is re-used for each
@@ -85,7 +85,7 @@ func (n *NginxVTS) createHTTPClient() (*http.Client, error) {
 	return client, nil
 }
 
-func (n *NginxVTS) gatherURL(addr *url.URL, acc telegraf.Accumulator) error {
+func (n *NginxVTS) gatherURL(addr *url.URL, acc opsagent.Accumulator) error {
 	resp, err := n.client.Get(addr.String())
 	if err != nil {
 		return fmt.Errorf("error making HTTP request to %s: %s", addr.String(), err)
@@ -180,7 +180,7 @@ type Cache struct {
 	} `json:"responses"`
 }
 
-func gatherStatusURL(r *bufio.Reader, tags map[string]string, acc telegraf.Accumulator) error {
+func gatherStatusURL(r *bufio.Reader, tags map[string]string, acc opsagent.Accumulator) error {
 	dec := json.NewDecoder(r)
 	status := &NginxVTSResponse{}
 	if err := dec.Decode(status); err != nil {
@@ -335,7 +335,7 @@ func getTags(addr *url.URL) map[string]string {
 }
 
 func init() {
-	inputs.Add("nginx_vts", func() telegraf.Input {
+	inputs.Add("nginx_vts", func() opsagent.Input {
 		return &NginxVTS{}
 	})
 }

@@ -35,9 +35,9 @@ var sampleConfig = `
   # response_timeout = "5s"
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.cer"
-  # tls_key = "/etc/telegraf/key.key"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.cer"
+  # tls_key = "/etc/opsagent/key.key"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 `
@@ -50,7 +50,7 @@ func (n *Tengine) Description() string {
 	return "Read Tengine's basic status information (ngx_http_reqstat_module)"
 }
 
-func (n *Tengine) Gather(acc telegraf.Accumulator) error {
+func (n *Tengine) Gather(acc opsagent.Accumulator) error {
 	var wg sync.WaitGroup
 
 	// Create an HTTP client that is re-used for each
@@ -134,7 +134,7 @@ type TengineSatus struct {
 	http_ups_5xx             uint64
 }
 
-func (n *Tengine) gatherUrl(addr *url.URL, acc telegraf.Accumulator) error {
+func (n *Tengine) gatherUrl(addr *url.URL, acc opsagent.Accumulator) error {
 	var tenginestatus TengineSatus
 	resp, err := n.client.Get(addr.String())
 	if err != nil {
@@ -332,7 +332,7 @@ func getTags(addr *url.URL, server_name string) map[string]string {
 }
 
 func init() {
-	inputs.Add("tengine", func() telegraf.Input {
+	inputs.Add("tengine", func() opsagent.Input {
 		return &Tengine{}
 	})
 }

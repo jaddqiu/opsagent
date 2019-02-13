@@ -35,7 +35,7 @@ var sampleConfig = `
   ## Librator API Docs
   ## http://dev.librato.com/v1/metrics-authentication
   ## Librato API user
-  api_user = "telegraf@influxdb.com" # required.
+  api_user = "opsagent@influxdb.com" # required.
   ## Librato API token
   api_token = "my-secret-token" # required.
   ## Debug
@@ -88,7 +88,7 @@ func (l *Librato) Connect() error {
 	return nil
 }
 
-func (l *Librato) Write(metrics []telegraf.Metric) error {
+func (l *Librato) Write(metrics []opsagent.Metric) error {
 
 	if len(metrics) == 0 {
 		return nil
@@ -182,7 +182,7 @@ func (l *Librato) Description() string {
 	return "Configuration for Librato API to send metrics to."
 }
 
-func (l *Librato) buildGauges(m telegraf.Metric) ([]*Gauge, error) {
+func (l *Librato) buildGauges(m opsagent.Metric) ([]*Gauge, error) {
 
 	gauges := []*Gauge{}
 	if m.Time().Unix() == 0 {
@@ -257,7 +257,7 @@ func (l *Librato) Close() error {
 }
 
 func init() {
-	outputs.Add("librato", func() telegraf.Output {
+	outputs.Add("librato", func() opsagent.Output {
 		return NewLibrato(libratoAPI)
 	})
 }

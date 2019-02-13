@@ -85,7 +85,7 @@ func (_ *Procstat) Description() string {
 	return "Monitor process cpu and memory usage"
 }
 
-func (p *Procstat) Gather(acc telegraf.Accumulator) error {
+func (p *Procstat) Gather(acc opsagent.Accumulator) error {
 	if p.createPIDFinder == nil {
 		switch p.PidFinder {
 		case "native":
@@ -141,7 +141,7 @@ func (p *Procstat) Gather(acc telegraf.Accumulator) error {
 }
 
 // Add metrics a single Process
-func (p *Procstat) addMetric(proc Process, acc telegraf.Accumulator) {
+func (p *Procstat) addMetric(proc Process, acc opsagent.Accumulator) {
 	var prefix string
 	if p.Prefix != "" {
 		prefix = p.Prefix + "_"
@@ -312,7 +312,7 @@ func (p *Procstat) getPIDFinder() (PIDFinder, error) {
 }
 
 // Get matching PIDs and their initial tags
-func (p *Procstat) findPids(acc telegraf.Accumulator) ([]PID, map[string]string, error) {
+func (p *Procstat) findPids(acc opsagent.Accumulator) ([]PID, map[string]string, error) {
 	var pids []PID
 	tags := make(map[string]string)
 	var err error
@@ -420,7 +420,7 @@ func (p *Procstat) winServicePIDs() ([]PID, error) {
 }
 
 func init() {
-	inputs.Add("procstat", func() telegraf.Input {
+	inputs.Add("procstat", func() opsagent.Input {
 		return &Procstat{}
 	})
 }

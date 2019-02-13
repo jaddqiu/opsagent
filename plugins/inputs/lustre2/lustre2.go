@@ -1,5 +1,5 @@
 /*
-Lustre 2.x telegraf plugin
+Lustre 2.x opsagent plugin
 
 Lustre (http://lustre.org/) is an open-source, parallel file system
 for HPC environments. It stores statistics about its activity in
@@ -353,7 +353,7 @@ var wanted_mdt_jobstats_fields = []*mapping{
 	},
 }
 
-func (l *Lustre2) GetLustreProcStats(fileglob string, wanted_fields []*mapping, acc telegraf.Accumulator) error {
+func (l *Lustre2) GetLustreProcStats(fileglob string, wanted_fields []*mapping, acc opsagent.Accumulator) error {
 	files, err := filepath.Glob(fileglob)
 	if err != nil {
 		return err
@@ -422,7 +422,7 @@ func (l *Lustre2) Description() string {
 }
 
 // Gather reads stats from all lustre targets
-func (l *Lustre2) Gather(acc telegraf.Accumulator) error {
+func (l *Lustre2) Gather(acc opsagent.Accumulator) error {
 	l.allFields = make(map[string]map[string]interface{})
 
 	if len(l.Ost_procfiles) == 0 {
@@ -500,7 +500,7 @@ func (l *Lustre2) Gather(acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add("lustre2", func() telegraf.Input {
+	inputs.Add("lustre2", func() opsagent.Input {
 		return &Lustre2{}
 	})
 }

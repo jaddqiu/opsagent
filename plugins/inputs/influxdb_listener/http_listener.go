@@ -57,7 +57,7 @@ type HTTPListener struct {
 
 	handler *influx.MetricHandler
 	parser  *influx.Parser
-	acc     telegraf.Accumulator
+	acc     opsagent.Accumulator
 	pool    *pool
 
 	BytesRecv       selfstat.Stat
@@ -93,11 +93,11 @@ const sampleConfig = `
 
   ## Set one or more allowed client CA certificate file names to
   ## enable mutually authenticated TLS connections
-  tls_allowed_cacerts = ["/etc/telegraf/clientca.pem"]
+  tls_allowed_cacerts = ["/etc/opsagent/clientca.pem"]
 
   ## Add service certificate and key
-  tls_cert = "/etc/telegraf/cert.pem"
-  tls_key = "/etc/telegraf/key.pem"
+  tls_cert = "/etc/opsagent/cert.pem"
+  tls_key = "/etc/opsagent/key.pem"
 
   ## Optional username and password to accept for HTTP basic authentication.
   ## You probably want to make sure you have TLS configured above for this.
@@ -113,13 +113,13 @@ func (h *HTTPListener) Description() string {
 	return "Influx HTTP write listener"
 }
 
-func (h *HTTPListener) Gather(_ telegraf.Accumulator) error {
+func (h *HTTPListener) Gather(_ opsagent.Accumulator) error {
 	h.BuffersCreated.Set(h.pool.ncreated())
 	return nil
 }
 
 // Start starts the http listener service.
-func (h *HTTPListener) Start(acc telegraf.Accumulator) error {
+func (h *HTTPListener) Start(acc opsagent.Accumulator) error {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
@@ -421,13 +421,13 @@ func getPrecisionMultiplier(precision string) time.Duration {
 
 func init() {
 	// http_listener deprecated in 1.9
-	inputs.Add("http_listener", func() telegraf.Input {
+	inputs.Add("http_listener", func() opsagent.Input {
 		return &HTTPListener{
 			ServiceAddress: ":8186",
 			TimeFunc:       time.Now,
 		}
 	})
-	inputs.Add("influxdb_listener", func() telegraf.Input {
+	inputs.Add("influxdb_listener", func() opsagent.Input {
 		return &HTTPListener{
 			ServiceAddress: ":8186",
 			TimeFunc:       time.Now,

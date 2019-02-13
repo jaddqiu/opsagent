@@ -14,7 +14,7 @@ import (
 	"github.com/jaddqiu/opsagent/plugins/inputs"
 )
 
-// Ipsets is a telegraf plugin to gather packets and bytes counters from ipset
+// Ipsets is a opsagent plugin to gather packets and bytes counters from ipset
 type Ipset struct {
 	IncludeUnmatchedSets bool
 	UseSudo              bool
@@ -46,7 +46,7 @@ func (ipset *Ipset) SampleConfig() string {
 `
 }
 
-func (ips *Ipset) Gather(acc telegraf.Accumulator) error {
+func (ips *Ipset) Gather(acc opsagent.Accumulator) error {
 	out, e := ips.lister(ips.Timeout, ips.UseSudo)
 	if e != nil {
 		acc.AddError(e)
@@ -117,7 +117,7 @@ func setList(Timeout internal.Duration, UseSudo bool) (*bytes.Buffer, error) {
 }
 
 func init() {
-	inputs.Add("ipset", func() telegraf.Input {
+	inputs.Add("ipset", func() opsagent.Input {
 		return &Ipset{
 			lister:  setList,
 			Timeout: defaultTimeout,

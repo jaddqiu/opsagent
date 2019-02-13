@@ -19,7 +19,7 @@ func NewSerializer(splunkmetric_hec_routing bool) (*serializer, error) {
 	return s, nil
 }
 
-func (s *serializer) Serialize(metric telegraf.Metric) ([]byte, error) {
+func (s *serializer) Serialize(metric opsagent.Metric) ([]byte, error) {
 
 	m, err := s.createObject(metric)
 	if err != nil {
@@ -29,7 +29,7 @@ func (s *serializer) Serialize(metric telegraf.Metric) ([]byte, error) {
 	return m, nil
 }
 
-func (s *serializer) SerializeBatch(metrics []telegraf.Metric) ([]byte, error) {
+func (s *serializer) SerializeBatch(metrics []opsagent.Metric) ([]byte, error) {
 
 	var serialized []byte
 
@@ -45,7 +45,7 @@ func (s *serializer) SerializeBatch(metrics []telegraf.Metric) ([]byte, error) {
 	return serialized, nil
 }
 
-func (s *serializer) createObject(metric telegraf.Metric) (metricGroup []byte, err error) {
+func (s *serializer) createObject(metric opsagent.Metric) (metricGroup []byte, err error) {
 
 	/*  Splunk supports one metric json object, and does _not_ support an array of JSON objects.
 	     ** Splunk has the following required names for the metric store:

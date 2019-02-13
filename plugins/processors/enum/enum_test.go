@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func createTestMetric() telegraf.Metric {
+func createTestMetric() opsagent.Metric {
 	metric, _ := metric.New("m1",
 		map[string]string{"tag": "tag_value"},
 		map[string]interface{}{
@@ -22,7 +22,7 @@ func createTestMetric() telegraf.Metric {
 	return metric
 }
 
-func calculateProcessedValues(mapper EnumMapper, metric telegraf.Metric) map[string]interface{} {
+func calculateProcessedValues(mapper EnumMapper, metric opsagent.Metric) map[string]interface{} {
 	processed := mapper.Apply(metric)
 	return processed[0].Fields()
 }

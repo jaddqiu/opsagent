@@ -13,7 +13,7 @@ import (
 	"github.com/jaddqiu/opsagent"
 )
 
-func (n *NginxPlusApi) gatherMetrics(addr *url.URL, acc telegraf.Accumulator) {
+func (n *NginxPlusApi) gatherMetrics(addr *url.URL, acc opsagent.Accumulator) {
 	acc.AddError(n.gatherProcessesMetrics(addr, acc))
 	acc.AddError(n.gatherConnectionsMetrics(addr, acc))
 	acc.AddError(n.gatherSslMetrics(addr, acc))
@@ -50,7 +50,7 @@ func (n *NginxPlusApi) gatherUrl(addr *url.URL, path string) ([]byte, error) {
 	}
 }
 
-func (n *NginxPlusApi) gatherProcessesMetrics(addr *url.URL, acc telegraf.Accumulator) error {
+func (n *NginxPlusApi) gatherProcessesMetrics(addr *url.URL, acc opsagent.Accumulator) error {
 	body, err := n.gatherUrl(addr, processesPath)
 	if err != nil {
 		return err
@@ -73,7 +73,7 @@ func (n *NginxPlusApi) gatherProcessesMetrics(addr *url.URL, acc telegraf.Accumu
 	return nil
 }
 
-func (n *NginxPlusApi) gatherConnectionsMetrics(addr *url.URL, acc telegraf.Accumulator) error {
+func (n *NginxPlusApi) gatherConnectionsMetrics(addr *url.URL, acc opsagent.Accumulator) error {
 	body, err := n.gatherUrl(addr, connectionsPath)
 	if err != nil {
 		return err
@@ -99,7 +99,7 @@ func (n *NginxPlusApi) gatherConnectionsMetrics(addr *url.URL, acc telegraf.Accu
 	return nil
 }
 
-func (n *NginxPlusApi) gatherSslMetrics(addr *url.URL, acc telegraf.Accumulator) error {
+func (n *NginxPlusApi) gatherSslMetrics(addr *url.URL, acc opsagent.Accumulator) error {
 	body, err := n.gatherUrl(addr, sslPath)
 	if err != nil {
 		return err
@@ -124,7 +124,7 @@ func (n *NginxPlusApi) gatherSslMetrics(addr *url.URL, acc telegraf.Accumulator)
 	return nil
 }
 
-func (n *NginxPlusApi) gatherHttpRequestsMetrics(addr *url.URL, acc telegraf.Accumulator) error {
+func (n *NginxPlusApi) gatherHttpRequestsMetrics(addr *url.URL, acc opsagent.Accumulator) error {
 	body, err := n.gatherUrl(addr, httpRequestsPath)
 	if err != nil {
 		return err
@@ -148,7 +148,7 @@ func (n *NginxPlusApi) gatherHttpRequestsMetrics(addr *url.URL, acc telegraf.Acc
 	return nil
 }
 
-func (n *NginxPlusApi) gatherHttpServerZonesMetrics(addr *url.URL, acc telegraf.Accumulator) error {
+func (n *NginxPlusApi) gatherHttpServerZonesMetrics(addr *url.URL, acc opsagent.Accumulator) error {
 	body, err := n.gatherUrl(addr, httpServerZonesPath)
 	if err != nil {
 		return err
@@ -195,7 +195,7 @@ func (n *NginxPlusApi) gatherHttpServerZonesMetrics(addr *url.URL, acc telegraf.
 	return nil
 }
 
-func (n *NginxPlusApi) gatherHttpUpstreamsMetrics(addr *url.URL, acc telegraf.Accumulator) error {
+func (n *NginxPlusApi) gatherHttpUpstreamsMetrics(addr *url.URL, acc opsagent.Accumulator) error {
 	body, err := n.gatherUrl(addr, httpUpstreamsPath)
 	if err != nil {
 		return err
@@ -279,7 +279,7 @@ func (n *NginxPlusApi) gatherHttpUpstreamsMetrics(addr *url.URL, acc telegraf.Ac
 	return nil
 }
 
-func (n *NginxPlusApi) gatherHttpCachesMetrics(addr *url.URL, acc telegraf.Accumulator) error {
+func (n *NginxPlusApi) gatherHttpCachesMetrics(addr *url.URL, acc opsagent.Accumulator) error {
 	body, err := n.gatherUrl(addr, httpCachesPath)
 	if err != nil {
 		return err
@@ -333,7 +333,7 @@ func (n *NginxPlusApi) gatherHttpCachesMetrics(addr *url.URL, acc telegraf.Accum
 	return nil
 }
 
-func (n *NginxPlusApi) gatherStreamServerZonesMetrics(addr *url.URL, acc telegraf.Accumulator) error {
+func (n *NginxPlusApi) gatherStreamServerZonesMetrics(addr *url.URL, acc opsagent.Accumulator) error {
 	body, err := n.gatherUrl(addr, streamServerZonesPath)
 	if err != nil {
 		return err
@@ -368,7 +368,7 @@ func (n *NginxPlusApi) gatherStreamServerZonesMetrics(addr *url.URL, acc telegra
 	return nil
 }
 
-func (n *NginxPlusApi) gatherStreamUpstreamsMetrics(addr *url.URL, acc telegraf.Accumulator) error {
+func (n *NginxPlusApi) gatherStreamUpstreamsMetrics(addr *url.URL, acc opsagent.Accumulator) error {
 	body, err := n.gatherUrl(addr, streamUpstreamsPath)
 	if err != nil {
 		return err

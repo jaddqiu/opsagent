@@ -9,12 +9,12 @@ import (
 	"github.com/jaddqiu/opsagent/plugins/inputs"
 )
 
-func (w *Wireless) Gather(acc telegraf.Accumulator) error {
+func (w *Wireless) Gather(acc opsagent.Accumulator) error {
 	return nil
 }
 
 func init() {
-	inputs.Add("wireless", func() telegraf.Input {
+	inputs.Add("wireless", func() opsagent.Input {
 		log.Print("W! [inputs.wireless] Current platform is not supported")
 		return &Wireless{}
 	})

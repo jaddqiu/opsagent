@@ -120,7 +120,7 @@ type Statsd struct {
 
 	graphiteParser *graphite.GraphiteParser
 
-	acc telegraf.Accumulator
+	acc opsagent.Accumulator
 
 	MaxConnections     selfstat.Stat
 	CurrentConnections selfstat.Stat
@@ -193,8 +193,8 @@ const sampleConfig = `
   ## Address and port to host UDP listener on
   service_address = ":8125"
 
-  ## The following configuration options control when telegraf clears it's cache
-  ## of previous values. If set to false, then telegraf will only clear it's
+  ## The following configuration options control when opsagent clears it's cache
+  ## of previous values. If set to false, then opsagent will only clear it's
   ## cache when the daemon is restarted.
   ## Reset gauges every interval (default=true)
   delete_gauges = true
@@ -235,7 +235,7 @@ func (_ *Statsd) SampleConfig() string {
 	return sampleConfig
 }
 
-func (s *Statsd) Gather(acc telegraf.Accumulator) error {
+func (s *Statsd) Gather(acc opsagent.Accumulator) error {
 	s.Lock()
 	defer s.Unlock()
 	now := time.Now()
@@ -296,7 +296,7 @@ func (s *Statsd) Gather(acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (s *Statsd) Start(_ telegraf.Accumulator) error {
+func (s *Statsd) Start(_ opsagent.Accumulator) error {
 	// Make data structures
 	s.gauges = make(map[string]cachedgauge)
 	s.counters = make(map[string]cachedcounter)
@@ -887,7 +887,7 @@ func (s *Statsd) isUDP() bool {
 }
 
 func init() {
-	inputs.Add("statsd", func() telegraf.Input {
+	inputs.Add("statsd", func() opsagent.Input {
 		return &Statsd{
 			Protocol:               defaultProtocol,
 			ServiceAddress:         ":8125",

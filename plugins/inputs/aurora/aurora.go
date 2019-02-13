@@ -72,9 +72,9 @@ var sampleConfig = `
   # password = "pa$$word"
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 `
@@ -87,7 +87,7 @@ func (a *Aurora) Description() string {
 	return "Gather metrics from Apache Aurora schedulers"
 }
 
-func (a *Aurora) Gather(acc telegraf.Accumulator) error {
+func (a *Aurora) Gather(acc opsagent.Accumulator) error {
 	if a.client == nil {
 		err := a.initialize()
 		if err != nil {
@@ -205,7 +205,7 @@ func (a *Aurora) gatherRole(ctx context.Context, origin *url.URL) (RoleType, err
 }
 
 func (a *Aurora) gatherScheduler(
-	ctx context.Context, origin *url.URL, role RoleType, acc telegraf.Accumulator,
+	ctx context.Context, origin *url.URL, role RoleType, acc opsagent.Accumulator,
 ) error {
 	loc := *origin
 	loc.Path = "vars.json"
@@ -274,7 +274,7 @@ func (a *Aurora) gatherScheduler(
 }
 
 func init() {
-	inputs.Add("aurora", func() telegraf.Input {
+	inputs.Add("aurora", func() opsagent.Input {
 		return &Aurora{}
 	})
 }

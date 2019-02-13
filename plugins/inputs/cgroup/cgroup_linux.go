@@ -16,7 +16,7 @@ import (
 
 const metricName = "cgroup"
 
-func (g *CGroup) Gather(acc telegraf.Accumulator) error {
+func (g *CGroup) Gather(acc opsagent.Accumulator) error {
 	list := make(chan pathInfo)
 	go g.generateDirs(list)
 
@@ -33,7 +33,7 @@ func (g *CGroup) Gather(acc telegraf.Accumulator) error {
 	return nil
 }
 
-func (g *CGroup) gatherDir(dir string, acc telegraf.Accumulator) error {
+func (g *CGroup) gatherDir(dir string, acc opsagent.Accumulator) error {
 	fields := make(map[string]interface{})
 
 	list := make(chan pathInfo)

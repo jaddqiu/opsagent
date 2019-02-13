@@ -180,10 +180,10 @@ func (n *NetResponse) UDPGather() (tags map[string]string, fields map[string]int
 	return tags, fields
 }
 
-// Gather is called by telegraf when the plugin is executed on its interval.
+// Gather is called by opsagent when the plugin is executed on its interval.
 // It will call either UDPGather or TCPGather based on the configuration and
 // also fill an Accumulator that is supplied.
-func (n *NetResponse) Gather(acc telegraf.Accumulator) error {
+func (n *NetResponse) Gather(acc opsagent.Accumulator) error {
 	// Set default values
 	if n.Timeout.Duration == 0 {
 		n.Timeout.Duration = time.Second
@@ -263,7 +263,7 @@ func setResult(result ResultType, fields map[string]interface{}, tags map[string
 }
 
 func init() {
-	inputs.Add("net_response", func() telegraf.Input {
+	inputs.Add("net_response", func() opsagent.Input {
 		return &NetResponse{}
 	})
 }

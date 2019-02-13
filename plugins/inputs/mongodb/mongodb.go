@@ -42,9 +42,9 @@ var sampleConfig = `
   # gather_perdb_stats = false
 
   ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
+  # tls_ca = "/etc/opsagent/ca.pem"
+  # tls_cert = "/etc/opsagent/cert.pem"
+  # tls_key = "/etc/opsagent/key.pem"
   ## Use TLS but skip chain & host verification
   # insecure_skip_verify = false
 `
@@ -61,7 +61,7 @@ var localhost = &url.URL{Host: "mongodb://127.0.0.1:27017"}
 
 // Reads stats from all configured servers accumulates stats.
 // Returns one of the errors encountered while gather stats (if any).
-func (m *MongoDB) Gather(acc telegraf.Accumulator) error {
+func (m *MongoDB) Gather(acc opsagent.Accumulator) error {
 	if len(m.Servers) == 0 {
 		m.gatherServer(m.getMongoServer(localhost), acc)
 		return nil
@@ -71,7 +71,7 @@ func (m *MongoDB) Gather(acc telegraf.Accumulator) error {
 	for i, serv := range m.Servers {
 		if !strings.HasPrefix(serv, "mongodb://") {
 			// Preserve backwards compatibility for hostnames without a
-			// scheme, broken in go 1.8. Remove in Telegraf 2.0
+			// scheme, broken in go 1.8. Remove in Opsagent 2.0
 			serv = "mongodb://" + serv
 			log.Printf("W! [inputs.mongodb] Using %q as connection URL; please update your configuration to use an URL", serv)
 			m.Servers[i] = serv
@@ -107,7 +107,7 @@ func (m *MongoDB) getMongoServer(url *url.URL) *Server {
 	return m.mongos[url.Host]
 }
 
-func (m *MongoDB) gatherServer(server *Server, acc telegraf.Accumulator) error {
+func (m *MongoDB) gatherServer(server *Server, acc opsagent.Accumulator) error {
 	if server.Session == nil {
 		var dialAddrs []string
 		if server.Url.User != nil {
@@ -168,7 +168,7 @@ func (m *MongoDB) gatherServer(server *Server, acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add("mongodb", func() telegraf.Input {
+	inputs.Add("mongodb", func() opsagent.Input {
 		return &MongoDB{
 			mongos: make(map[string]*Server),
 		}

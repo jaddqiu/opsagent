@@ -2,11 +2,11 @@
 
 package internal
 
-const Usage = `Telegraf, The plugin-driven server agent for collecting and reporting metrics.
+const Usage = `Opsagent, The plugin-driven server agent for collecting and reporting metrics.
 
 Usage:
 
-  telegraf [commands|flags]
+  opsagent [commands|flags]
 
 The commands & flags are:
 
@@ -28,26 +28,26 @@ The commands & flags are:
   --sample-config                print out full sample configuration
   --test                         gather metrics, print them out, and exit;
                                  processors, aggregators, and outputs are not run
-  --usage <plugin>               print usage for a plugin, ie, 'telegraf --usage mysql'
+  --usage <plugin>               print usage for a plugin, ie, 'opsagent --usage mysql'
   --version                      display the version and exit
 
 Examples:
 
-  # generate a telegraf config file:
-  telegraf config > telegraf.conf
+  # generate a opsagent config file:
+  opsagent config > opsagent.conf
 
   # generate config with only cpu input & influxdb output plugins defined
-  telegraf --input-filter cpu --output-filter influxdb config
+  opsagent --input-filter cpu --output-filter influxdb config
 
-  # run a single telegraf collection, outputing metrics to stdout
-  telegraf --config telegraf.conf --test
+  # run a single opsagent collection, outputing metrics to stdout
+  opsagent --config opsagent.conf --test
 
-  # run telegraf with all plugins defined in config file
-  telegraf --config telegraf.conf
+  # run opsagent with all plugins defined in config file
+  opsagent --config opsagent.conf
 
-  # run telegraf, enabling the cpu & memory input, and influxdb output plugins
-  telegraf --config telegraf.conf --input-filter cpu:mem --output-filter influxdb
+  # run opsagent, enabling the cpu & memory input, and influxdb output plugins
+  opsagent --config opsagent.conf --input-filter cpu:mem --output-filter influxdb
 
-  # run telegraf with pprof
-  telegraf --config telegraf.conf --pprof-addr localhost:6060
+  # run opsagent with pprof
+  opsagent --config opsagent.conf --pprof-addr localhost:6060
 `

@@ -80,7 +80,7 @@ func (h *Fluentd) Description() string { return description }
 func (h *Fluentd) SampleConfig() string { return sampleConfig }
 
 // Gather - Main code responsible for gathering, processing and creating metrics
-func (h *Fluentd) Gather(acc telegraf.Accumulator) error {
+func (h *Fluentd) Gather(acc opsagent.Accumulator) error {
 
 	_, err := url.Parse(h.Endpoint)
 	if err != nil {
@@ -169,5 +169,5 @@ func (h *Fluentd) Gather(acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add("fluentd", func() telegraf.Input { return &Fluentd{} })
+	inputs.Add("fluentd", func() opsagent.Input { return &Fluentd{} })
 }

@@ -4,7 +4,7 @@ import (
 	"github.com/jaddqiu/opsagent"
 )
 
-type Creator func() telegraf.Output
+type Creator func() opsagent.Output
 
 var Outputs = map[string]Creator{}
 

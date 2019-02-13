@@ -40,10 +40,10 @@ type PubSub struct {
 
 	parser parsers.Parser
 	wg     *sync.WaitGroup
-	acc    telegraf.TrackingAccumulator
+	acc    opsagent.TrackingAccumulator
 	mu     sync.Mutex
 
-	undelivered map[telegraf.TrackingID]message
+	undelivered map[opsagent.TrackingID]message
 	sem         semaphore
 }
 
@@ -56,7 +56,7 @@ func (ps *PubSub) SampleConfig() string {
 }
 
 // Gather does nothing for this service input.
-func (ps *PubSub) Gather(acc telegraf.Accumulator) error {
+func (ps *PubSub) Gather(acc opsagent.Accumulator) error {
 	return nil
 }
 
@@ -68,7 +68,7 @@ func (ps *PubSub) SetParser(parser parsers.Parser) {
 // Start initializes the plugin and processing messages from Google PubSub.
 // Two goroutines are started - one pulling for the subscription, one
 // receiving delivery notifications from the accumulator.
-func (ps *PubSub) Start(ac telegraf.Accumulator) error {
+func (ps *PubSub) Start(ac opsagent.Accumulator) error {
 	if ps.Subscription == "" {
 		return fmt.Errorf(`"subscription" is required`)
 	}
@@ -157,7 +157,7 @@ func (ps *PubSub) onMessage(ctx context.Context, msg message) error {
 
 	id := ps.acc.AddTrackingMetricGroup(metrics)
 	if ps.undelivered == nil {
-		ps.undelivered = make(map[telegraf.TrackingID]message)
+		ps.undelivered = make(map[opsagent.TrackingID]message)
 	}
 	ps.undelivered[id] = msg
 
@@ -180,7 +180,7 @@ func (ps *PubSub) receiveDelivered(ctx context.Context) {
 	}
 }
 
-func (ps *PubSub) removeDelivered(id telegraf.TrackingID) message {
+func (ps *PubSub) removeDelivered(id opsagent.TrackingID) message {
 	ps.mu.Lock()
 	defer ps.mu.Unlock()
 
@@ -234,7 +234,7 @@ func (ps *PubSub) getGCPSubscription(ctx context.Context, subId string) (subscri
 }
 
 func init() {
-	inputs.Add("cloud_pubsub", func() telegraf.Input {
+	inputs.Add("cloud_pubsub", func() opsagent.Input {
 		ps := &PubSub{
 			MaxUndeliveredMessages: defaultMaxUndeliveredMessages,
 		}
@@ -257,7 +257,7 @@ const sampleConfig = `
   data_format = "influx"
 
   ## Optional. Filepath for GCP credentials JSON file to authorize calls to 
-  ## PubSub APIs. If not set explicitly, Telegraf will attempt to use 
+  ## PubSub APIs. If not set explicitly, Opsagent will attempt to use 
   ## Application Default Credentials, which is preferred. 
   # credentials_file = "path/to/my/creds.json"
 

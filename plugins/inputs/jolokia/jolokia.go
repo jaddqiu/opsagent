@@ -256,7 +256,7 @@ func (j *Jolokia) extractValues(measurement string, value interface{}, fields ma
 	}
 }
 
-func (j *Jolokia) Gather(acc telegraf.Accumulator) error {
+func (j *Jolokia) Gather(acc opsagent.Accumulator) error {
 
 	if j.jClient == nil {
 		log.Println("W! DEPRECATED: the jolokia plugin has been deprecated " +
@@ -319,7 +319,7 @@ func (j *Jolokia) Gather(acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add("jolokia", func() telegraf.Input {
+	inputs.Add("jolokia", func() opsagent.Input {
 		return &Jolokia{
 			ResponseHeaderTimeout: DefaultResponseHeaderTimeout,
 			ClientTimeout:         DefaultClientTimeout,

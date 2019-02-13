@@ -6,7 +6,7 @@ import (
 	"github.com/jaddqiu/opsagent"
 )
 
-func (c *DMCache) Gather(acc telegraf.Accumulator) error {
+func (c *DMCache) Gather(acc opsagent.Accumulator) error {
 	return nil
 }
 

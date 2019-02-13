@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var first5 = []telegraf.Metric{
+var first5 = []opsagent.Metric{
 	testutil.TestMetric(101, "metric1"),
 	testutil.TestMetric(101, "metric2"),
 	testutil.TestMetric(101, "metric3"),
@@ -19,7 +19,7 @@ var first5 = []telegraf.Metric{
 	testutil.TestMetric(101, "metric5"),
 }
 
-var next5 = []telegraf.Metric{
+var next5 = []opsagent.Metric{
 	testutil.TestMetric(101, "metric6"),
 	testutil.TestMetric(101, "metric7"),
 	testutil.TestMetric(101, "metric8"),
@@ -27,8 +27,8 @@ var next5 = []telegraf.Metric{
 	testutil.TestMetric(101, "metric10"),
 }
 
-func reverse(metrics []telegraf.Metric) []telegraf.Metric {
-	result := make([]telegraf.Metric, 0, len(metrics))
+func reverse(metrics []opsagent.Metric) []opsagent.Metric {
+	result := make([]opsagent.Metric, 0, len(metrics))
 	for i := len(metrics) - 1; i >= 0; i-- {
 		result = append(result, metrics[i])
 	}
@@ -408,14 +408,14 @@ func TestRunningOutputWriteFailOrder3(t *testing.T) {
 	// Verify that 6 metrics were written
 	assert.Len(t, m.Metrics(), 6)
 	// Verify that they are in order
-	expected := []telegraf.Metric{next5[0], first5[4], first5[3], first5[2], first5[1], first5[0]}
+	expected := []opsagent.Metric{next5[0], first5[4], first5[3], first5[2], first5[1], first5[0]}
 	assert.Equal(t, expected, m.Metrics())
 }
 
 type mockOutput struct {
 	sync.Mutex
 
-	metrics []telegraf.Metric
+	metrics []opsagent.Metric
 
 	// if true, mock a write failure
 	failWrite bool
@@ -437,7 +437,7 @@ func (m *mockOutput) SampleConfig() string {
 	return ""
 }
 
-func (m *mockOutput) Write(metrics []telegraf.Metric) error {
+func (m *mockOutput) Write(metrics []opsagent.Metric) error {
 	m.Lock()
 	defer m.Unlock()
 	if m.failWrite {
@@ -445,7 +445,7 @@ func (m *mockOutput) Write(metrics []telegraf.Metric) error {
 	}
 
 	if m.metrics == nil {
-		m.metrics = []telegraf.Metric{}
+		m.metrics = []opsagent.Metric{}
 	}
 
 	for _, metric := range metrics {
@@ -454,7 +454,7 @@ func (m *mockOutput) Write(metrics []telegraf.Metric) error {
 	return nil
 }
 
-func (m *mockOutput) Metrics() []telegraf.Metric {
+func (m *mockOutput) Metrics() []opsagent.Metric {
 	m.Lock()
 	defer m.Unlock()
 	return m.metrics
@@ -481,7 +481,7 @@ func (m *perfOutput) SampleConfig() string {
 	return ""
 }
 
-func (m *perfOutput) Write(metrics []telegraf.Metric) error {
+func (m *perfOutput) Write(metrics []opsagent.Metric) error {
 	if m.failWrite {
 		return fmt.Errorf("Failed Write!")
 	}
