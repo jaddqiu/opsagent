@@ -18,6 +18,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/influxdata/toml"
+	"github.com/influxdata/toml/ast"
 	"github.com/jaddqiu/opsagent"
 	"github.com/jaddqiu/opsagent/internal"
 	"github.com/jaddqiu/opsagent/internal/models"
@@ -27,8 +29,6 @@ import (
 	"github.com/jaddqiu/opsagent/plugins/parsers"
 	"github.com/jaddqiu/opsagent/plugins/processors"
 	"github.com/jaddqiu/opsagent/plugins/serializers"
-	"github.com/influxdata/toml"
-	"github.com/influxdata/toml/ast"
 )
 
 var (
@@ -715,6 +715,23 @@ func (c *Config) LoadConfig(path string) error {
 						pluginName, path)
 				}
 			}
+		/*
+			// add tasks plugin
+			case "tasks":
+				for pluginName, pluginVal := range subTable.Fields {
+					switch pluginSubTable := pluginVal.(type) {
+					case []*ast.Table:
+						for _, t := range pluginSubTable {
+							if err = c.addTask(pluginName, t); err != nil {
+								return fmt.Errorf("Error parsing %s, %s", path, err)
+							}
+						}
+					default:
+						return fmt.Errorf("Unsupported config format: %s, file %s",
+							pluginName, path)
+					}
+				}
+		*/
 		// Assume it's an input input for legacy config file support if no other
 		// identifiers are present
 		default:
@@ -813,6 +830,28 @@ func (c *Config) addAggregator(name string, table *ast.Table) error {
 	c.Aggregators = append(c.Aggregators, models.NewRunningAggregator(aggregator, conf))
 	return nil
 }
+
+/*
+func (c *Config) addTask(name string, table *ast.Table) error {
+	creator, ok := tasks.Tasks[name]
+	if !ok {
+		return fmt.Errorf("Undefined but requested aggregator: %s", name)
+	}
+	task := creator()
+
+	conf, err := buildTask(name, table)
+	if err != nil {
+		return err
+	}
+
+	if err := toml.UnmarshalTable(table, task); err != nil {
+		return err
+	}
+
+	c.Tasks = append(c.Tasks, models.NewRunningTask(task, conf))
+	return nil
+}
+*/
 
 func (c *Config) addProcessor(name string, table *ast.Table) error {
 	creator, ok := processors.Processors[name]
