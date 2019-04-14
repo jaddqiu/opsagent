@@ -13,6 +13,7 @@ import (
 	"github.com/jaddqiu/opsagent/internal/config"
 	"github.com/jaddqiu/opsagent/internal/models"
 	"github.com/jaddqiu/opsagent/plugins/serializers/influx"
+	"github.com/robfig/cron"
 )
 
 // Agent runs a set of plugins.
@@ -58,6 +59,17 @@ func (a *Agent) Run(ctx context.Context) error {
 	}
 
 	var wg sync.WaitGroup
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		err := a.runTasks(ctx, startTime)
+		if err != nil {
+			log.Printf("E! [agent] Error running tasks: %v", err)
+		}
+
+	}()
 
 	src := inputC
 	dst := inputC
@@ -210,7 +222,146 @@ func (a *Agent) Test(ctx context.Context) error {
 		}
 	}
 
+	for _, task := range a.Config.Tasks {
+		select {
+		case <-ctx.Done():
+			return nil
+		default:
+			if err := task.Task.Execute(); err != nil {
+				return err
+			}
+		}
+	}
+
 	return nil
+}
+
+// runTasks starts and triggers the execution for Tasks.
+//
+// When the context is done the timers are stopped and this function returns
+// after all ongoing Tasks calls complete.
+func (a *Agent) runTasks(
+	ctx context.Context,
+	startTime time.Time,
+) error {
+	var wg sync.WaitGroup
+	for _, task := range a.Config.Tasks {
+		interval := a.Config.Agent.Interval.Duration
+		cronSpec := a.Config.Agent.Cron.Spec
+		precision := a.Config.Agent.Precision.Duration
+		jitter := a.Config.Agent.CollectionJitter.Duration
+
+		// Overwrite agent cron specification if this plugin has its own.
+		if task.Config.CronSpec != "" {
+			cronSpec = input.Config.CronSpec
+		}
+
+		// Overwrite agent interval if this plugin has its own.
+		if task.Config.Interval != 0 {
+			interval = input.Config.Interval
+		}
+
+		wg.Add(1)
+		if task.Config.Schedule == "interval" {
+			go func(task *models.RunningTask) {
+				defer wg.Done()
+
+				if a.Config.Agent.RoundInterval {
+					err := internal.SleepContext(
+						ctx, internal.AlignDuration(startTime, interval))
+					if err != nil {
+						return err
+					}
+				}
+
+				a.executeOnInterval(ctx, task, interval, jitter)
+			}(task)
+		}
+		if task.Config.Schedule == "cron" {
+			go func(task *models.RunningTask) {
+				defer wg.Done()
+
+				a.executeOnInterval(ctx, task, cronSpec, jitter)
+			}(task)
+		}
+	}
+	wg.Wait()
+
+	return nil
+}
+
+// executeOnCron runs an task's execute function on cron specification until the context is
+// done.
+func (a *Agent) executeOnCron(
+	ctx context.Context,
+	task *models.RunningTask,
+	cronSpec string,
+	timeout time.Duration,
+) {
+
+	c := cron.New()
+	err := c.AddFunc(cronSpec, func() {
+		err = a.executeOnce(task, timeout)
+
+		select {
+		case <-ctx.Done():
+			c.Stop()
+			return
+		}
+	})
+	if err != nil {
+		return
+	}
+	c.Start()
+}
+
+// executeOnInterval runs an task's execute function periodically until the context is
+// done.
+func (a *Agent) executeOnInterval(
+	ctx context.Context,
+	task *models.RunningTask,
+	interval time.Duration,
+	jitter time.Duration,
+) {
+
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+
+	for {
+		err := internal.SleepContext(ctx, internal.RandomDuration(jitter))
+		if err != nil {
+			return
+		}
+
+		err = a.executeOnce(task, interval)
+
+		select {
+		case <-ticker.C:
+			continue
+		case <-ctx.Done():
+			return
+		}
+	}
+}
+
+// executeOnce runs the task's Execute function once
+func (a *Agent) executeOnce(task *models.RunningTask, timeout time.Duration) error {
+	ticker := time.NewTicker(timeout)
+	defer ticker.Stop()
+	done := make(chan error)
+	go func() {
+		done <- task.Execute()
+	}()
+
+	for {
+		select {
+		case err := <-done:
+			return err
+		case <-ticker.C:
+			log.Printf("W! [agent] task %q did not complete within its timeout",
+				task.Name())
+		}
+	}
 }
 
 // runInputs starts and triggers the periodic gather for Inputs.
@@ -244,7 +395,7 @@ func (a *Agent) runInputs(
 				err := internal.SleepContext(
 					ctx, internal.AlignDuration(startTime, interval))
 				if err != nil {
-					return
+					return err
 				}
 			}
 
@@ -256,7 +407,7 @@ func (a *Agent) runInputs(
 	return nil
 }
 
-// gather runs an input's gather function periodically until the context is
+// gatherOnInterval runs an input's gather function periodically until the context is
 // done.
 func (a *Agent) gatherOnInterval(
 	ctx context.Context,
