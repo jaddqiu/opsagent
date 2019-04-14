@@ -19,6 +19,8 @@ import (
 	"github.com/jaddqiu/opsagent/internal/config"
 	"github.com/jaddqiu/opsagent/logger"
 	_ "github.com/jaddqiu/opsagent/plugins/aggregators/all"
+	"github.com/jaddqiu/opsagent/plugins/tasks"
+	_ "github.com/jaddqiu/opsagent/plugins/tasks/all"
 	"github.com/jaddqiu/opsagent/plugins/inputs"
 	_ "github.com/jaddqiu/opsagent/plugins/inputs/all"
 	"github.com/jaddqiu/opsagent/plugins/outputs"
@@ -41,6 +43,10 @@ var fVersion = flag.Bool("version", false, "display the version and exit")
 var fSampleConfig = flag.Bool("sample-config", false,
 	"print out full sample configuration")
 var fPidfile = flag.String("pidfile", "", "file to write our pid to")
+var fTaskFilters = flag.String("task-filter", "",
+	"filter the tasks to enable, separator is :")
+var fTaskList = flag.Bool("task-list", false,
+	"print available task plugins.")
 var fInputFilters = flag.String("input-filter", "",
 	"filter the inputs to enable, separator is :")
 var fInputList = flag.Bool("input-list", false,
@@ -70,6 +76,7 @@ var stop chan struct{}
 
 func reloadLoop(
 	stop chan struct{},
+	taskFilters []string,
 	inputFilters []string,
 	outputFilters []string,
 	aggregatorFilters []string,
@@ -99,7 +106,7 @@ func reloadLoop(
 			}
 		}()
 
-		err := runAgent(ctx, inputFilters, outputFilters)
+		err := runAgent(ctx, taskFilters, inputFilters, outputFilters)
 		if err != nil {
 			log.Fatalf("E! [opsagent] Error running agent: %v", err)
 		}
@@ -107,6 +114,7 @@ func reloadLoop(
 }
 
 func runAgent(ctx context.Context,
+	taskFilters []string,
 	inputFilters []string,
 	outputFilters []string,
 ) error {
@@ -117,6 +125,7 @@ func runAgent(ctx context.Context,
 
 	// If no other options are specified, load the config file and run.
 	c := config.NewConfig()
+	c.TaskFilters = taskFilters
 	c.OutputFilters = outputFilters
 	c.InputFilters = inputFilters
 	err := c.LoadConfig(*fConfig)
@@ -133,6 +142,10 @@ func runAgent(ctx context.Context,
 	if !*fTest && len(c.Outputs) == 0 {
 		return errors.New("Error: no outputs found, did you provide a valid config file?")
 	}
+	if len(c.Tasks) == 0 {
+		return errors.New("Error: no tasks found, did you provide a valid config file?")
+	}
+
 	if len(c.Inputs) == 0 {
 		return errors.New("Error: no inputs found, did you provide a valid config file?")
 	}
@@ -163,6 +176,7 @@ func runAgent(ctx context.Context,
 		return ag.Test(ctx)
 	}
 
+	log.Printf("I! Loaded tasks: %s", strings.Join(c.TaskNames(), " "))
 	log.Printf("I! Loaded inputs: %s", strings.Join(c.InputNames(), " "))
 	log.Printf("I! Loaded aggregators: %s", strings.Join(c.AggregatorNames(), " "))
 	log.Printf("I! Loaded processors: %s", strings.Join(c.ProcessorNames(), " "))
@@ -196,6 +210,7 @@ func usageExit(rc int) {
 }
 
 type program struct {
+	taskFilters      []string
 	inputFilters      []string
 	outputFilters     []string
 	aggregatorFilters []string
@@ -210,6 +225,7 @@ func (p *program) run() {
 	stop = make(chan struct{})
 	reloadLoop(
 		stop,
+		p.taskFilters,
 		p.inputFilters,
 		p.outputFilters,
 		p.aggregatorFilters,
@@ -249,7 +265,10 @@ func main() {
 	flag.Parse()
 	args := flag.Args()
 
-	inputFilters, outputFilters := []string{}, []string{}
+	taskFilters, inputFilters, outputFilters := []string{}, []string{}, []string{}
+	if *fTaskFilters != "" {
+		taskFilters = strings.Split(":"+strings.TrimSpace(*fTaskFilters)+":", ":")
+	}
 	if *fInputFilters != "" {
 		inputFilters = strings.Split(":"+strings.TrimSpace(*fInputFilters)+":", ":")
 	}
@@ -289,6 +308,7 @@ func main() {
 			return
 		case "config":
 			config.PrintSampleConfig(
+				taskFilters,
 				inputFilters,
 				outputFilters,
 				aggregatorFilters,
@@ -306,6 +326,12 @@ func main() {
 			fmt.Printf("  %s\n", k)
 		}
 		return
+	case *fTaskList:
+		fmt.Println("Available Task Plugins:")
+		for k := range tasks.Tasks{
+			fmt.Printf("  %s\n", k)
+		}
+		return
 	case *fInputList:
 		fmt.Println("Available Input Plugins:")
 		for k := range inputs.Inputs {
@@ -317,6 +343,7 @@ func main() {
 		return
 	case *fSampleConfig:
 		config.PrintSampleConfig(
+			taskFilters,
 			inputFilters,
 			outputFilters,
 			aggregatorFilters,
@@ -324,10 +351,11 @@ func main() {
 		)
 		return
 	case *fUsage != "":
+		err0 := config.PrintTaskConfig(*fUsage)
 		err := config.PrintInputConfig(*fUsage)
 		err2 := config.PrintOutputConfig(*fUsage)
-		if err != nil && err2 != nil {
-			log.Fatalf("E! %s and %s", err, err2)
+		if err0 != nil && err != nil && err2 != nil {
+			log.Fatalf("E! %s, %s and %s", err0, err, err2)
 		}
 		return
 	}
@@ -352,6 +380,7 @@ func main() {
 		}
 
 		prg := &program{
+			taskFilters:       taskFilters,
 			inputFilters:      inputFilters,
 			outputFilters:     outputFilters,
 			aggregatorFilters: aggregatorFilters,
@@ -385,6 +414,7 @@ func main() {
 		stop = make(chan struct{})
 		reloadLoop(
 			stop,
+			taskFilters,
 			inputFilters,
 			outputFilters,
 			aggregatorFilters,

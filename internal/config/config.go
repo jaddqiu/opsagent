@@ -29,9 +29,13 @@ import (
 	"github.com/jaddqiu/opsagent/plugins/parsers"
 	"github.com/jaddqiu/opsagent/plugins/processors"
 	"github.com/jaddqiu/opsagent/plugins/serializers"
+	"github.com/jaddqiu/opsagent/plugins/tasks"
 )
 
 var (
+	// Default task plugins
+	taskDefaults = []string{"example"}
+
 	// Default input plugins
 	inputDefaults = []string{"cpu", "mem", "swap", "system", "kernel",
 		"processes", "disk", "diskio"}
@@ -53,10 +57,12 @@ var (
 // specified
 type Config struct {
 	Tags          map[string]string
+	TaskFilters   []string
 	InputFilters  []string
 	OutputFilters []string
 
 	Agent       *AgentConfig
+	Tasks       []*models.RunningTask
 	Inputs      []*models.RunningInput
 	Outputs     []*models.RunningOutput
 	Aggregators []*models.RunningAggregator
@@ -74,9 +80,11 @@ func NewConfig() *Config {
 		},
 
 		Tags:          make(map[string]string),
+		Tasks:         make([]*models.RunningTask, 0),
 		Inputs:        make([]*models.RunningInput, 0),
 		Outputs:       make([]*models.RunningOutput, 0),
 		Processors:    make([]*models.RunningProcessor, 0),
+		TaskFilters:   make([]string, 0),
 		InputFilters:  make([]string, 0),
 		OutputFilters: make([]string, 0),
 	}
@@ -86,6 +94,9 @@ func NewConfig() *Config {
 type AgentConfig struct {
 	// Interval at which to gather information
 	Interval internal.Duration
+
+	// Interval at which to gather information
+	CronSpec string
 
 	// RoundInterval rounds collection interval to 'interval'.
 	//     ie, if Interval=10s then always collect on :00, :10, :20, etc.
@@ -147,7 +158,16 @@ type AgentConfig struct {
 	OmitHostname bool
 }
 
-// Inputs returns a list of strings of the configured inputs.
+// TaskNames returns a list of strings of the configured tasks.
+func (c *Config) TaskNames() []string {
+	var name []string
+	for _, task := range c.Tasks {
+		name = append(name, task.Name())
+	}
+	return name
+}
+
+// InputNames returns a list of strings of the configured inputs.
 func (c *Config) InputNames() []string {
 	var name []string
 	for _, input := range c.Inputs {
@@ -296,6 +316,13 @@ var aggregatorHeader = `
 ###############################################################################
 `
 
+var taskHeader = `
+
+###############################################################################
+#                            Task PLUGINS                                    #
+###############################################################################
+`
+
 var inputHeader = `
 
 ###############################################################################
@@ -312,6 +339,7 @@ var serviceInputHeader = `
 
 // PrintSampleConfig prints the sample config
 func PrintSampleConfig(
+	taskFilters []string,
 	inputFilters []string,
 	outputFilters []string,
 	aggregatorFilters []string,
@@ -359,6 +387,23 @@ func PrintSampleConfig(
 		}
 		sort.Strings(pnames)
 		printFilteredAggregators(pnames, true)
+	}
+
+	// print task plugins
+	fmt.Printf(taskHeader)
+	if len(taskFilters) != 0 {
+		printFilteredTasks(taskFilters, false)
+	} else {
+		printFilteredTasks(taskDefaults, false)
+		// Print non-default tasks, commented
+		var pnames []string
+		for pname := range tasks.Tasks {
+			if !sliceContains(pname, taskDefaults) {
+				pnames = append(pnames, pname)
+			}
+		}
+		sort.Strings(pnames)
+		printFilteredTasks(pnames, true)
 	}
 
 	// print input plugins
@@ -412,6 +457,25 @@ func printFilteredAggregators(aggregatorFilters []string, commented bool) {
 		creator := aggregators.Aggregators[aname]
 		output := creator()
 		printConfig(aname, output, "aggregators", commented)
+	}
+}
+
+func printFilteredTasks(taskFilters []string, commented bool) {
+	// Filter tasks
+	var pnames []string
+	for pname := range tasks.Tasks {
+		if sliceContains(pname, taskFilters) {
+			pnames = append(pnames, pname)
+		}
+	}
+	sort.Strings(pnames)
+
+	// Print Inputs
+	for _, pname := range pnames {
+		creator := tasks.Tasks[pname]
+		task := creator()
+
+		printConfig(pname, task, "tasks", commented)
 	}
 }
 
@@ -509,6 +573,16 @@ func sliceContains(name string, list []string) bool {
 		}
 	}
 	return false
+}
+
+// PrintTaskConfig prints the config usage of a single task.
+func PrintTaskConfig(name string) error {
+	if creator, ok := tasks.Tasks[name]; ok {
+		printConfig(name, creator(), "tasks", false)
+	} else {
+		return errors.New(fmt.Sprintf("Task %s not found", name))
+	}
+	return nil
 }
 
 // PrintInputConfig prints the config usage of a single input.
@@ -660,6 +734,20 @@ func (c *Config) LoadConfig(path string) error {
 				case []*ast.Table:
 					for _, t := range pluginSubTable {
 						if err = c.addOutput(pluginName, t); err != nil {
+							return fmt.Errorf("Error parsing %s, %s", path, err)
+						}
+					}
+				default:
+					return fmt.Errorf("Unsupported config format: %s, file %s",
+						pluginName, path)
+				}
+			}
+		case "tasks":
+			for pluginName, pluginVal := range subTable.Fields {
+				switch pluginSubTable := pluginVal.(type) {
+				case []*ast.Table:
+					for _, t := range pluginSubTable {
+						if err = c.addTask(pluginName, t); err != nil {
 							return fmt.Errorf("Error parsing %s, %s", path, err)
 						}
 					}
@@ -912,6 +1000,31 @@ func (c *Config) addOutput(name string, table *ast.Table) error {
 	ro := models.NewRunningOutput(name, output, outputConfig,
 		c.Agent.MetricBatchSize, c.Agent.MetricBufferLimit)
 	c.Outputs = append(c.Outputs, ro)
+	return nil
+}
+
+func (c *Config) addTask(name string, table *ast.Table) error {
+	if len(c.TaskFilters) > 0 && !sliceContains(name, c.TaskFilters) {
+		return nil
+	}
+
+	creator, ok := tasks.Tasks[name]
+	if !ok {
+		return fmt.Errorf("Undefined but requested task: %s", name)
+	}
+	task := creator()
+
+	pluginConfig, err := buildTask(name, table)
+	if err != nil {
+		return err
+	}
+
+	if err := toml.UnmarshalTable(table, task); err != nil {
+		return err
+	}
+
+	rp := models.NewRunningTask(task, pluginConfig)
+	c.Tasks = append(c.Tasks, rp)
 	return nil
 }
 
@@ -1225,6 +1338,51 @@ func buildFilter(tbl *ast.Table) (models.Filter, error) {
 	delete(tbl.Fields, "tagexclude")
 	delete(tbl.Fields, "taginclude")
 	return f, nil
+}
+
+// buildTask parses task specific items from the ast.Table,
+// builds the filter and returns a
+// models.TaskConfig to be inserted into models.RunningTask
+func buildTask(name string, tbl *ast.Table) (*models.TaskConfig, error) {
+	cp := &models.TaskConfig{Name: name}
+	if node, ok := tbl.Fields["interval"]; ok {
+		if kv, ok := node.(*ast.KeyValue); ok {
+			if str, ok := kv.Value.(*ast.String); ok {
+				dur, err := time.ParseDuration(str.Value)
+				if err != nil {
+					return nil, err
+				}
+
+				cp.Interval = dur
+			}
+		}
+	}
+
+	if node, ok := tbl.Fields["cron_spec"]; ok {
+		if kv, ok := node.(*ast.KeyValue); ok {
+			if str, ok := kv.Value.(*ast.String); ok {
+				cp.CronSpec = str.Value
+			}
+		}
+	}
+
+	if node, ok := tbl.Fields["schedule"]; ok {
+		if kv, ok := node.(*ast.KeyValue); ok {
+			if str, ok := kv.Value.(*ast.String); ok {
+				cp.Schedule = str.Value
+			}
+		}
+	}
+
+	delete(tbl.Fields, "schedule")
+	delete(tbl.Fields, "cron_spec")
+	delete(tbl.Fields, "interval")
+	var err error
+	cp.Filter, err = buildFilter(tbl)
+	if err != nil {
+		return cp, err
+	}
+	return cp, nil
 }
 
 // buildInput parses input specific items from the ast.Table,

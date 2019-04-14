@@ -247,18 +247,18 @@ func (a *Agent) runTasks(
 	var wg sync.WaitGroup
 	for _, task := range a.Config.Tasks {
 		interval := a.Config.Agent.Interval.Duration
-		cronSpec := a.Config.Agent.Cron.Spec
-		precision := a.Config.Agent.Precision.Duration
+		cronSpec := a.Config.Agent.CronSpec
+		// precision := a.Config.Agent.Precision.Duration
 		jitter := a.Config.Agent.CollectionJitter.Duration
 
 		// Overwrite agent cron specification if this plugin has its own.
 		if task.Config.CronSpec != "" {
-			cronSpec = input.Config.CronSpec
+			cronSpec = task.Config.CronSpec
 		}
 
 		// Overwrite agent interval if this plugin has its own.
 		if task.Config.Interval != 0 {
-			interval = input.Config.Interval
+			interval = task.Config.Interval
 		}
 
 		wg.Add(1)
@@ -270,7 +270,7 @@ func (a *Agent) runTasks(
 					err := internal.SleepContext(
 						ctx, internal.AlignDuration(startTime, interval))
 					if err != nil {
-						return err
+						return
 					}
 				}
 
@@ -281,7 +281,7 @@ func (a *Agent) runTasks(
 			go func(task *models.RunningTask) {
 				defer wg.Done()
 
-				a.executeOnInterval(ctx, task, cronSpec, jitter)
+				a.executeOnCron(ctx, task, cronSpec, interval)
 			}(task)
 		}
 	}
@@ -298,14 +298,24 @@ func (a *Agent) executeOnCron(
 	cronSpec string,
 	timeout time.Duration,
 ) {
+	ticker := time.NewTicker(timeout)
+	defer ticker.Stop()
 
 	c := cron.New()
 	err := c.AddFunc(cronSpec, func() {
+		err := internal.SleepContext(ctx, internal.RandomDuration(timeout))
+		if err != nil {
+			return
+		}
+
 		err = a.executeOnce(task, timeout)
+		if err != nil {
+			return
+		}
 
 		select {
+		case <-ticker.C:
 		case <-ctx.Done():
-			c.Stop()
 			return
 		}
 	})
@@ -395,7 +405,7 @@ func (a *Agent) runInputs(
 				err := internal.SleepContext(
 					ctx, internal.AlignDuration(startTime, interval))
 				if err != nil {
-					return err
+					return
 				}
 			}
 

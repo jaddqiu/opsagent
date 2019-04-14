@@ -17,6 +17,8 @@ The commands & flags are:
   --config <file>                configuration file to load
   --config-directory <directory> directory containing additional *.conf files
   --debug                        turn on debug logging
+  --task-filter <filter>         filter the taskss to enable, separator is :
+  --task-list                    print available task plugins.
   --input-filter <filter>        filter the inputs to enable, separator is :
   --input-list                   print available input plugins.
   --output-filter <filter>       filter the outputs to enable, separator is :
@@ -35,6 +37,9 @@ Examples:
 
   # generate a opsagent config file:
   opsagent config > opsagent.conf
+
+  # generate config with only example task
+  opsagent --task-filter example
 
   # generate config with only cpu input & influxdb output plugins defined
   opsagent --input-filter cpu --output-filter influxdb config

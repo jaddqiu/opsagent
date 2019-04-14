@@ -7,6 +7,9 @@ type Task interface {
 	// Description returns a one-sentence description on the Task
 	Description() string
 
+	// check execution environment.
+	Check() error
+
 	// Execute task once.
 	Execute() error
 
