@@ -303,12 +303,8 @@ func (a *Agent) executeOnCron(
 
 	c := cron.New()
 	err := c.AddFunc(cronSpec, func() {
-		err := internal.SleepContext(ctx, internal.RandomDuration(timeout))
-		if err != nil {
-			return
-		}
 
-		err = a.executeOnce(task, timeout)
+		err := a.executeOnce(task, timeout)
 		if err != nil {
 			return
 		}
